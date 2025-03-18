@@ -1,0 +1,99 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :::p, comp baseLayout:::::x, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp baseLayout:::::x, space :::p}}"
+		} ) {
+			name: "this"
+			"iconImage": new com.jformdesigner.model.SwingIcon( 0, "/resources/logo.png" )
+			"title": "ZMPrintService"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp bottomLayout:::::x, comp panel2:::::x}, space :::p}}"
+				"$verticalGroup": "par l {seq t {space :::p, comp panel2:::::x, space :::p, comp bottomLayout:::p:32:p, space :::p}}"
+			} ) {
+				name: "baseLayout"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) ) {
+					name: "bottomLayout"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {comp sys_msg_label::l::229:x}"
+						"$verticalGroup": "par l {comp sys_msg_label::t::32:x}"
+					} ) {
+						name: "panel6"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "sys_msg_label"
+							"text": "System Message Label"
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "minimize"
+						"text": "最小化"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label4"
+						"text": "     "
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "quit"
+						"text": "退出程序"
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {space :::p, par l {comp panel7:::::x, comp panel8:::p:397:p, comp scrollPane1::l:::x}, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, comp panel7:::p:30:p, space :::p, comp panel8:::p:30:p, space :::p, comp scrollPane1:::p:193:p, space :::p}}"
+				} ) {
+					name: "panel2"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) ) {
+						name: "panel7"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label9"
+							"text": "   Service IP    "
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "ipBox"
+							"editable": false
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) ) {
+						name: "panel8"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label10"
+							"text": "Service Port   "
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "port"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label8"
+							"text": "   "
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "restart"
+							"text": "重启服务"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label7"
+							"text": "   "
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "usbConnectTest"
+							"text": "测试USB打印机连接"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JTextArea" ) {
+							name: "service_message"
+							"editable": false
+						} )
+					} )
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 180, 45 )
+			"size": new java.awt.Dimension( 435, 370 )
+		} )
+	}
+}

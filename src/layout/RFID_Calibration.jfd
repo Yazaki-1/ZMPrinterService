@@ -1,0 +1,497 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :p:197:p, comp just_rfid:::p:150:p, space :::p, comp just_label:::p:150:p, space :::p, comp getResult_button:::p:150:p, space :::x}, seq t {space :::p, par l {seq l {comp rfid_signal_panel:::::x, space :::p, par l {comp RSSI_data_picturePanel::l:p::p, comp RSSI_data_label2::l:p::p}, space :::p, par l {comp label_height_label:::p::p, comp rfid_panel:::p::p}}, comp tabbedPane1::t::0:x, seq l {comp CalibrationData_label:::p::p, space :p:55:p, comp sensor_value_label:::p::p}, comp CalibrationData_picturePanel::l:::x}, space :::p}}"
+			"$verticalGroup": "par l {seq l {comp tabbedPane1:::p:201:p, space s:::p, par b {comp just_label::b:p::p, comp just_rfid::b:p::p, comp getResult_button::b:p::p}, space u:::p, par b {comp CalibrationData_label::b:p::p, comp sensor_value_label::b:p::p}, space :::p, comp CalibrationData_picturePanel:::::p, space :::p, par l {seq {par l {seq {comp RSSI_data_label2:::p::p, space :::p, comp RSSI_data_picturePanel:::::x}, seq {space :p:10:p, comp label_height_label:::p::p, space :::p, comp rfid_panel::::226:x}}, space :p:23:p}, comp rfid_signal_panel:::::x}, space :::p}}"
+		} ) {
+			name: "this"
+			"title": "RFID Calibration"
+			"resizable": false
+			"defaultCloseOperation": 2
+			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowClosing", "thisWindowClosing", true ) )
+			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowOpened", "thisWindowOpened", true ) )
+			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+				name: "tabbedPane1"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :p:18:p, comp printerInfo_panel:::::x, space :::p, comp uhf_param:::p::p, space :::p, comp hf_param:::p::p, space :::p, comp panel1:::p::p, space :::p}}"
+					"$verticalGroup": "par l {seq {par l {comp hf_param::t:::x, comp uhf_param::t:::x, seq {space :::p, par l {comp panel1:::::x, comp printerInfo_panel:::::x}}}, space :::p}}"
+				} ) {
+					name: "RFID_printer"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l {seq l {comp label99:::p::p, space :::p, comp printerListBox::::208:x}, seq {par l {comp firmware_label::l:p::p, comp print_mode_label::l:p::p, comp paper_sensor_label::l:p::p, comp printer_dpi_label::l:p::p}, space :0:149:x}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {par b {comp printerListBox::b:::x, comp label99::b:p::p}, space :::p, comp firmware_label:::p::p, space :::p, comp print_mode_label:::p::p, space :::p, comp paper_sensor_label:::p::p, space :::p, comp printer_dpi_label:::p::p, space :p:23:p}}"
+					} ) {
+						name: "printerInfo_panel"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "printer_dpi_label"
+							"text": "打印机分辨率：null"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "paper_sensor_label"
+							"text": "感应器类型：null"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "print_mode_label"
+							"text": "打印模式：null"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "firmware_label"
+							"text": "Firmware版本：V0.00XX"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label99"
+							"text": "当前打印机："
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "printerListBox"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, par l {par t:l {seq t {comp dr_value_label:::p::p, space :::p, comp dr_value_comboBox:::p:80:p}, seq t {comp frequency_label:::p::p, space :::p, comp frequency_comboBox:::p:80:p}}, seq l {comp write_power_label1:::p::p, space :::p, comp write_power_comboBox:::p:80:p, space :::p, comp write_power_label2:::p::p}, seq l {par t {comp read_power_label1:::p::p, comp protocol_label:::p::p}, space :::p, par l {seq l {comp protocol_comboBox:::p:80:p, space u:::p, comp checkBox_gjb_jm:::p::p}, seq l {comp read_power_comboBox:::p:80:p, space :::p, comp read_power_label2:::p::p}}}}, space :::x}}"
+						"$verticalGroup": "par l {seq l {space :::p, par b {comp protocol_comboBox::b:p:17:p, comp checkBox_gjb_jm::b:p::p, comp protocol_label::b:p::p}, space :::p, par b {comp read_power_comboBox::b:p:18:p, comp read_power_label2::b:p:18:p, comp read_power_label1::b:p::p}, space :::p, par b {comp write_power_comboBox::b:p:17:p, comp write_power_label2::b:p:18:p, comp write_power_label1::b:p::p}, space :::p, par b {comp dr_value_comboBox::b:p:17:p, comp dr_value_label::b:p::p}, space :::p, par b {comp frequency_comboBox::b:p:17:p, comp frequency_label::b:p::p}, space :::x}}"
+					} ) {
+						name: "uhf_param"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "protocol_label"
+							"text": "协议："
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "protocol_comboBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "ISO"
+								addElement( "ISO" )
+								addElement( "GJB" )
+								addElement( "GB" )
+							}
+							"selectedIndex": 0
+							addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "protocol_comboBoxItemStateChanged", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "checkBox_gjb_jm"
+							"text": "启用军密"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "read_power_comboBox"
+							"model": &DefaultComboBoxModel0 new javax.swing.DefaultComboBoxModel {
+								selectedItem: "0"
+								addElement( "0" )
+								addElement( "1" )
+								addElement( "2" )
+								addElement( "3" )
+								addElement( "4" )
+								addElement( "5" )
+								addElement( "6" )
+								addElement( "7" )
+								addElement( "8" )
+								addElement( "9" )
+								addElement( "10" )
+								addElement( "11" )
+								addElement( "12" )
+								addElement( "13" )
+								addElement( "14" )
+								addElement( "15" )
+								addElement( "16" )
+								addElement( "17" )
+								addElement( "18" )
+								addElement( "19" )
+								addElement( "20" )
+								addElement( "21" )
+								addElement( "22" )
+								addElement( "23" )
+								addElement( "24" )
+								addElement( "25" )
+								addElement( "26" )
+								addElement( "27" )
+							}
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "read_power_label2"
+							"text": "dBm"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "write_power_label2"
+							"text": "dBm"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "write_power_comboBox"
+							"model": #DefaultComboBoxModel0
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "write_power_label1"
+							"text": "写功率："
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "read_power_label1"
+							"text": "读功率："
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "dr_value_label"
+							"text": "校准模式："
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "dr_value_comboBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "0"
+								addElement( "0" )
+								addElement( "1" )
+								addElement( "2" )
+							}
+							"selectedIndex": 2
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "frequency_comboBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "Auto8"
+								addElement( "Auto8" )
+								addElement( "Auto9" )
+							}
+							"selectedIndex": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "frequency_label"
+							"text": "工作频率："
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, par l:::p {seq l {comp HF_power_label1:::p::p, space :::p, comp HF_power_comboBox:::p:50:p, space :::p, comp HF_power_label2:::p::p}, seq l {comp HF_type_label:::p::p, space :::p, comp HF_type_comboBox:::p:82:p}}, space :::x}}"
+						"$verticalGroup": "par l {seq l {space :p:14:p, par b {comp HF_power_label1::b:p::p, comp HF_power_comboBox::b:p:18:p, comp HF_power_label2::b:p::p}, space :p:7:p, par l {comp HF_type_label:::p::p, comp HF_type_comboBox:::p:17:p}, space :::x}}"
+					} ) {
+						name: "hf_param"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "HF_power_label1"
+							"text": "模块功率："
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "HF_power_comboBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "12"
+								addElement( "12" )
+								addElement( "24" )
+								addElement( "36" )
+								addElement( "48" )
+							}
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "HF_type_label"
+							"text": "协议类型："
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "HF_type_comboBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "默认"
+								addElement( "默认" )
+								addElement( "15693" )
+								addElement( "14443A" )
+								addElement( "NFC/UltraLight" )
+							}
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "HF_power_label2"
+							"text": "dBm"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp refreshPrinterInfo_button::l:::x, comp addNetP::t::124:x, comp setPrinter_button::l::124:x, comp delNetPrinter::l::124:x}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, comp refreshPrinterInfo_button:::p:24:p, space :::p, comp addNetP:::p:24:p, space :::p, comp delNetPrinter:::p:24:p, space :::x, comp setPrinter_button:::p:24:p, space :::p}}"
+					} ) {
+						name: "panel1"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "refreshPrinterInfo_button"
+							"text": "刷新"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "setPrinter_button"
+							"text": "更改设置"
+							"actionCommand": "更改设置"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "addNetP"
+							"text": "添加网络打印机"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "delNetPrinter"
+							"text": "删除网络打印机"
+						} )
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "RFID标签打印机"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :::p, par l {seq {space :6:6:p, par l {seq l {comp label28:::p:84:p, space u:::p, comp ip_mac_textField:::p:165:p, space s:::p, comp label27:::::x, space s:::p, comp net_set_button:::p:100:p, space :p:207:p}, seq {par l {seq {comp label24:::p:84:p, space u:::p, comp ip_subMask_textField:::p:165:p, space s:::p, comp label26:::p:84:p, space u:::p, comp ip_port_textField:::p:165:p}, seq {comp label23:::p:84:p, space u:::p, comp ip_textField:::p:165:p, space s:::p, comp label25:::p:84:p, space u:::p, comp ip_gate_textField:::p:165:p}}, space ::319:x}}}, seq {comp label22:::p:172:p, space ::693:x}}}}"
+					"$verticalGroup": "par l {seq l {space :::p, comp label22:::p::p, space :::p, par b {comp label23::b:p::p, comp ip_textField::b:p::p, comp label25::b:p::p, comp ip_gate_textField::b:p::p}, space :::p, par b {comp label24::b:p::p, comp ip_subMask_textField::b:p::p, comp label26::b:p::p, comp ip_port_textField::b:p::p}, space :5:5:p, par b {comp label28::b:p::p, comp ip_mac_textField::b:p::p, comp label27::b:p::p, comp net_set_button::b:p::p}, space ::18:x}}"
+				} ) {
+					name: "net_param"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label22"
+						"text": "设置打印机的网络参数为："
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label23"
+						"text": "IP地址："
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ip_textField"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label24"
+						"text": "子网掩码："
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ip_subMask_textField"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label25"
+						"text": "网关地址："
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label26"
+						"text": "端口号："
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ip_gate_textField"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ip_port_textField"
+						"text": "9100"
+						"editable": false
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label27"
+						"text": "MAC及端口号为固定值不可改变。"
+						"foreground": new java.awt.Color( 51, 153, 255, 255 )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "net_set_button"
+						"text": "设置"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ip_mac_textField"
+						"editable": false
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label28"
+						"text": "MAC："
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "网络参数"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {space :::p, comp label4:::p::p, space u:::p, comp scrollPane1:::p:567:p, space s:::p, par l {comp command_button::::202:x, comp reset_button::::202:x}, space :::p}}"
+					"$verticalGroup": "par l {seq t {space :::p, par t {comp scrollPane1::::149:x, seq {par l {comp label4:::p::p, comp reset_button:::p::p}, space ::81:x, comp command_button:::p::p}}, space :::p}}"
+				} ) {
+					name: "advanceSetting"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label4"
+						"text": "编写指令："
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JTextArea" ) {
+							name: "command_textArea"
+						} )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "reset_button"
+						"text": "恢复出厂设置"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "command_button"
+						"text": "发送指令"
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "高级设置"
+				} )
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "just_rfid"
+				"text": "RFID校准"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "getResult_button"
+				"text": "查询结果"
+				"actionCommand": "查询结果"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {space :0:0:x}"
+				"$verticalGroup": "par l {space :0:132:x}"
+			} ) {
+				name: "CalibrationData_picturePanel"
+				"background": &Color0 new java.awt.Color( 204, 204, 204, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "CalibrationData_label"
+				"text": "标签纸校准曲线："
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {space :0:277:x}"
+				"$verticalGroup": "par l {space :0:0:x}"
+			} ) {
+				name: "RSSI_data_picturePanel"
+				"background": #Color0
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "RSSI_data_label2"
+				"text": "RFID信号图示："
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {par l {comp rssiNumber_label::l:p::p, comp rssiHeight_label::l:p::p, comp readWriteLine_label::l:p::p, comp set_wp_label1::l:p::p, seq l {comp set_wp_textField:::p:49:p, space :::p, comp set_wp_label2:::p::p, space s:::p, comp set_wp_button:::p::p}, comp set_an_label1:::p::p, seq l {comp set_an_textField:::p:49:p, space :::p, comp set_an_label2:::p::p, space s:::p, comp set_an_button:::p::p}}, space :0:12:x}, comp uhf_inlay_label::::185:x}"
+				"$verticalGroup": "par l {seq l {space :::p, comp rssiNumber_label:::p::p, space :::p, comp rssiHeight_label:::p::p, space :::p, comp readWriteLine_label:::p::p, space :::p, comp set_wp_label1:::p::p, space :::p, par b {comp set_wp_button::b:p::p, comp set_wp_label2::b:p::p, comp set_wp_textField::b:p::p}, space :::p, comp set_an_label1:::p::p, space :::p, par l {par b:l {comp set_an_textField::b:p::p, comp set_an_label2::b:p::p}, comp set_an_button:::p::p}, space :::p, comp uhf_inlay_label:::p:20:p, space :::x}}"
+			} ) {
+				name: "rfid_panel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "uhf_inlay_label"
+					"horizontalAlignment": 2
+					"font": new java.awt.Font( "Microsoft YaHei UI", 0, 10 )
+					"text": "芯片型号"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "set_an_textField"
+					"text": "0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "set_an_label2"
+					"text": "mm"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "set_an_button"
+					"text": "设定"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "set_an_label1"
+					"text": "指定AN值："
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "set_wp_textField"
+					"text": "0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "set_wp_label2"
+					"text": "mm"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "set_wp_button"
+					"text": "设定"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "set_wp_label1"
+					"text": "指定读写位置："
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "readWriteLine_label"
+					"text": "标签读写位置：00mm"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "rssiHeight_label"
+					"text": "最大读写区域高度：00mm"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "rssiNumber_label"
+					"text": "信号读写区域数量：0"
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp RSSI_data_scrollPane::l:::x, seq {par l {comp RSSI_data_label::l:p::p, comp sysMsg_label::l:p::p, comp sensor_level_label::l:p::p, seq l {comp sensor_level_label2:::p::p, space :::p, par l {comp sensor_level_button:::p:55:p, seq l {comp sensor_level_comboBox:::p:55:p, space s:::p, comp sensorLevel_label3:::p::p}}, space :::p, par l {seq {comp maxLength_textField:::p:55:p, space :::p, comp label20:::p::p}, comp maxLength_button:::p:55:p}}}, space :0:0:x}}, space :::p}}"
+				"$verticalGroup": "par l {seq l {comp sensor_level_label:::p::p, space :::p, par l {seq {par b {comp sensor_level_label2::b:p::p, comp sensor_level_comboBox::b:p:23:p, comp sensorLevel_label3::b:p::p}, space :::p, comp sensor_level_button:::p:23:p}, seq {par b {comp maxLength_textField::b:p:23:p, comp label20::b:p::p}, space :::p, comp maxLength_button:::p:23:p}}, space :p:4:p, comp RSSI_data_label:::p::p, space :::p, comp RSSI_data_scrollPane:::p:150:p, space ::7:x, comp sysMsg_label:::p::p, space :::p}}"
+			} ) {
+				name: "rfid_signal_panel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "sensor_level_label"
+					"text": "当前探测等级：0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "sensor_level_label2"
+					"text": "新探测等级："
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "sensor_level_comboBox"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "0"
+						addElement( "0" )
+						addElement( "1" )
+						addElement( "2" )
+						addElement( "3" )
+						addElement( "4" )
+						addElement( "5" )
+						addElement( "6" )
+						addElement( "7" )
+						addElement( "8" )
+						addElement( "9" )
+						addElement( "10" )
+						addElement( "11" )
+						addElement( "12" )
+						addElement( "13" )
+						addElement( "14" )
+						addElement( "15" )
+						addElement( "16" )
+						addElement( "17" )
+						addElement( "18" )
+						addElement( "19" )
+						addElement( "20" )
+						addElement( "21" )
+						addElement( "22" )
+						addElement( "23" )
+					}
+					"selectedIndex": 0
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "sensor_level_button"
+					"text": "设定"
+					"font": new java.awt.Font( "Microsoft YaHei UI", 0, 9 )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "RSSI_data_label"
+					"text": "RFID信号数据："
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "RSSI_data_scrollPane"
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "RSSI_data_textArea"
+						"editable": false
+						"lineWrap": true
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "sysMsg_label"
+					"text": "当前系统名称"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "sensorLevel_label3"
+					"text": "最大打印长度："
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "maxLength_textField"
+					"text": "0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label20"
+					"text": "mm"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "maxLength_button"
+					"text": "设定"
+					"font": new java.awt.Font( "Microsoft YaHei UI", 0, 9 )
+				} )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label_height_label"
+				"text": "标签高度（含间隙）：00mm"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "sensor_value_label"
+				"text": "  "
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "just_label"
+				"text": "标签校准"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 885, 745 )
+		} )
+	}
+}
+
+

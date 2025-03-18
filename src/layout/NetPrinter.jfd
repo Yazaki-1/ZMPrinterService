@@ -1,0 +1,65 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {space :::p, par l {comp netMsgPanel:::::x, comp btnPanel::l::0:x}, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp netMsgPanel:::p:86:p, space :::p, comp btnPanel:::p:30:p, space :::x}}"
+		} ) {
+			name: "this"
+			"title": "添加网络打印机"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+				"columns": 1
+				"rows": 2
+			} ) {
+				name: "netMsgPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :::p, comp label1:::p:66:p, space :::p, comp ipText::::372:x, space :::p}}"
+					"$verticalGroup": "par l {seq {space :::p, par b {comp label1::b::37:x, comp ipText::b:p::p}, space :::p}}"
+				} ) {
+					name: "ipPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label1"
+						"text": "IP地址："
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ipText"
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "testConnectMessage"
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+				"columns": 2
+			} ) {
+				name: "btnPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {space :0:114:x}"
+					"$verticalGroup": "par l {space :0:30:x}"
+				} ) {
+					name: "panel5"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {space :0:114:x}"
+					"$verticalGroup": "par l {space :0:30:x}"
+				} ) {
+					name: "panel6"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addPrinterBtn"
+					"text": "添加网络打印机"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "testConnectBtn"
+					"text": "测试连接"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 470, 165 )
+		} )
+	}
+}
+
