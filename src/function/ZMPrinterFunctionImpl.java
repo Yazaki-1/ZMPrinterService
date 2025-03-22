@@ -157,14 +157,14 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
         List<String> printers = printerOperator.getPrinters();
         StringBuilder printerBuilder = new StringBuilder();
         printers.forEach(p -> printerBuilder.append(getNameAndSn(p)).append("|"));
-        return printerBuilder.toString();
+        return printerBuilder.substring(0, printerBuilder.toString().length() - 1);
     }
 
     @Override
     public String getNameAndSn(String serial) throws ConnectException {
         byte[] command = "RQ1,1\r\n".getBytes(StandardCharsets.UTF_8);
         String info = printerOperator.sendAndReadPrinter(serial, command, command.length);
-        info = info.replace("dpi", "");
+        info = info.replace("dpi", "").replace("\r", "").replace("\n", "");
         String[] infos = info.split(",");
         String name = infos[0];
         String sn = infos[2];

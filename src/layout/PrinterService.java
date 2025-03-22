@@ -244,7 +244,7 @@ public class PrinterService extends JFrame {
                 ipBox.setText(ip);
                 ipBox.setCaretPosition(0);
 
-//                systemTray();
+                systemTray();
 
                 CommonClass.saveLog(ip + "    " + sys_msg, LogType.ServiceData);
                 setTitle("ZMPrintService [Ver" + CommonClass.SOFT_VERSION + "]");
@@ -316,7 +316,7 @@ public class PrinterService extends JFrame {
             setVisible(false);
             // 获取系统托盘
             SystemTray tray = SystemTray.getSystemTray();
-            Image image = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/logo16.png"))).getImage();
+            Image image = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/logo32.png"))).getImage();
             TrayIcon trayIcon = getTrayIcon(image, tray);
 
             try {

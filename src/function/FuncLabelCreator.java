@@ -599,7 +599,8 @@ public class FuncLabelCreator {
                         ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
                     } catch (NumberFormatException e) {
                         // 未通过Parse,catch为ip
-                        String status = function.getPrinterStatus(funcParams[1]);
+                        String addr = funcParams.length == 3 ? funcParams[2] : funcParams[1];
+                        String status = function.getPrinterStatus(addr);
                         ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_NET:" + status); // 必定是0,如果不是会被catch
                     }
                 }
