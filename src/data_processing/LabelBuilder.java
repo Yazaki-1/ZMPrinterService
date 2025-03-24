@@ -149,6 +149,12 @@ public class LabelBuilder {
 
             switch (connectType) {
                 case "USB": {
+                    if (printer.printermbsn.isEmpty()) {
+                        List<String> printers = printerOperator.getPrinters();
+                        if (!printers.isEmpty()) {
+                            printer.printermbsn = printers.get(0);
+                        }
+                    }
                     String status = printerOperator.getPrinterStatus(printer.printermbsn);
                     // 实际上会被catch而不是进来if判断
                     if (status.equals("|")) {
