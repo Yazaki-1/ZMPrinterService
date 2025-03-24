@@ -203,6 +203,13 @@ public class LabelBuilder {
     }
 
     public static void addPrintQueue(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
+        if (printer.printermbsn.isEmpty()) {
+            PrinterOperator printerOperator = new PrinterOperatorImpl();
+            List<String> printers = printerOperator.getPrinters();
+            if (!printers.isEmpty()) {
+                printer.printermbsn = printers.get(0);
+            }
+        }
         float speed = printer.printSpeed * 25.4f;
         float labelHeight = label.labelheight;
         long printWaiting = (long) (labelHeight / speed * 1000 / 3);
