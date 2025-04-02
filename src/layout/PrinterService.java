@@ -332,7 +332,7 @@ public class PrinterService extends JFrame {
         // 添加鼠标点击事件监听器
         trayIcon.addActionListener(e -> {
             // 双击托盘图标时的操作
-            setVisible(true);
+            setVisible(!this.isVisible());
             setState(JFrame.NORMAL);
             toFront();
         });
@@ -342,7 +342,7 @@ public class PrinterService extends JFrame {
 
     private PopupMenu getPopupMenu() {
         PopupMenu popupMenu = new PopupMenu();
-        MenuItem menuItem = new MenuItem("打开窗口");
+        MenuItem menuItem = new MenuItem("Open");
         menuItem.addActionListener(e -> {
             setExtendedState(Frame.NORMAL);//窗体恢复正常化状态
             setVisible(true);//双击托盘图标显示窗体
@@ -352,7 +352,7 @@ public class PrinterService extends JFrame {
 
         String osName = System.getProperty("os.name");
         if (osName.toLowerCase().contains("windows")) {
-            CheckboxMenuItem checkboxMenuItem = new CheckboxMenuItem("开机自动启动");
+            CheckboxMenuItem checkboxMenuItem = new CheckboxMenuItem("Auto Start");
 
             int i = RegUtil.INSTANCE.get_reg();
 
@@ -374,13 +374,13 @@ public class PrinterService extends JFrame {
             popupMenu.add(checkboxMenuItem);//添加一个菜单项
         }
 
-        menuItem = new MenuItem("退出程序");
+        menuItem = new MenuItem("Quit");
         menuItem.addActionListener(e -> {
             System.exit(0);//关闭程序
         });
         popupMenu.add(menuItem);//添加一个菜单项
 
-        menuItem = new MenuItem("关于");
+        menuItem = new MenuItem("About");
         String messageBody = "ZMPrintService Ver" +
                 CommonClass.SOFT_VERSION +
                 "是网页前端打印服务器，\n" +
