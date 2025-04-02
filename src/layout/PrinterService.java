@@ -8,6 +8,7 @@ import common.CommonClass;
 import common.LogType;
 import server.PrinterWebSocketServer;
 import utils.NetUtils;
+import utils.RegUtil;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -349,7 +350,7 @@ public class PrinterService extends JFrame {
 
     private PopupMenu getPopupMenu(SystemTray tray, TrayIcon trayIcon) {
         PopupMenu popupMenu = new PopupMenu();
-        MenuItem menuItem = new MenuItem("Show Main Form");
+        MenuItem menuItem = new MenuItem("打开窗口");
         menuItem.addActionListener(e -> {
             //隐藏托盘图标
             TrayIcon[] trayIcons = SystemTray.getSystemTray().getTrayIcons();
@@ -364,13 +365,38 @@ public class PrinterService extends JFrame {
         });
         popupMenu.add(menuItem);//添加一个菜单项
 
-        menuItem = new MenuItem("Exit");
+        String osName = System.getProperty("os.name");
+        if (osName.toLowerCase().contains("windows")) {
+            CheckboxMenuItem checkboxMenuItem = new CheckboxMenuItem("开机自动启动");
+
+            int i = RegUtil.INSTANCE.get_reg();
+
+            if (i == -1) {
+                CommonClass.saveAndShow("获取自动启动状态失败!可能是权限不足的问题.", LogType.ErrorData);
+            }else {
+                CommonClass.showServiceMsg("" + (i == 1));
+                checkboxMenuItem.setState(i == 1);
+            }
+
+            checkboxMenuItem.addItemListener(l -> {
+                int setAutoStart = checkboxMenuItem.getState() ? 1 : 0;
+                String regPath = System.getProperty("user.dir") + "\\ZMPrinterService.exe";
+                int result = RegUtil.INSTANCE.set_auto_start(setAutoStart, regPath);
+                if (result == 0) {
+                    CommonClass.saveAndShow("设置自动启动失败!可能是权限不足的问题.", LogType.ErrorData);
+                }
+            });
+
+            popupMenu.add(checkboxMenuItem);//添加一个菜单项
+        }
+
+        menuItem = new MenuItem("退出程序");
         menuItem.addActionListener(e -> {
             System.exit(0);//关闭程序
         });
         popupMenu.add(menuItem);//添加一个菜单项
 
-        menuItem = new MenuItem("About");
+        menuItem = new MenuItem("关于");
         String messageBody = "ZMPrintService Ver" +
                 CommonClass.SOFT_VERSION +
                 "是网页前端打印服务器，\n" +

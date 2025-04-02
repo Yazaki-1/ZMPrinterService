@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 
 /**
- * @author LuoKunFan
+ * @author LuoKunFan ph
  */
 public class RFID_Calibration extends JDialog {
 
