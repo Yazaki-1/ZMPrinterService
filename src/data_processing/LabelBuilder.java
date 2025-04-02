@@ -27,6 +27,7 @@ import java.util.*;
  */
 public class LabelBuilder {
     private static final PrintUtility printUtility = new PrintUtility();
+    private static boolean preview_one = false;
 
     public static void build(JsonData jsonData, String clientRemote) {
         if (jsonData.getLsfFilePath() != null) {
@@ -60,8 +61,11 @@ public class LabelBuilder {
                 ZMPrinter finalLsfPrinter = lsfPrinter;
                 if (labels != null) {
                     // 数据填充-labels: varvalue,varname
-                    labels.forEach(l -> {
-                        JSONObject label = JSONObject.parseObject(l);
+                    for (int i = 0; i < labels.size(); i++) {
+                        if (i == 0 && jsonData.getOperator().contains("preview")) {
+                            preview_one = true;
+                        }
+                        JSONObject label = JSONObject.parseObject(labels.get(i));
                         try {
                             JSONArray array = label.getJSONArray("lsfFileVarList");
                             setLsfFileVar(array, contents, jsonData.getOperator(), finalLsfPrinter, labelFormat, clientRemote);
@@ -70,7 +74,7 @@ public class LabelBuilder {
                         } catch (Exception e) {
                             throw new FunctionalException("3007|Json反序列化异常:" + e.getMessage());
                         }
-                    });
+                    }
                 }
                 // 如果是用的LsfFileVarList单张数据
                 if (jsonData.getLsfFileVarList() != null) {
@@ -95,9 +99,12 @@ public class LabelBuilder {
                     printLabel(printer, labelFormat, labelObjectList, clientRemote);
                     break;
                 case "preview":
-                    int border = jsonData.getOperator().endsWith("0") ? 0 : 1;
-                    preview(printer, labelFormat, labelObjectList, clientRemote, border);
-                    break;
+                    if (preview_one) {
+                        int border = jsonData.getOperator().endsWith("0") ? 0 : 1;
+                        preview(printer, labelFormat, labelObjectList, clientRemote, border);
+                        preview_one = false;
+                        break;
+                    }
                 case "setting":
                     setting(printer, jsonData.getParameters(), clientRemote);
                     break;
@@ -155,22 +162,10 @@ public class LabelBuilder {
                             printer.printermbsn = printers.get(0);
                         }
                     }
-                    String status = printerOperator.getPrinterStatus(printer.printermbsn);
-                    // 实际上会被catch而不是进来if判断
-                    if (status.equals("|")) {
-                        writeResult = null;
-                        break;
-                    }
                     writeResult = printerOperator.sendToPrinter(printer.printermbsn, data, data.length);
                     break;
                 }
                 case "NET": {
-                    String status = printerOperator.getPrinterStatus(printer.printernetip);
-                    // 实际上会被catch而不是进来if判断
-                    if (status.equals("|")) {
-                        writeResult = null;
-                        break;
-                    }
                     writeResult = printerOperator.sendToPrinter(printer.printernetip, data);
                     break;
                 }

@@ -187,6 +187,12 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
         try {
             long serial = Long.parseLong(addr);
             String serialNumber = serial == 1 ? "" : addr;
+            if (serialNumber.isEmpty()) {
+                List<String> printers = printerOperator.getPrinters();
+                if (!printers.isEmpty()) {
+                    serialNumber = printers.get(0);
+                }
+            }
             return printerOperator.readTag(serialNumber, labelType, configuration);
         } catch (NumberFormatException e) {
             // 未通过Parse,catch为ip
