@@ -244,7 +244,7 @@ public class PrinterService extends JFrame {
                 String ip = NetUtils.getRealIP();//当前电脑ip地址
                 ipBox.setText(ip);
                 ipBox.setCaretPosition(0);
-
+                setVisible(false);
                 systemTray();
 
                 CommonClass.saveLog(ip + "    " + sys_msg, LogType.ServiceData);
@@ -275,7 +275,7 @@ public class PrinterService extends JFrame {
         });
 
         // 最小化、退出按钮响应事件
-        minimize.addActionListener(e -> systemTray());
+        minimize.addActionListener(e -> setVisible(false));
         quit.addActionListener(e -> System.exit(0));
 
         // 消息窗口右键功能
@@ -314,11 +314,10 @@ public class PrinterService extends JFrame {
     // 系统托盘和右键按钮事件
     private void systemTray() {
         if (SystemTray.isSupported()) {
-            setVisible(false);
             // 获取系统托盘
             SystemTray tray = SystemTray.getSystemTray();
             Image image = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/logo16.png"))).getImage();
-            TrayIcon trayIcon = getTrayIcon(image, tray);
+            TrayIcon trayIcon = getTrayIcon(image);
 
             try {
                 tray.add(trayIcon);
@@ -328,37 +327,23 @@ public class PrinterService extends JFrame {
         }
     }
 
-    private TrayIcon getTrayIcon(Image image, SystemTray tray) {
+    private TrayIcon getTrayIcon(Image image) {
         TrayIcon trayIcon = new TrayIcon(image);
         // 添加鼠标点击事件监听器
         trayIcon.addActionListener(e -> {
-            //隐藏托盘图标
-            TrayIcon[] trayIcons = SystemTray.getSystemTray().getTrayIcons();
-            for (TrayIcon icon : trayIcons) {
-                if (icon == trayIcon) {
-                    tray.remove(icon);
-                }
-            }
             // 双击托盘图标时的操作
             setVisible(true);
             setState(JFrame.NORMAL);
             toFront();
         });
-        trayIcon.setPopupMenu(getPopupMenu(tray, trayIcon));
+        trayIcon.setPopupMenu(getPopupMenu());
         return trayIcon;
     }
 
-    private PopupMenu getPopupMenu(SystemTray tray, TrayIcon trayIcon) {
+    private PopupMenu getPopupMenu() {
         PopupMenu popupMenu = new PopupMenu();
         MenuItem menuItem = new MenuItem("打开窗口");
         menuItem.addActionListener(e -> {
-            //隐藏托盘图标
-            TrayIcon[] trayIcons = SystemTray.getSystemTray().getTrayIcons();
-            for (TrayIcon icon : trayIcons) {
-                if (icon == trayIcon) {
-                    tray.remove(icon);
-                }
-            }
             setExtendedState(Frame.NORMAL);//窗体恢复正常化状态
             setVisible(true);//双击托盘图标显示窗体
             toFront();
@@ -374,7 +359,6 @@ public class PrinterService extends JFrame {
             if (i == -1) {
                 CommonClass.saveAndShow("获取自动启动状态失败!可能是权限不足的问题.", LogType.ErrorData);
             }else {
-                CommonClass.showServiceMsg("" + (i == 1));
                 checkboxMenuItem.setState(i == 1);
             }
 
