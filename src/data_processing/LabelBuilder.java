@@ -99,12 +99,9 @@ public class LabelBuilder {
                     printLabel(printer, labelFormat, labelObjectList, clientRemote);
                     break;
                 case "preview":
-                    if (preview_one) {
-                        int border = jsonData.getOperator().endsWith("0") ? 0 : 1;
-                        preview(printer, labelFormat, labelObjectList, clientRemote, border);
-                        preview_one = false;
-                        break;
-                    }
+                    int border = jsonData.getOperator().endsWith("0") ? 0 : 1;
+                    preview(printer, labelFormat, labelObjectList, clientRemote, border);
+                    break;
                 case "setting":
                     setting(printer, jsonData.getParameters(), clientRemote);
                     break;
@@ -133,9 +130,13 @@ public class LabelBuilder {
             case "print":
                 printLabel(printer, label, contents, clientRemote);
                 break;
-            case "preview":
-                preview(printer, label, contents, clientRemote, border);
-                break;
+            case "preview": {
+                if (preview_one) {
+                    preview(printer, label, contents, clientRemote, border);
+                    preview_one = false;
+                    break;
+                }
+            }
             case "setting":
                 throw new FunctionalException("3001|调用LSF模板不能使用Setting");
             case "batch":
