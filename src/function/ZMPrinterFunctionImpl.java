@@ -162,9 +162,11 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
 
     @Override
     public String getNameAndSn(String serial) throws ConnectException {
-        byte[] command = "RQ1,1\r\n".getBytes(StandardCharsets.UTF_8);
-        String info = printerOperator.sendAndReadPrinter(serial, command, command.length);
-        info = info.replace("dpi", "").replace("\r", "").replace("\n", "");
+        boolean isNet = serial.contains(".");
+        int index = isNet ? 2 : 1;
+        byte[] command = ("RQ" + index + ",1\r\n").getBytes(StandardCharsets.UTF_8);
+        String info = isNet ? printerOperator.sendAndReadPrinter(serial, command, 12301, null) : printerOperator.sendAndReadPrinter(serial, command, command.length);
+        info = info.replace("dpi", "").replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         String[] infos = info.split(",");
         String name = infos[0];
         String sn = infos[2];
