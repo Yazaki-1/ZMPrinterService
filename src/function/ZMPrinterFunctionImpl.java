@@ -169,9 +169,8 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
         info = info.replace("dpi", "").replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         String[] infos = info.split(",");
         String name = infos[0];
-        String sn = infos[2];
         String dpi = infos[3];
-        return name + "," + sn + "," + dpi;
+        return name + "," + serial + "," + dpi;
     }
 
     @Override
