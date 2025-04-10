@@ -45,7 +45,6 @@ public class PrinterService extends JFrame {
     }
 
     private void initComponents() {
-        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         JPanel baseLayout = new JPanel();
         JPanel bottomLayout = new JPanel();
         JPanel panel6 = new JPanel();

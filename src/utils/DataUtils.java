@@ -38,7 +38,12 @@ public class DataUtils {
                         if (count > 1) {
                             throw new RuntimeException("Image名字不能相同！");
                         }
-                        labelObjectList.stream().filter(f -> f.ObjectName.equals(objName)).findAny().ifPresent(f -> f.imagedata = Base64.getDecoder().decode(objData));
+                        labelObjectList.stream()
+                                .filter(f -> f.ObjectName.equals(objName))
+                                .findAny()
+                                .ifPresent(f -> {
+                                    if (objData!= null && !objData.isEmpty()) f.imagedata = Base64.getDecoder().decode(objData);
+                                });
                     }
                 }
             });

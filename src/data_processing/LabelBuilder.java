@@ -115,6 +115,7 @@ public class LabelBuilder {
     }
 
     private static void setLsfFileVar(ArrayList<Object> arrayList, List<ZMLabelobject> contents, String operator, ZMPrinter printer, ZMLabel label, String clientRemote) {
+        Map<String, String> lsfMaps = new HashMap<>();
         arrayList.forEach(a -> {
             JSONObject lsfFileVar = JSONObject.parseObject(a.toString());
             if (lsfFileVar.containsKey("lsfFileVar")) {
@@ -122,9 +123,11 @@ public class LabelBuilder {
                 Map<String, Object> jsonMap = JSONObject.parseObject(var);
                 String k = jsonMap.get("varname").toString();
                 String v = jsonMap.get("varvalue").toString();
-                printUtility.setVarValue(contents, k, v);
+//                printUtility.setVarValue(contents, k, v);
+                lsfMaps.put(k, v);
             }
         });
+        printUtility.setVarValue(contents, lsfMaps);
         int border = operator.endsWith("0") ? 0 : 1;
         switch (operator) {
             case "print":
@@ -235,9 +238,9 @@ public class LabelBuilder {
     }
 
     public static void preview(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote, int border) throws FunctionalException {
-        BufferedImage labelImage = printUtility.CreateLabelImage(printer, label, contents, border);//生成标签图片
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
+            BufferedImage labelImage = printUtility.CreateLabelImage(printer, label, contents, border);//生成标签图片
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ImageIO.write(labelImage, "png", stream);
             String base64Image = Base64.getEncoder().encodeToString(stream.toByteArray());
             ChannelMap.writeMessageToClient(clientRemote, "ZM_PrintLabel_Preview:data:image/png;base64," + base64Image);
