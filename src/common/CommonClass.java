@@ -10,11 +10,15 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 public class CommonClass {
-    public static final String SOFT_VERSION = "3.0.9 Last-Version";
+    public static final String SOFT_VERSION = "3.0.10.1 Last-Version";
     private static final String configDataDir = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "logs";
     private static final String startLog = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "startLog.log";
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");// 定义时间格式
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");// 定义日期格式
+    public static String localSN = "";
+    public static Integer localPort = null;
+    public static boolean hideVisible = false;
+    public static boolean tray = false;
 
     //保存数据到log文件，被synchronized修饰的代码块及方法，在同一时间，只能被单个线程访问。
     public static synchronized void saveLog(String data, LogType logType) {

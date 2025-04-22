@@ -39,6 +39,12 @@ public class FuncLabelCreator {
                 funcBody.init();
                 if (funcParams != null) {
                     try {
+                        int sn = Integer.parseInt(CommonClass.localSN);
+                        funcBody.getPrinter().printermbsn = String.valueOf(sn);
+                    } catch (NumberFormatException e) {
+                        funcBody.getPrinter().printermbsn = "";
+                    }
+                    try {
                         int printerPort = Integer.parseInt(funcParams[1]); //打印机端口，如果不是数字的，则认为是打印机驱动名
                         if (printerPort == 255) {
                             funcBody.getPrinter().printername = "USB打印机";
@@ -590,18 +596,26 @@ public class FuncLabelCreator {
                 //ZM_GetPrinterStatus_USB|500或者ZM_GetPrinterStatus_USB|500|serial
                 //不允许无参
                 if (funcParams != null) {
+                    String addr;
                     try {
-                        // 如果长度为3判定为最后一组参数是地址,否则是第二组
-                        long serial = funcParams.length == 3 ? Long.parseLong(funcParams[2]) : Long.parseLong(funcParams[1]);
-                        // 如果为500,则用""作为地址
-                        String addr = serial == 500 ? "" : String.valueOf(serial);
+                        int sn = Integer.parseInt(CommonClass.localSN);
+                        addr = String.valueOf(sn);
                         String status = function.getPrinterStatus(addr);
                         ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
                     } catch (NumberFormatException e) {
-                        // 未通过Parse,catch为ip
-                        String addr = funcParams.length == 3 ? funcParams[2] : funcParams[1];
-                        String status = function.getPrinterStatus(addr);
-                        ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_NET:" + status); // 必定是0,如果不是会被catch
+                        try {
+                            // 如果长度为3判定为最后一组参数是地址,否则是第二组
+                            long serial = funcParams.length == 3 ? Long.parseLong(funcParams[2]) : Long.parseLong(funcParams[1]);
+                            // 如果为500,则用""作为地址
+                            addr = serial == 500 ? "" : String.valueOf(serial);
+                            String status = function.getPrinterStatus(addr);
+                            ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
+                        } catch (NumberFormatException ex) {
+                            // 未通过Parse,catch为ip
+                            addr = funcParams.length == 3 ? funcParams[2] : funcParams[1];
+                            String status = function.getPrinterStatus(addr);
+                            ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_NET:" + status); // 必定是0,如果不是会被catch
+                        }
                     }
                 }
                 break;

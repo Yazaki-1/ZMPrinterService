@@ -30,6 +30,7 @@ public class PrinterService extends JFrame {
     public PrinterService() {
         initComponents();//初始化Swing组件
         serverThread = new Thread(() -> {
+            System.out.println(portBox.getText());
             PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
             try {
                 server.start_server();
@@ -87,12 +88,12 @@ public class PrinterService extends JFrame {
                     GroupLayout panel6Layout = new GroupLayout(panel6);
                     panel6.setLayout(panel6Layout);
                     panel6Layout.setHorizontalGroup(
-                        panel6Layout.createParallelGroup()
-                            .addComponent(sys_msg_label, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
+                            panel6Layout.createParallelGroup()
+                                    .addComponent(sys_msg_label, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
                     );
                     panel6Layout.setVerticalGroup(
-                        panel6Layout.createParallelGroup()
-                            .addComponent(sys_msg_label, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                            panel6Layout.createParallelGroup()
+                                    .addComponent(sys_msg_label, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                     );
                 }
                 bottomLayout.add(panel6);
@@ -134,7 +135,8 @@ public class PrinterService extends JFrame {
                     label10.setText("Service Port   ");
                     panel8.add(label10);
                     panel8.add(portBox);
-                    portBox.setText("1808");
+                    int port = CommonClass.localPort == null ? 1808 : CommonClass.localPort;
+                    portBox.setText(String.valueOf(port));
 
                     //---- label8 ----
                     label8.setText("   ");
@@ -164,65 +166,65 @@ public class PrinterService extends JFrame {
                 GroupLayout panel2Layout = new GroupLayout(panel2);
                 panel2.setLayout(panel2Layout);
                 panel2Layout.setHorizontalGroup(
-                    panel2Layout.createParallelGroup()
-                        .addGroup(panel2Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(panel2Layout.createParallelGroup()
-                                .addComponent(panel7, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(panel8, GroupLayout.PREFERRED_SIZE, 397, GroupLayout.PREFERRED_SIZE)
-                                .addComponent(scrollPane1))
-                            .addContainerGap())
+                        panel2Layout.createParallelGroup()
+                                .addGroup(panel2Layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addGroup(panel2Layout.createParallelGroup()
+                                                .addComponent(panel7, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(panel8, GroupLayout.PREFERRED_SIZE, 397, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(scrollPane1))
+                                        .addContainerGap())
                 );
                 panel2Layout.setVerticalGroup(
-                    panel2Layout.createParallelGroup()
-                        .addGroup(panel2Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(panel7, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(panel8, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, 193, GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap())
+                        panel2Layout.createParallelGroup()
+                                .addGroup(panel2Layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(panel7, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(panel8, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(scrollPane1, GroupLayout.PREFERRED_SIZE, 193, GroupLayout.PREFERRED_SIZE)
+                                        .addContainerGap())
                 );
             }
 
             GroupLayout baseLayoutLayout = new GroupLayout(baseLayout);
             baseLayout.setLayout(baseLayoutLayout);
             baseLayoutLayout.setHorizontalGroup(
-                baseLayoutLayout.createParallelGroup()
-                    .addGroup(baseLayoutLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(baseLayoutLayout.createParallelGroup()
-                            .addComponent(bottomLayout, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
+                    baseLayoutLayout.createParallelGroup()
+                            .addGroup(baseLayoutLayout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addGroup(baseLayoutLayout.createParallelGroup()
+                                            .addComponent(bottomLayout, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addContainerGap())
             );
             baseLayoutLayout.setVerticalGroup(
-                baseLayoutLayout.createParallelGroup()
-                    .addGroup(GroupLayout.Alignment.TRAILING, baseLayoutLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bottomLayout, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
+                    baseLayoutLayout.createParallelGroup()
+                            .addGroup(GroupLayout.Alignment.TRAILING, baseLayoutLayout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(bottomLayout, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+                                    .addContainerGap())
             );
         }
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
-            contentPaneLayout.createParallelGroup()
-                .addGroup(contentPaneLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(baseLayout, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap())
+                contentPaneLayout.createParallelGroup()
+                        .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(baseLayout, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
         );
         contentPaneLayout.setVerticalGroup(
-            contentPaneLayout.createParallelGroup()
-                .addGroup(contentPaneLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(baseLayout, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap())
+                contentPaneLayout.createParallelGroup()
+                        .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(baseLayout, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
         );
         pack();
         setLocationRelativeTo(getOwner());
@@ -243,8 +245,12 @@ public class PrinterService extends JFrame {
                 String ip = NetUtils.getRealIP();//当前电脑ip地址
                 ipBox.setText(ip);
                 ipBox.setCaretPosition(0);
-                setVisible(false);
+
                 systemTray();
+
+                if (CommonClass.tray) {
+                    setVisible(false);
+                }
 
                 CommonClass.saveLog(ip + "    " + sys_msg, LogType.ServiceData);
                 setTitle("ZMPrintService [Ver" + CommonClass.SOFT_VERSION + "]");
@@ -357,7 +363,7 @@ public class PrinterService extends JFrame {
 
             if (i == -1) {
                 CommonClass.saveAndShow("获取自动启动状态失败!可能是权限不足的问题.", LogType.ErrorData);
-            }else {
+            } else {
                 checkboxMenuItem.setState(i == 1);
             }
 
