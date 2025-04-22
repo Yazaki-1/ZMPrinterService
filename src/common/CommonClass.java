@@ -19,6 +19,7 @@ public class CommonClass {
     public static Integer localPort = null;
     public static boolean hideVisible = false;
     public static boolean tray = false;
+    public static boolean auto_start = false;
 
     //保存数据到log文件，被synchronized修饰的代码块及方法，在同一时间，只能被单个线程访问。
     public static synchronized void saveLog(String data, LogType logType) {
