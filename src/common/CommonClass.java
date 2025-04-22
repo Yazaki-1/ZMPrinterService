@@ -64,7 +64,9 @@ public class CommonClass {
 
     public static synchronized void saveAndShow(String data, LogType logType) {
         saveLog(data, logType);
-        showServiceMsg(data);
+        if (!hideVisible) {
+            showServiceMsg(data);
+        }
     }
 
     public static synchronized void writeStartLog(String data) {
