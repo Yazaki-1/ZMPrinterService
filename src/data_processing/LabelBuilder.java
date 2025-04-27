@@ -51,7 +51,7 @@ public class LabelBuilder {
                     if (jsonData.getPrinter().printerdpi > 0 && jsonData.getPrinter().printerdpi != lsfPrinter.printerdpi) {
                         printUtility.SetLabelObjectScale(
                                 jsonData.getPrinter(),
-                                jsonData.getPrinter().printerdpi,
+                                lsfPrinter.printerdpi,
                                 contents
                         );
                     }
@@ -123,7 +123,6 @@ public class LabelBuilder {
                 Map<String, Object> jsonMap = JSONObject.parseObject(var);
                 String k = jsonMap.get("varname").toString();
                 String v = jsonMap.get("varvalue").toString();
-//                printUtility.setVarValue(contents, k, v);
                 lsfMaps.put(k, v);
             }
         });
