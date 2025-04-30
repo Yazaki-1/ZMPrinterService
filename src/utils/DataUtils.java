@@ -42,7 +42,8 @@ public class DataUtils {
                                 .filter(f -> f.ObjectName.equals(objName))
                                 .findAny()
                                 .ifPresent(f -> {
-                                    if (objData!= null && !objData.isEmpty()) f.imagedata = Base64.getDecoder().decode(objData);
+                                    if (objData != null && !objData.isEmpty())
+                                        f.imagedata = Base64.getDecoder().decode(objData);
                                 });
                     }
                 }

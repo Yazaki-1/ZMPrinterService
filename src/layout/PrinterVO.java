@@ -31,7 +31,7 @@ public class PrinterVO implements Serializable {
             this.version = Float.parseFloat(ver);
         }
 
-        if (name.startsWith("ZRM")) {
+        if (firmware.startsWith("ZRM")) {
             this.printerType = PrinterType.GJB;
         }else {
             //判断是RFID打印机还是普通打印机

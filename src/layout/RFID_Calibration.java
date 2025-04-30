@@ -1719,9 +1719,14 @@ public class RFID_Calibration extends JDialog {
                         protocol_comboBox.setVisible(false);
                         checkBox_gjb_jm.setVisible(false);
 
+                        just_rfid.setVisible(true);
+
                         byte[] rfidByte = ("RQ" + type + ",5\r\n").getBytes(StandardCharsets.UTF_8);
                         String rfidRead = getPrinterMessage(key, rfidByte).replace("\r", "").replace("\n", "");
                         String[] readList = rfidRead.split(",");
+                        if (readList.length == 1 && readList[0].isEmpty()) {
+                            throw new RuntimeException("查询功率返回异常!");
+                        }
                         if (printerVO.getPrinterType() == PrinterType.HF) { // 高频
                             uhf_param.setVisible(false);
                             hf_param.setVisible(true);
@@ -1736,8 +1741,10 @@ public class RFID_Calibration extends JDialog {
                             uhf_param.setVisible(true);
                             hf_param.setVisible(false);
 
-                            read_power_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(readList[5])));
-                            write_power_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(readList[6])));
+                            String readStr = printerVO.getPrinterType() == PrinterType.GJB ? readList[1] : readList[5];
+                            String writeStr = printerVO.getPrinterType() == PrinterType.GJB ? readList[4] : readList[6];
+                            read_power_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(readStr)));
+                            write_power_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(writeStr)));
                             dr_value_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(readList[7])));
 
                             if (printerVO.getVersion() >= 2.366f || printerVO.getPrinterType() == PrinterType.GJB) { // V2.36UR 开始支持RQ" + type + ",11 获取频段
@@ -1846,7 +1853,6 @@ public class RFID_Calibration extends JDialog {
 
         // 显示通用的控件
         just_label.setVisible(true);
-        just_rfid.setVisible(true);
         getResult_button.setVisible(true);
         sensor_value_label.setVisible(true);
     }
