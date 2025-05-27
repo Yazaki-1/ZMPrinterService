@@ -50,7 +50,9 @@ public class PrinterWebSocketHandler extends SimpleChannelInboundHandler<WebSock
                 // 如果是Json
                 JsonData jsonData = DataUtils.fromJson(webSocketMessage);
                 LabelBuilder.build(jsonData, remoteAddress);
-            } catch (FunctionalException e) { // lsf模板打印的时候选择了preview抛出的异常、未定义的Operator抛出的异常、lsf文件找不到路径异常、json反序列化填充数据异常
+            } catch (FunctionalException | ConnectException e) {
+                // lsf模板打印的时候选择了preview抛出的异常、未定义的Operator抛出的异常、lsf文件找不到路径异常、json反序列化填充数据异常
+                // 新增打印机连接的异常
                 CommonClass.saveAndShow(remoteAddress + "    " + e.getMessage(), LogType.ErrorData);
                 ChannelMap.writeMessageToClient(remoteAddress, e.getMessage());
             } catch (Exception e) { // json序列化异常

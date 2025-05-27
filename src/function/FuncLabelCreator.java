@@ -263,7 +263,17 @@ public class FuncLabelCreator {
                         labelObject.Xposition = Integer.parseInt(funcParams[1]) / funcBody.getPixel();//X坐标，单位mm
                         labelObject.Yposition = Integer.parseInt(funcParams[2]) / funcBody.getPixel();//Y坐标，单位mm
                         labelObject.textfont = funcParams[5];//字体名称
-                        labelObject.direction = Integer.parseInt(funcParams[6]) - 1;
+                        int dire = Integer.parseInt(funcParams[6]);
+                        if (dire < 5) {
+                            labelObject.direction = dire - 1;
+                        } else if (dire < 9) {
+                            dire -= 5;
+                            //90和270反转
+                            if (dire == 1) dire = 3;
+                            else if (dire == 3) dire = 1;
+                            labelObject.direction = dire;
+                            labelObject.texttextalign = 1;
+                        }
 
                         int weight = Integer.parseInt(funcParams[7]);
                         int fontX = Integer.parseInt(funcParams[8]);

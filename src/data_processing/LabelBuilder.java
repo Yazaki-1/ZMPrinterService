@@ -189,7 +189,7 @@ public class LabelBuilder {
                 } catch (InterruptedException e) {
                     throw new FunctionalException("4005|其他异常 => " + e.getMessage());
                 }
-                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
+                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
                 ChannelMap.writeMessageToClient(clientRemote, message);
             } else {
                 throw new FunctionalException("4005|其他异常 => 未定义的printerInterface");
