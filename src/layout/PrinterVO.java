@@ -31,17 +31,17 @@ public class PrinterVO implements Serializable {
             this.version = Float.parseFloat(ver);
         }
 
-        if (firmware.startsWith("ZRM")) {
+        if (firmware.startsWith("ZRM") || firmware.startsWith("YL")) {
             this.printerType = PrinterType.GJB;
-        }else {
+        } else {
             //判断是RFID打印机还是普通打印机
             String rfidSign = productNumber.substring(3, 4);//1011002112字符串第4个字符为1是RFID，为0是普通打印机
             if (rfidSign.equals("0")) {
                 this.printerType = PrinterType.NORMAL;
-            }else {
+            } else {
                 if (firmware.endsWith("HF")) {
                     this.printerType = PrinterType.HF;
-                }else {
+                } else {
                     this.printerType = PrinterType.UHF;
                 }
             }
