@@ -1741,8 +1741,8 @@ public class RFID_Calibration extends JDialog {
                             uhf_param.setVisible(true);
                             hf_param.setVisible(false);
 
-                            String readStr = printerVO.getPrinterType() == PrinterType.GJB ? readList[1] : readList[5];
-                            String writeStr = printerVO.getPrinterType() == PrinterType.GJB ? readList[4] : readList[6];
+                            String readStr = printerVO.getPrinterType() == PrinterType.GJB ? readList[4] : readList[5];
+                            String writeStr = printerVO.getPrinterType() == PrinterType.GJB ? readList[1] : readList[6];
                             read_power_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(readStr)));
                             write_power_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(writeStr)));
                             dr_value_comboBox.setSelectedItem(String.valueOf(Integer.parseInt(readList[7])));
