@@ -5,10 +5,19 @@ import com.sun.jna.Native;
 
 public interface RegUtil extends Library {
 
-    RegUtil INSTANCE = Native.load("resources/dll/reg_set.dll", RegUtil.class);
+    RegUtil INSTANCE = Native.load(getResourcePath(), RegUtil.class);
 
     int set_auto_start(int start, String programPath);
 
     int get_reg();
+
+    static String getResourcePath() {
+        String os = System.getProperty("os.name").toLowerCase().replace(" ", "");
+        if (os.contains("windows7")) {
+            return "resources/dll/reg_set_by_win7.dll";
+        } else {
+            return "resources/dll/reg_set.dll";
+        }
+    }
 
 }
