@@ -12,6 +12,7 @@ public interface RegUtil extends Library {
     int get_reg();
 
     static String getResourcePath() {
+        System.out.println(1);
         String os = System.getProperty("os.name").toLowerCase().replace(" ", "");
         if (os.contains("windows7")) {
             return "resources/dll/reg_set_by_win7.dll";

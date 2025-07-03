@@ -9,8 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 public class CommonClass {
-    public static final String SOFT_VERSION = "3.0.15 Last-Version";
+    public static final String SOFT_VERSION = "3.0.15.1 Last-Version";
     private static final String configDataDir = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "logs";
     private static final String startLog = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "startLog.log";
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");// 定义时间格式

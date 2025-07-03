@@ -5,7 +5,6 @@ import com.ZMPrinter.ZMLabel;
 import com.ZMPrinter.ZMLabelobject;
 import com.ZMPrinter.ZMPrinter;
 
-import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +30,6 @@ public class FuncBody implements Serializable {
     public byte[] buildLabelCommand() {
         PrintUtility printUtility = new PrintUtility();
         return printUtility.CreateLabelCommand(printer, label, labelObjects);
-    }
-
-    public BufferedImage buildImage() {
-        PrintUtility printUtility = new PrintUtility();
-        return printUtility.CreateLabelImage(printer, label, labelObjects);
     }
 
     public float getPixel() {
