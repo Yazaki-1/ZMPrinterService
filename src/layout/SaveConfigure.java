@@ -4,8 +4,6 @@
 
 package layout;
 
-import com.ZMPrinter.PrinterOperator;
-import com.ZMPrinter.PrinterOperatorImpl;
 import utils.ConfigureUtils;
 
 import java.awt.*;
@@ -15,7 +13,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,8 +20,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.border.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * @author PH
@@ -45,7 +40,7 @@ public class SaveConfigure extends JDialog {
             String dir = System.getProperty("user.dir");
             configDir = dir + "/bin/configure/";
         } else if (os.toLowerCase().contains("linux")) {
-            configDir = "/opt/zmsoft/ZMPrinterService/bin/configure/";
+            configDir = System.getProperty("user.home") + "/zmsoft/ZMPrinterService/bin/configure/";
         } else
             throw new RuntimeException("暂不支持" + os);
     }
@@ -61,14 +56,14 @@ public class SaveConfigure extends JDialog {
     }
 
     private void initComponents() {
-        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GE N-BEGIN:initComponents  @formatter:off
         labelPictureContainer = new JPanel();
-        label1 = new JLabel();
+        JLabel label1 = new JLabel();
         labelName = new JTextField();
-        label2 = new JLabel();
-        uploadButton = new JButton();
-        label3 = new JLabel();
-        saveButton = new JButton();
+        JLabel label2 = new JLabel();
+        JButton uploadButton = new JButton();
+        JLabel label3 = new JLabel();
+        JButton saveButton = new JButton();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -90,23 +85,23 @@ public class SaveConfigure extends JDialog {
         }
 
         //---- label1 ----
-        label1.setText("\u4e3a\u4fdd\u5b58\u7684\u6807\u7b7e\u8bbe\u7f6e\u4e00\u4e2a\u540d\u79f0");
+        label1.setText("为保存的标签设置一个名称");
         label1.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 14));
 
         //---- label2 ----
-        label2.setText("\u8bf7\u4e0a\u4f20\u4e00\u5f20\u6807\u7b7e\u56fe\u7247");
+        label2.setText("请上传一张标签图片");
         label2.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 14));
 
         //---- uploadButton ----
-        uploadButton.setText("\u4e0a\u4f20");
+        uploadButton.setText("上传");
 
         //---- label3 ----
-        label3.setText("*\u8bf7\u5728\u4fdd\u5b58\u6807\u7b7e\u53c2\u6570\u4e4b\u524d\u786e\u5b9aRFID\u8bfb\u5199\u529f\u7387\u662f\u5426\u80fd\u6b63\u5e38\u4f7f\u7528\uff01\uff01\uff01\uff01");
+        label3.setText("*请在保存标签参数之前确定RFID读写功率是否能正常使用！！！！");
         label3.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 14));
         label3.setForeground(new Color(0xff3333));
 
         //---- saveButton ----
-        saveButton.setText("\u4fdd\u5b58");
+        saveButton.setText("保存");
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
@@ -232,14 +227,9 @@ public class SaveConfigure extends JDialog {
         });
     }
 
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GE N-BEGIN:variables  @formatter:off
     private JPanel labelPictureContainer;
-    private JLabel label1;
     private JTextField labelName;
-    private JLabel label2;
-    private JButton uploadButton;
-    private JLabel label3;
-    private JButton saveButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
     private boolean warningOption() {

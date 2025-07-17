@@ -420,7 +420,7 @@ public class RFID_Configuration extends JDialog {
                     String dir = System.getProperty("user.dir");
                     configDir = dir + "/bin/configure";
                 }else if (os.toLowerCase().contains("linux")) {
-                    configDir = "/opt/zmsoft/ZMPrinterService/bin/configure";
+                    configDir = System.getProperty("user.home") + "/zmsoft/ZMPrinterService/bin/configure/";
                 }else
                     throw new RuntimeException("暂不支持" + os);
 
@@ -437,6 +437,10 @@ public class RFID_Configuration extends JDialog {
                 String[] strings = new String[names.size()];
                 names.toArray(strings);
                 configureList.setListData(strings);
+
+                if (names.isEmpty()) {
+                    startConfig.setEnabled(false);
+                }
             }
         });
 
@@ -611,7 +615,7 @@ public class RFID_Configuration extends JDialog {
                     topPanel.setEnabled(false);
                     centerPanel.setEnabled(false);
                     bottomPanel.setEnabled(false);
-                    showErrorMessage("普通打印机无法使用一键配置工具");
+                    showErrorMessage("当前打印机无法使用一键配置工具!");
                 }
             }
         }

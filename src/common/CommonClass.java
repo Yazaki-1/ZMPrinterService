@@ -12,8 +12,14 @@ import java.util.Date;
 
 public class CommonClass {
     public static final String SOFT_VERSION = "3.1.1 Last-Version";
-    private static final String configDataDir = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "logs";
-    private static final String startLog = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "startLog.log";
+    private static final String configDataDir =
+            (System.getProperty("os.name").toLowerCase().contains("windows") ?
+                    System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
+                    System.getProperty("user.home") + "/zmsoft/ZMPrinterService/") + "logs";
+    private static final String startLog =
+            (System.getProperty("os.name").toLowerCase().contains("windows") ?
+                    System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
+                    System.getProperty("user.home") + "/zmsoft/ZMPrinterService/") + "startLog.log";
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");// 定义时间格式
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");// 定义日期格式
     public static String localSN = "";
@@ -79,6 +85,33 @@ public class CommonClass {
             bw.write(System.lineSeparator());
             bw.flush();
             bw.close();
+        } catch (FileNotFoundException ex) {
+            //表示用户是第一次使用,需要在用户目录新建各种文件夹
+            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                String soft = System.getProperty("user.home") + "/zmsoft";
+                String service = soft + "/ZMPrinterService";
+                String logs = service + "/logs";
+                String bin = service + "/bin";
+                String configure = bin + "/configure";
+
+                //没有目录
+                try {
+                    //尝试创建
+                    Files.createDirectory(Paths.get(soft));
+                    Files.createDirectory(Paths.get(service));
+                    Files.createDirectory(Paths.get(logs));
+                    Files.createDirectory(Paths.get(bin));
+                    Files.createDirectory(Paths.get(configure));
+                    //设置写入文本文件的编码为UTF-8
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(startLog, true), StandardCharsets.UTF_8));
+                    bw.write("V" + CommonClass.SOFT_VERSION + "  " + nowTime + "  " + data);
+                    bw.write(System.lineSeparator());
+                    bw.flush();
+                    bw.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

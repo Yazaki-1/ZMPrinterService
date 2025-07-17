@@ -13,7 +13,10 @@ import java.nio.file.Paths;
 public class Main {
     public static void main(String[] args) {
         try {
-            String dataPath = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "data.json";
+            String dataPath =
+                    (System.getProperty("os.name").toLowerCase().contains("windows") ?
+                            System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
+                            System.getProperty("user.home") + "/zmsoft/ZMPrinterService/") + "bin/data.json";
             System.out.println(dataPath);
             String jsonContent = new String(Files.readAllBytes(Paths.get(dataPath)));
 
