@@ -11,10 +11,7 @@ import utils.NetUtils;
 import utils.RegUtil;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.Objects;
 import javax.swing.*;
 import javax.swing.GroupLayout;
@@ -50,7 +47,7 @@ public class PrinterService extends JFrame {
         JPanel bottomLayout = new JPanel();
         JPanel panel6 = new JPanel();
         JLabel sys_msg_label = new JLabel();
-        JButton minimize = new JButton();
+        JButton restart = new JButton();
         JLabel label4 = new JLabel();
         JButton quit = new JButton();
         JPanel panel2 = new JPanel();
@@ -61,7 +58,7 @@ public class PrinterService extends JFrame {
         JLabel label10 = new JLabel();
         portBox = new JTextField();
         JLabel label8 = new JLabel();
-        JButton restart = new JButton();
+        JButton configuration = new JButton();
         JLabel label7 = new JLabel();
         JButton calibration = new JButton();
         JScrollPane scrollPane1 = new JScrollPane();
@@ -98,9 +95,9 @@ public class PrinterService extends JFrame {
                 }
                 bottomLayout.add(panel6);
 
-                //---- minimize ----
-                minimize.setText("缩小到托盘");
-                bottomLayout.add(minimize);
+                //---- restart ----
+                restart.setText("重启服务");
+                bottomLayout.add(restart);
 
                 //---- label4 ----
                 label4.setText("     ");
@@ -142,9 +139,9 @@ public class PrinterService extends JFrame {
                     label8.setText("   ");
                     panel8.add(label8);
 
-                    //---- restart ----
-                    restart.setText("重启服务");
-                    panel8.add(restart);
+                    //---- configuration ----
+                    configuration.setText("一键配置");
+                    panel8.add(configuration);
 
                     //---- label7 ----
                     label7.setText("   ");
@@ -258,7 +255,22 @@ public class PrinterService extends JFrame {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+                setVisible(false);
+            }
+        });
+
+        addWindowStateListener(e -> {
+            if ((e.getNewState() & JFrame.ICONIFIED) != 0) {
+                setVisible(false);
+            }
+        });
+
+        configuration.addActionListener(e -> {
+            try {
+                RFID_Configuration rfidConfiguration = new RFID_Configuration(this);
+                rfidConfiguration.setVisible(true);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -279,8 +291,7 @@ public class PrinterService extends JFrame {
             serverThread.start();
         });
 
-        // 最小化、退出按钮响应事件
-        minimize.addActionListener(e -> setVisible(false));
+        // 退出按钮响应事件
         quit.addActionListener(e -> System.exit(0));
 
         // 消息窗口右键功能

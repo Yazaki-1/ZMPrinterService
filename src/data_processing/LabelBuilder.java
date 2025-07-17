@@ -201,13 +201,14 @@ public class LabelBuilder {
     }
 
     public static void addPrintQueue(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
-        if (printer.printermbsn.isEmpty()) {
+        if (printer.printermbsn.isEmpty() && printer.printernetip.isEmpty()) { // 如果这台打印机mbsn与ip皆为空值,默认选中USB第一台
             PrinterOperator printerOperator = new PrinterOperatorImpl();
             List<String> printers = printerOperator.getPrinters();
             if (!printers.isEmpty()) {
                 printer.printermbsn = printers.get(0);
             }
         }
+
         float speed = printer.printSpeed * 25.4f;
         float labelHeight = label.labelheight;
         long printWaiting = (long) (labelHeight / speed * 1000 / 3);

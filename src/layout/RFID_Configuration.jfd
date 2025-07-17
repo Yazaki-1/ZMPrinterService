@@ -1,0 +1,146 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.6" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {space :::p, par l {comp topPanel:::::x, comp centerPanel::l:::x, comp bottomPanel::l:::x}, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp topPanel:::p::p, space :::p, comp centerPanel:::p:244:p, space :::p, comp bottomPanel:::::x, space :::p}}"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq l {comp panel8:::p::p, space :::p, comp panel9:::::x}}"
+				"$verticalGroup": "par l {comp panel8:::::x, comp panel9::l:::x}"
+			} ) {
+				name: "topPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {space :::p, par l {seq {comp label3:::p::p, space :::p, comp printerListBox:::p:221:p, space :::p, comp refreshButton:::p::p}, comp firmware_label::l:p::p, comp paper_sensor_label::l:p::p, comp printer_dpi_label::l:p::p}, space ::62:x}}"
+					"$verticalGroup": "par l {seq {space :p:4:p, par b {comp label3::b:p::p, comp printerListBox::b:p::p, comp refreshButton::b:p::p}, space :::p, comp firmware_label:::p::p, space :::p, comp paper_sensor_label:::p::p, space :::x, comp printer_dpi_label:::p::p, space :::p}}"
+				} ) {
+					name: "panel8"
+					"border": &LineBorder0 new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label3"
+						"text": "打印机："
+					} )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "printerListBox"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "firmware_label"
+						"text": "Firmware："
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "paper_sensor_label"
+						"text": "感应器类型："
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "refreshButton"
+						"text": "刷新"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "printer_dpi_label"
+						"text": "分辨率："
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {space :::p, par l {comp label7::l:p::p, seq l {space :p:46:p, par l {seq l {comp label9:::p::p, space :::p, comp vertical_level:::p:105:p, space :::p, comp label11:::p::p, space s:::p, comp offsetButton:::p::p, space :0:32:x}, seq l {comp label8:::p::p, space :::p, comp horizontal_level:::p:105:p, space :::p, comp label10:::p::p, space ::128:x}}}}, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, comp label7:::p::p, space :::x, par b {comp label8::b:p::p, comp label10::b:p::p, comp horizontal_level::b:p::p}, space :::p, par b {comp label9::b:p::p, comp label11::b:p::p, comp vertical_level::b:p::p, comp offsetButton::b:p::p}, space :p:9:p}}"
+				} ) {
+					name: "panel9"
+					"border": #LineBorder0
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label7"
+						"text": "打印内容位置微调（水平负数左移，垂直负数上移）"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label8"
+						"text": "水平偏移"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label9"
+						"text": "垂直偏移"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label10"
+						"text": "毫米"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label11"
+						"text": "毫米"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "offsetButton"
+						"text": "设置"
+					} )
+					add( new FormComponent( "javax.swing.JSpinner" ) {
+						name: "horizontal_level"
+					} )
+					add( new FormComponent( "javax.swing.JSpinner" ) {
+						name: "vertical_level"
+					} )
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq l {par l:::p {comp panel13:::::x, comp panel14:::::x}, space :::p, comp labelPicture:::::x}}"
+				"$verticalGroup": "par l {seq {comp panel13:::p::p, space :::x, comp panel14:::p::p, space :::p}, comp labelPicture::l:::x}"
+			} ) {
+				name: "centerPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :::p, comp scrollPane1::::331:x, space :::p}}"
+					"$verticalGroup": "par l {comp scrollPane1::l::200:x}"
+				} ) {
+					name: "panel13"
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "configureList"
+						} )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq l {space :p:112:p, comp startConfig:::p::p, space ::113:x}}"
+					"$verticalGroup": "par l {seq l {comp startConfig:::p::p, space :0:0:x}}"
+				} ) {
+					name: "panel14"
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "startConfig"
+						"text": "开始配置打印机"
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {space :0:455:x}"
+					"$verticalGroup": "par l {space :0:0:x}"
+				} ) {
+					name: "labelPicture"
+					"border": #LineBorder0
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq l {comp label12:::p::p, space ::488:x, comp label_height_label:::p::p, space :p:157:p}, comp calibrationData_picturePanel::t:::x}"
+				"$verticalGroup": "par l {seq l {par b {comp label12::b:p::p, comp label_height_label::b:p::p}, space :::p, comp calibrationData_picturePanel:::::x}}"
+			} ) {
+				name: "bottomPanel"
+				"border": #LineBorder0
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label12"
+					"text": "标签定位曲线"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {space :0:804:x}"
+					"$verticalGroup": "par l {space :0:121:x}"
+				} ) {
+					name: "calibrationData_picturePanel"
+					"background": new java.awt.Color( 204, 204, 204, 255 )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label_height_label"
+					"text": "标签高度(间隙): "
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 820, 560 )
+		} )
+	}
+}

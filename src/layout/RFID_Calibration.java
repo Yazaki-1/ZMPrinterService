@@ -15,7 +15,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,239 +57,6 @@ public class RFID_Calibration extends JDialog {
             gr.drawImage(RSSI_data_picture, 0, RSSI_data_picturePanel.getHeight() - RSSI_data_picture.getHeight(), null);
             gr.dispose();
         }
-    }
-
-    //从校准数据中分析得出第1,2个标签的高度和间隙,错误或异常返回null,正常返回Map
-    private Map<String, Float> GetCalibraLabelHeight(String[] calibrationDataList, int mediaSensor, int adThreshold, float printerDpi) {
-        Map<String, Float> map = new HashMap<>();
-        float labelHeight;
-        float labelGap;
-        DecimalFormat df = new DecimalFormat(".00");//保留两位小数
-
-        try {
-            // 找出标签探测信号的最小值与最大值,计算出每个等级的跨度
-            int levelStepValue = getLevelStepValue(calibrationDataList);
-            if (levelStepValue == 0)//没有校准数据
-            {
-                return null;
-            }
-            //endregion
-
-            boolean startIsLabel = false;//开始是标签
-            boolean startIsGap = false;//开始是间隙
-
-            boolean startLabelFound = false;//是否找到了第一个标签起始位置
-            boolean startGapFound = false;//是否找到了第一个间隙起始位置
-            boolean endLabelFound = false;//是否找到了第一个标签结束位置
-            boolean endGapFound = false;//是否找到了第一个间隙结束位置
-
-            int gapStartIndex = 0;//第一个间隙在数据数组中的起始位置
-            int labelStartIndex = 0;//第一个标签在数据数组中的起始位置
-            int gapEndIndex = 0;//第一个间隙在数据数组中的结束位置
-            int labelEndIndex = 0;//第一个标签在数据数组中的结束位置
-
-            //***********************************************************
-            boolean startIsLabel2 = false;//开始是标签
-            boolean startIsGap2 = false;//开始是间隙
-
-            boolean startLabelFound2 = false;//是否找到了第2个标签起始位置
-            boolean startGapFound2 = false;//是否找到了第2个间隙起始位置
-            boolean endLabelFound2 = false;//是否找到了第2个标签结束位置
-            boolean endGapFound2 = false;//是否找到了第2个间隙结束位置
-
-            int gapStartIndex2 = 0;//第2个间隙在数据数组中的起始位置
-            int labelStartIndex2 = 0;//第2个标签在数据数组中的起始位置
-            int gapEndIndex2 = 0;//第2个间隙在数据数组中的结束位置
-            int labelEndIndex2 = 0;//第2个标签在数据数组中的结束位置
-
-            for (int i = 0; i < calibrationDataList.length - 1; i++)//遍历所有的标签探测数据,calibrationDataList最后一个值为空
-            {
-                if (i == 0)//第一个数据
-                {
-                    //region 判断开始是标签还是间隙
-                    if (mediaSensor == 1)//反射式感应器
-                    {
-                        if (Integer.parseInt(calibrationDataList[i]) > adThreshold)//第一个值大于阈值,反射式感应器,大于阈值的认为是标签
-                        {
-                            startIsLabel = true;
-                            startIsGap = false;
-                        } else {
-                            startIsLabel = false;
-                            startIsGap = true;
-                        }
-                    } else//穿透式感应器
-                    {
-                        if (Integer.parseInt(calibrationDataList[i]) < adThreshold)//第一个值小于阈值,穿透式感应器,小于阈值的认为是标签
-                        {
-                            startIsLabel = true;
-                            startIsGap = false;
-                        } else {
-                            startIsLabel = false;
-                            startIsGap = true;
-                        }
-                    }
-                    //endregion
-                } else//后面的数据
-                {
-                    //mediaSensor值0是穿透式,1是反射式
-                    if (mediaSensor == 1)//反射式
-                    {
-                        if (!startGapFound && !endGapFound && startIsLabel && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第一个间隙的开始
-                        {
-                            startIsLabel = false;
-                            startIsGap = true;
-                            gapStartIndex = i;
-                            startGapFound = true;
-                        } else if (!startLabelFound && !endLabelFound && startIsGap && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第一个标签的开始
-                        {
-                            startIsLabel = true;
-                            startIsGap = false;
-                            labelStartIndex = i;
-                            startLabelFound = true;
-                        } else if (startGapFound && !endGapFound && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第一个间隙的结束
-                        {
-                            gapEndIndex = i;
-                            endGapFound = true;
-                            startIsLabel2 = true;
-                            startIsGap2 = false;
-                        } else if (startLabelFound && !endLabelFound && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第一个标签的结束
-                        {
-                            labelEndIndex = i;
-                            endLabelFound = true;
-                            startIsLabel2 = false;
-                            startIsGap2 = true;
-                        }//**********************************************************************************************************************
-                        else if (startGapFound && endGapFound && !startGapFound2 && !endGapFound2 && startIsLabel2 && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第2个间隙的开始
-                        {
-                            startIsLabel2 = false;
-                            startIsGap2 = true;
-                            gapStartIndex2 = i;
-                            startGapFound2 = true;
-                        } else if (startGapFound && endGapFound && !startLabelFound2 && !endLabelFound2 && startIsGap2 && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第2个标签的开始
-                        {
-                            startIsLabel2 = true;
-                            startIsGap2 = false;
-                            labelStartIndex2 = i;
-                            startLabelFound2 = true;
-                        } else if (startGapFound && endGapFound && startGapFound2 && !endGapFound2 && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第2个间隙的结束
-                        {
-                            gapEndIndex2 = i;
-                            endGapFound2 = true;
-                        } else if (startGapFound && endGapFound && startLabelFound2 && !endLabelFound2 && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第2个标签的结束
-                        {
-                            labelEndIndex2 = i;
-                            endLabelFound2 = true;
-                        }
-                    } else//穿透式
-                    {
-                        if (!startGapFound && !endGapFound && startIsLabel && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第一个间隙的开始
-                        {
-                            startIsLabel = false;
-                            startIsGap = true;
-                            gapStartIndex = i;
-                            startGapFound = true;
-                        } else if (!startLabelFound && !endLabelFound && startIsGap && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第一个标签的开始
-                        {
-                            startIsLabel = true;
-                            startIsGap = false;
-                            labelStartIndex = i;
-                            startLabelFound = true;
-                        } else if (startGapFound && !endGapFound && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第一个间隙的结束
-                        {
-                            gapEndIndex = i;
-                            endGapFound = true;
-                            startIsLabel2 = true;
-                            startIsGap2 = false;
-                        } else if (startLabelFound && !endLabelFound && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第一个标签的结束
-                        {
-                            labelEndIndex = i;
-                            endLabelFound = true;
-                            startIsLabel2 = false;
-                            startIsGap2 = true;
-                        }//************************************************************************************************************************
-                        else if (startGapFound && endGapFound && !startGapFound2 && !endGapFound2 && startIsLabel2 && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第2个间隙的开始
-                        {
-                            startIsLabel2 = false;
-                            startIsGap2 = true;
-                            gapStartIndex2 = i;
-                            startGapFound2 = true;
-                        } else if (startGapFound && endGapFound && !startLabelFound2 && !endLabelFound2 && startIsGap2 && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第2个标签的开始
-                        {
-                            startIsLabel2 = true;
-                            startIsGap2 = false;
-                            labelStartIndex2 = i;
-                            startLabelFound2 = true;
-                        } else if (startGapFound && endGapFound && startGapFound2 && !endGapFound2 && Integer.parseInt(calibrationDataList[i]) < adThreshold - levelStepValue)//碰到第2个间隙的结束
-                        {
-                            gapEndIndex2 = i;
-                            endGapFound2 = true;
-                        } else if (startGapFound && endGapFound && startLabelFound2 && !endLabelFound2 && Integer.parseInt(calibrationDataList[i]) > adThreshold + levelStepValue)//碰到第2个标签的结束
-                        {
-                            labelEndIndex2 = i;
-                            endLabelFound2 = true;
-                        }
-                    }
-                }
-            }
-
-            if (endLabelFound && endGapFound && endLabelFound2 && endGapFound2)//找到2张标签
-            {
-                int labelDots = labelEndIndex - labelStartIndex + 1;//第一个标签的高度点数
-                int gapDots = gapEndIndex - gapStartIndex + 1;//第一个间隙的高度点数
-
-                int labelDots2 = labelEndIndex2 - labelStartIndex2 + 1;//第2个标签的高度点数
-                int gapDots2 = gapEndIndex2 - gapStartIndex2 + 1;//第2个间隙的高度点数
-
-                //如果探测的前两张数据标签高度差距大于20%,则认为不正常
-                if (1f * (Math.abs(labelDots2 - labelDots)) / labelDots2 > 0.2f)
-                    labelDots = 0;
-
-                if (labelDots == 0 || gapDots == 0) {
-                    labelHeight = 0;
-                    labelGap = 0;
-                } else//正常的数据,计算前2张标签的平均值
-                {
-                    int labelDotSaveRage = (int) ((labelDots + labelDots2) / 2f + 0.5f);
-                    int gapDotSaveRage = (int) ((gapDots + gapDots2) / 2f + 0.5f);
-
-                    labelHeight = Float.parseFloat(df.format(labelDotSaveRage / (printerDpi / 25.4f)));//校准得到的标签高度,单位是mm,保留2位小数
-                    labelGap = Float.parseFloat(df.format(gapDotSaveRage / (printerDpi / 25.4f)));//校准得到的标签间隙,单位是mm,保留2位小数
-                }
-            } else if (endLabelFound && endGapFound)//只找到第一张标签
-            {
-                int labelDots = labelEndIndex - labelStartIndex + 1;//第一个标签的高度点数
-                int gapDots = gapEndIndex - gapStartIndex + 1;//第一个间隙的高度点数
-
-                labelHeight = Float.parseFloat(df.format(labelDots / (printerDpi / 25.4f)));//float)Math.Round(labelDots / (printerDPI / 25.4f), 2);//校准得到的标签高度,单位是mm,保留2位小数
-                labelGap = Float.parseFloat(df.format(gapDots / (printerDpi / 25.4f)));//(float)Math.Round(gapDots / (printerDPI / 25.4f), 2);//校准得到的标签间隙,单位是mm,保留2位小数
-            } else//没有找到标签
-            {
-                labelHeight = 0;
-                labelGap = 0;
-            }
-
-        } catch (Exception ex) {
-            return null;
-        }
-
-        map.put("labelHeight", labelHeight);
-        map.put("labelGap", labelGap);
-        return map;
-    }
-
-    private static int getLevelStepValue(String[] calibrationDataList) {
-        int levelStepValue;
-        int minValue = Integer.parseInt(calibrationDataList[0]), maxValue = Integer.parseInt(calibrationDataList[0]);
-        for (int i = 1; i < calibrationDataList.length; i++) {
-            if (!(calibrationDataList[i] == null || calibrationDataList[i].isEmpty())) {
-                if (minValue > Integer.parseInt(calibrationDataList[i]))
-                    minValue = Integer.parseInt(calibrationDataList[i]);
-                if (maxValue < Integer.parseInt(calibrationDataList[i]))
-                    maxValue = Integer.parseInt(calibrationDataList[i]);
-            }
-        }
-        levelStepValue = (int) (1f * (maxValue - minValue) / 24f + 0.5f);//计算出每个等级的跨度
-        return levelStepValue;
     }
 
     private void protocol_comboBoxItemStateChanged(ItemEvent e) {
@@ -394,9 +160,9 @@ public class RFID_Calibration extends JDialog {
         label_height_label = new JLabel();
         sensor_value_label = new JLabel();
         just_label = new JButton();
+        saveResultButton = new JButton();
 
         //======== this ========
-        setTitle("RFID Calibration");
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -1244,6 +1010,9 @@ public class RFID_Calibration extends JDialog {
         //---- just_label ----
         just_label.setText("标签校准");
 
+        saveResultButton.setText("保存校准结果");
+        saveResultButton.setVisible(false);
+
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
@@ -1268,7 +1037,10 @@ public class RFID_Calibration extends JDialog {
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(contentPaneLayout.createParallelGroup()
                                                         .addComponent(label_height_label)
-                                                        .addComponent(rfid_panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                                                        .addComponent(rfid_panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(saveResultButton)
+                                                )
+                                        )
                                         .addComponent(tabbedPane1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
                                         .addGroup(contentPaneLayout.createSequentialGroup()
                                                 .addComponent(calibrationData_label)
@@ -1304,7 +1076,9 @@ public class RFID_Calibration extends JDialog {
                                                                 .addGap(10, 10, 10)
                                                                 .addComponent(label_height_label)
                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(rfid_panel, GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)))
+                                                                .addComponent(rfid_panel, GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                                                                .addComponent(saveResultButton)
+                                                        ))
                                                 .addGap(23, 23, 23))
                                         .addComponent(rfid_signal_panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
@@ -1376,6 +1150,7 @@ public class RFID_Calibration extends JDialog {
     private JButton delNetPrinter;
     private JTextField ip_mac_textField;
     private JButton reset_button;
+    private JButton saveResultButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     private void initComponentListener() {
@@ -1422,6 +1197,7 @@ public class RFID_Calibration extends JDialog {
                     printerOperator.getPrinterStatus(selectPrinter);
                     boolean isNet = selectPrinter.contains(".");
                     calibrationFunction.sendCommand(selectPrinter, "MR", isNet);
+                    saveResultButton.setVisible(false);
                 } catch (Exception ex) {
                     showErrorMessage(ex.getMessage());
                 }
@@ -1446,6 +1222,13 @@ public class RFID_Calibration extends JDialog {
                     printerOperator.getPrinterStatus(selectPrinter);
                     getPrinterInfo(selectPrinter);
                     showResult(selectPrinter);
+
+                    PrinterVO printerVO = map.get(selectPrinter);
+                    if (printerVO != null) {
+                        if (printerVO.getPrinterType() == PrinterType.GJB || printerVO.getPrinterType() == PrinterType.UHF) {
+                            saveResultButton.setVisible(true);
+                        }
+                    }
                 }
             }
 
@@ -1597,6 +1380,17 @@ public class RFID_Calibration extends JDialog {
                 }
             }
         });
+
+        saveResultButton.addActionListener(e -> {
+            String ins = getInstructString();
+            String an = "#UM>AN" + set_an_textField.getText() + "\r\n";
+            String wp = "#UM>WP" + String.format("%03d", Integer.parseInt(set_wp_textField.getText())) + "\r\n";
+            String dl = "#UM>DL" + Objects.requireNonNull(sensor_level_comboBox.getSelectedItem()) + "\r\n";
+            ins += an + wp + dl + "MD\r\n";
+            System.out.println(ins);
+            SaveConfigure saveConfigure = new SaveConfigure(this, ins);
+            saveConfigure.setVisible(true);
+        });
     }
 
     private void initPrintListBox() {
@@ -1689,12 +1483,12 @@ public class RFID_Calibration extends JDialog {
                 byte[] modelByte = ("RQ" + type + ",2\r\n").getBytes(StandardCharsets.UTF_8);
                 byte[] netMsgByte = ("RQ" + type + ",3\r\n").getBytes(StandardCharsets.UTF_8);
                 try {
-                    String modelRead = getPrinterMessage(key, modelByte);
+                    String modelRead = LayoutUtils.getPrinterMessage(key, modelByte);
                     String[] r = modelRead.split(",");
                     printerInfoVO.setPrintModel(r[0].equals("1") ? "热转印" : "热敏");
                     printerInfoVO.setPaperSensor(Integer.valueOf(r[1]));
 
-                    String netMsgRead = getPrinterMessage(key, netMsgByte);
+                    String netMsgRead = LayoutUtils.getPrinterMessage(key, netMsgByte);
                     String[] n = netMsgRead.split(",");
                     printerInfoVO.setPrinterIp(n[0]);
                     printerInfoVO.setSubMask(n[1]);
@@ -1722,7 +1516,7 @@ public class RFID_Calibration extends JDialog {
                         just_rfid.setVisible(true);
 
                         byte[] rfidByte = ("RQ" + type + ",5\r\n").getBytes(StandardCharsets.UTF_8);
-                        String rfidRead = getPrinterMessage(key, rfidByte).replace("\r", "").replace("\n", "");
+                        String rfidRead = LayoutUtils.getPrinterMessage(key, rfidByte).replace("\r", "").replace("\n", "");
                         String[] readList = rfidRead.split(",");
                         if (readList.length == 1 && readList[0].isEmpty()) {
                             throw new RuntimeException("查询功率返回异常!");
@@ -1735,7 +1529,7 @@ public class RFID_Calibration extends JDialog {
                             HF_power_comboBox.setSelectedIndex(power);//模块功率
 
                             byte[] hfByte = ("RQ" + type + ",7\r\n").getBytes(StandardCharsets.UTF_8);
-                            String hfRead = getPrinterMessage(key, hfByte);
+                            String hfRead = LayoutUtils.getPrinterMessage(key, hfByte);
                             HF_type_comboBox.setSelectedIndex(Integer.parseInt(hfRead.split(",")[1]));//高频协议类型
                         } else { // 超高频或者GJB
                             uhf_param.setVisible(true);
@@ -1749,7 +1543,7 @@ public class RFID_Calibration extends JDialog {
 
                             if (printerVO.getVersion() >= 2.366f || printerVO.getPrinterType() == PrinterType.GJB) { // V2.36UR 开始支持RQ" + type + ",11 获取频段
                                 byte[] moduleByte = ("RQ" + type + ",11\r\n").getBytes(StandardCharsets.UTF_8);
-                                String moduleRead = getPrinterMessage(key, moduleByte);
+                                String moduleRead = LayoutUtils.getPrinterMessage(key, moduleByte);
                                 String[] moduleList = moduleRead.split(",");
                                 frequency_label.setVisible(true);
                                 frequency_comboBox.setVisible(true);
@@ -1808,7 +1602,7 @@ public class RFID_Calibration extends JDialog {
 
                             if (version >= 2.38) {
                                 byte[] anByte = ("RQ" + type + ",12\r\n").getBytes(StandardCharsets.UTF_8);
-                                String anRead = getPrinterMessage(key, anByte);
+                                String anRead = LayoutUtils.getPrinterMessage(key, anByte);
                                 int anValue = (int) (Float.parseFloat(anRead) / (printerVO.getDpi() / 25.4f));
                                 set_an_textField.setText(String.valueOf(anValue));
 
@@ -1857,18 +1651,6 @@ public class RFID_Calibration extends JDialog {
         sensor_value_label.setVisible(true);
     }
 
-    private String getPrinterMessage(String addr, byte[] data) {
-        String dataRead;
-        if (addr.contains(".")) {
-            // 带.的是IP地址
-            dataRead = printerOperator.sendAndReadPrinter(addr, data, 12301, "127.0.0.1");
-            dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
-        } else {
-            dataRead = printerOperator.sendAndReadPrinter(addr, data, data.length).replace("\r", "").replace("\n", "");
-        }
-        return dataRead;
-    }
-
     private void showResult(String addr) {
         if (!addr.isEmpty()) {
             try {
@@ -1877,8 +1659,7 @@ public class RFID_Calibration extends JDialog {
                     PrinterInfoVO printerInfoVO = printerVO.getVo();
                     printerOperator.getPrinterStatus(selectPrinter);
                     String commandString = selectPrinter.contains(".") ? "AL\r\n" : "AD\r\n"; //获取校准曲线的数据
-                    System.out.println("commandString => " + commandString);
-                    String readData = getPrinterMessage(addr, commandString.getBytes(StandardCharsets.UTF_8));
+                    String readData = LayoutUtils.getPrinterMessage(addr, commandString.getBytes(StandardCharsets.UTF_8));
 
                     float labelGapHeightPixel = 0;
                     float labelHeightPixel = 0;//标签的高度，mm
@@ -1909,7 +1690,7 @@ public class RFID_Calibration extends JDialog {
                                 String[] dataArr3 = dataArr2[1].split(","); //分割字符串
 
                                 // 自动分析得到标签高度和间隙高度
-                                Map<String, Float> map = GetCalibraLabelHeight(dataArr3, printerInfoVO.getPaperSensor(), adThreshold, printerVO.getDpi());
+                                Map<String, Float> map = LayoutUtils.GetCalibraLabelHeight(dataArr3, printerInfoVO.getPaperSensor(), adThreshold, printerVO.getDpi());
                                 if (map == null) {
                                     labelHeightPixel = 0;//标签的高度，mm
                                     labelGapPixel = 0;//间隙的高度，mm
@@ -1949,7 +1730,7 @@ public class RFID_Calibration extends JDialog {
                                     //绘制Y轴
                                     gr.setColor(Color.black);
 
-                                    int fontsize = getFontsize(calibrationImage);
+                                    int fontsize = LayoutUtils.getFontsize(calibrationImage);
                                     Font txtFont = new Font("Arial", Font.BOLD, (int) (fontsize / 72.0F * printerVO.getDpi() + 0.5F));
                                     gr.setFont(txtFont);
 
@@ -2006,7 +1787,7 @@ public class RFID_Calibration extends JDialog {
 
                     if (printerVO.getPrinterType() != PrinterType.NORMAL) {
                         String command = selectPrinter.contains(".") ? "SL\r\n" : "SI\r\n";
-                        String readRfidData = getPrinterMessage(addr, command.getBytes(StandardCharsets.UTF_8));
+                        String readRfidData = LayoutUtils.getPrinterMessage(addr, command.getBytes(StandardCharsets.UTF_8));
                         System.out.println("readRfidData => " + readRfidData);
                         RSSI_data_textArea.setText(readRfidData);//RFID的原始数据
 
@@ -2095,7 +1876,7 @@ public class RFID_Calibration extends JDialog {
                         if (printerVO.getPrinterType() == PrinterType.UHF || printerVO.getPrinterType() == PrinterType.GJB) {
                             int type = selectPrinter.contains(".") ? 2 : 1;
                             byte[] getInlayCommand = ("RQ" + type + ",8\r\n").getBytes(StandardCharsets.UTF_8);
-                            String inlayRead = getPrinterMessage(addr, getInlayCommand);
+                            String inlayRead = LayoutUtils.getPrinterMessage(addr, getInlayCommand);
                             inlayRead = inlayRead.substring(1, inlayRead.length() - 1);
                             if (inlayRead.contains("000000000000")) {
                                 uhf_inlay_label.setText("芯片类型");
@@ -2119,21 +1900,6 @@ public class RFID_Calibration extends JDialog {
         }
     }
 
-    private static int getFontsize(BufferedImage calibrationImage) {
-        int fontsize;
-        if (calibrationImage.getHeight() < 150)
-            fontsize = 2;
-        else if (calibrationImage.getHeight() < 250)
-            fontsize = 3;
-        else if (calibrationImage.getHeight() < 350)
-            fontsize = 4;
-        else if (calibrationImage.getHeight() < 450)
-            fontsize = 5;
-        else
-            fontsize = 6;
-        return fontsize;
-    }
-
     private void set_RFID_Params(PrinterVO printerVO, boolean isNet) {
         try {
             if (printerVO.getPrinterType() != PrinterType.NORMAL) {
@@ -2152,40 +1918,7 @@ public class RFID_Calibration extends JDialog {
                         throw new RuntimeException(ex);
                     }
                 } else { // 超高频
-                    String readPower = Objects.requireNonNull(read_power_comboBox.getSelectedItem()).toString();
-                    String writePower = Objects.requireNonNull(write_power_comboBox.getSelectedItem()).toString();
-                    String commandString = "RW" + readPower + "," + writePower + "\r\n";//设置读写功率
-                    commandString += "AP" + readPower + "," + writePower + "\r\n";//设置读写功率
-                    if (Objects.equals(dr_value_comboBox.getSelectedItem(), "2") || Objects.equals(dr_value_comboBox.getSelectedItem(), "3"))//自动功率模式
-                    {
-                        commandString = "AP" + read_power_comboBox.getSelectedItem().toString() + "," + write_power_comboBox.getSelectedItem().toString() + "\r\n";//设置自动校准的读写功率（自动和手动的读写功率分两个位置存储）
-                        commandString += "#UM>DR2\r\n";
-                    } else
-                        commandString += "#UM>DR" + Objects.requireNonNull(dr_value_comboBox.getSelectedItem()) + "\r\n";
-
-                    if (protocol_comboBox.isVisible())//三标协议
-                    {
-                        //配置: #UM>UT0 => ISO/6C
-                        //# UM>UT1 => GJB;
-                        //# UM>UT2 => GB ;
-                        if (protocol_comboBox.getSelectedIndex() == 0)//ISO 18000-6C
-                            commandString += "#UM>UT0\r\n";//设置为ISO
-                        else if (protocol_comboBox.getSelectedIndex() == 1) {
-                            commandString += "#UM>UT1\r\n";//设置为GJB
-                            if (checkBox_gjb_jm.isSelected())
-                                commandString += "#UM>KR1\r\n";//设置军密有效
-                            else
-                                commandString += "#UM>KR0\r\n";//设置军密无效
-                        } else {
-                            commandString += "#UM>UT2\r\n";//设置为GB
-                        }
-                    }
-                    if (frequency_comboBox.isVisible() && frequency_comboBox.getSelectedIndex() > -1) {
-                        if (Objects.equals(frequency_comboBox.getSelectedItem(), "Auto8"))
-                            commandString += "#UM>RE00\r\n#UM>PR1\r\n";
-                        else
-                            commandString += "#UM>RE00\r\n#UM>PR9\r\n";
-                    }
+                    String commandString = getInstructString();
                     calibrationFunction.sendCommand(selectPrinter, commandString, isNet);
                     try {
                         Thread.sleep(200);//设置后暂停一会儿让打印机处理
@@ -2199,6 +1932,45 @@ public class RFID_Calibration extends JDialog {
         } catch (Exception e) {
             showErrorMessage(e.getMessage());
         }
+    }
+
+    private String getInstructString() {
+        String readPower = Objects.requireNonNull(read_power_comboBox.getSelectedItem()).toString();
+        String writePower = Objects.requireNonNull(write_power_comboBox.getSelectedItem()).toString();
+        String commandString = "RW" + readPower + "," + writePower + "\r\n";//设置读写功率
+        commandString += "AP" + readPower + "," + writePower + "\r\n";//设置读写功率
+//        if (Objects.equals(dr_value_comboBox.getSelectedItem(), "2") || Objects.equals(dr_value_comboBox.getSelectedItem(), "3"))//自动功率模式
+//        {
+//            commandString = "AP" + readPower + "," + writePower + "\r\n";//设置自动校准的读写功率（自动和手动的读写功率分两个位置存储）
+//            commandString += "#UM>DR2\r\n";
+//        } else
+//
+        commandString += "#UM>DR" + Objects.requireNonNull(dr_value_comboBox.getSelectedItem()) + "\r\n";
+
+        if (protocol_comboBox.isVisible())//三标协议
+        {
+            //配置: #UM>UT0 => ISO/6C
+            //# UM>UT1 => GJB;
+            //# UM>UT2 => GB ;
+            if (protocol_comboBox.getSelectedIndex() == 0)//ISO 18000-6C
+                commandString += "#UM>UT0\r\n";//设置为ISO
+            else if (protocol_comboBox.getSelectedIndex() == 1) {
+                commandString += "#UM>UT1\r\n";//设置为GJB
+                if (checkBox_gjb_jm.isSelected())
+                    commandString += "#UM>KR1\r\n";//设置军密有效
+                else
+                    commandString += "#UM>KR0\r\n";//设置军密无效
+            } else {
+                commandString += "#UM>UT2\r\n";//设置为GB
+            }
+        }
+        if (frequency_comboBox.isVisible() && frequency_comboBox.getSelectedIndex() > -1) {
+            if (Objects.equals(frequency_comboBox.getSelectedItem(), "Auto8"))
+                commandString += "#UM>RE00\r\n#UM>PR1\r\n";
+            else
+                commandString += "#UM>RE00\r\n#UM>PR9\r\n";
+        }
+        return commandString;
     }
 
     private void showErrorMessage(String message) {
