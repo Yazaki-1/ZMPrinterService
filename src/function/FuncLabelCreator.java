@@ -87,6 +87,7 @@ public class FuncLabelCreator {
 
                         if (funcParams.length == 4 || funcParams.length == 6) {
                             String imageBase64 = funcParams.length == 4 ? funcParams[3] : funcParams[5];
+                            System.out.println(imageBase64);
                             if (imageBase64.contains(","))
                                 imageBase64 = imageBase64.substring(imageBase64.lastIndexOf(",") + 1);//去掉base64字符串头
                             if (funcParams.length == 4) {
