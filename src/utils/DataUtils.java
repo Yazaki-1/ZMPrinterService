@@ -49,6 +49,9 @@ public class DataUtils {
                 }
             });
         }
+        if (jsonData.getOperator() == null) {
+            jsonData.setOperator("print");
+        }
         return jsonData;
     }
 

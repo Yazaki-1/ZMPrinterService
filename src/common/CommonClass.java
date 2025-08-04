@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CommonClass {
-    public static final String SOFT_VERSION = "3.1.1 Last-Version";
+    public static final String SOFT_VERSION = "3.1.2.1 Last-Version";
     private static final String configDataDir =
             (System.getProperty("os.name").toLowerCase().contains("windows") ?
                     System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
