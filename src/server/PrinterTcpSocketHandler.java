@@ -17,6 +17,7 @@ public class PrinterTcpSocketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println(msg);
         String remoteAddress = ctx.channel().remoteAddress().toString();
         if (ChannelMap.findChannel(remoteAddress) == null) {
             ChannelMap.addChannel(ctx.channel());

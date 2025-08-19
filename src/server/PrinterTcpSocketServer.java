@@ -7,7 +7,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 import java.nio.charset.Charset;
@@ -23,7 +22,6 @@ public class PrinterTcpSocketServer {
         EventLoopGroup eventExecutors = new NioEventLoopGroup();
         EventLoopGroup connectExecutors = new NioEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-
         try {
             bootstrap.group(eventExecutors, connectExecutors)
                     .channel(NioServerSocketChannel.class)
@@ -34,7 +32,7 @@ public class PrinterTcpSocketServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) {
                             ChannelPipeline channelPipeline = socketChannel.pipeline();
-                            channelPipeline.addLast(new StringDecoder(Charset.forName("GBK")));
+                            channelPipeline.addLast(new TcpMessageDecoder());
                             channelPipeline.addLast(new StringEncoder(Charset.forName("GBK")));
                             channelPipeline.addLast(new PrinterTcpSocketHandler());
                         }
