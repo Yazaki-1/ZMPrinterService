@@ -6,6 +6,7 @@ package layout;
 
 import common.CommonClass;
 import common.LogType;
+import server.PrinterTcpSocketServer;
 import server.PrinterWebSocketServer;
 import utils.NetUtils;
 import utils.RegUtil;
@@ -27,16 +28,30 @@ public class PrinterService extends JFrame {
     public PrinterService() {
         initComponents();//初始化Swing组件
         serverThread = new Thread(() -> {
-            System.out.println(portBox.getText());
-            PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
-            try {
-                server.start_server();
-            } catch (InterruptedException _e) {
-                String msg = "服务重启,端口:" + portBox.getText();
-                CommonClass.saveLog(msg, LogType.ServiceData);
-            } catch (Exception e) {
-                String message = e.getMessage() + "\n";
-                CommonClass.showServiceMsg(message);
+            if (CommonClass.tcp_receive) {
+                System.out.println("tcp服务启动, port:" + portBox.getText());
+                PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(Integer.parseInt(portBox.getText()));
+                try {
+                    tcp_server.start_server();
+                } catch (InterruptedException _e) {
+                    String msg = "tcp服务重启,端口:" + portBox.getText();
+                    CommonClass.saveLog(msg, LogType.ServiceData);
+                } catch (Exception e) {
+                    String message = e.getMessage() + "\n";
+                    CommonClass.showServiceMsg(message);
+                }
+            }else {
+                System.out.println("ws服务启动, port:" + portBox.getText());
+                PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
+                try {
+                    server.start_server();
+                } catch (InterruptedException _e) {
+                    String msg = "ws服务重启,端口:" + portBox.getText();
+                    CommonClass.saveLog(msg, LogType.ServiceData);
+                } catch (Exception e) {
+                    String message = e.getMessage() + "\n";
+                    CommonClass.showServiceMsg(message);
+                }
             }
         });
         serverThread.start();
@@ -278,14 +293,26 @@ public class PrinterService extends JFrame {
         restart.addActionListener(e -> {
             serverThread.interrupt();
             serverThread = new Thread(() -> {
-                PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
-                try {
-                    server.start_server();
-                } catch (InterruptedException _e) {
-                    String msg = "服务重启,端口:" + portBox.getText();
-                    CommonClass.saveLog(msg, LogType.ServiceData);
-                } catch (Exception _e) {
-                    CommonClass.showServiceMsg(_e.getMessage());
+                if (CommonClass.tcp_receive) {
+                    PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(Integer.parseInt(portBox.getText()));
+                    try {
+                        tcp_server.start_server();
+                    } catch (InterruptedException _e) {
+                        String msg = "服务重启,端口:" + portBox.getText();
+                        CommonClass.saveLog(msg, LogType.ServiceData);
+                    } catch (Exception _e) {
+                        CommonClass.showServiceMsg(_e.getMessage());
+                    }
+                }else {
+                    PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
+                    try {
+                        server.start_server();
+                    } catch (InterruptedException _e) {
+                        String msg = "服务重启,端口:" + portBox.getText();
+                        CommonClass.saveLog(msg, LogType.ServiceData);
+                    } catch (Exception _e) {
+                        CommonClass.showServiceMsg(_e.getMessage());
+                    }
                 }
             });
             serverThread.start();

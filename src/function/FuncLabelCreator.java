@@ -558,7 +558,12 @@ public class FuncLabelCreator {
             // 查询打印机名称和序列号
             case "ZM_GetPrinterName":
             case "ZM_GetPrinterNameAndSN": {
-                String message = funcParams == null ? function.getNameAndSn() : function.getNameAndSn(funcParams[1]);
+                String message;
+                if (CommonClass.localSN.isEmpty()) {
+                    message = funcParams == null ? function.getNameAndSn() : function.getNameAndSn(funcParams[1]);
+                } else {
+                    message = function.getNameAndSn(CommonClass.localSN);
+                }
                 ChannelMap.writeMessageToClient(remoteAddress, "PrinterInfo:" + message);
                 break;
             }
@@ -577,21 +582,26 @@ public class FuncLabelCreator {
                 byte[] commands = funcBody.buildLabelCommand();
                 int len = commands.length;
                 String printResult;
-                if (funcBody.getPrinter().printermbsn.isEmpty() && funcBody.getPrinter().printernetip.isEmpty()) {
-                    //sn和ip都没设置默认选中第一个USB打印机
-                    List<String> serials = printerOperator.getPrinters();
-                    if (serials.isEmpty()) {
-                        CommonClass.saveAndShow("未连接打印机", LogType.ServiceData);
-                        break;
+                if (CommonClass.localSN.isEmpty()) {
+                    if (funcBody.getPrinter().printermbsn.isEmpty() && funcBody.getPrinter().printernetip.isEmpty()) {
+                        //sn和ip都没设置默认选中第一个USB打印机
+                        List<String> serials = printerOperator.getPrinters();
+                        if (serials.isEmpty()) {
+                            CommonClass.saveAndShow("未连接打印机", LogType.ServiceData);
+                            break;
+                        } else {
+                            printResult = printerOperator.sendToPrinter(serials.get(0), commands, len);
+                        }
+                    } else if (funcBody.getPrinter().printermbsn.isEmpty()) {
+                        //设了网络打印机ip
+                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printernetip, commands);
                     } else {
-                        printResult = printerOperator.sendToPrinter(serials.get(0), commands, len);
+                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len);
                     }
-                } else if (funcBody.getPrinter().printermbsn.isEmpty()) {
-                    //设了网络打印机ip
-                    printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printernetip, commands);
                 } else {
-                    printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len);
+                    printResult = printerOperator.sendToPrinter(CommonClass.localSN, commands, len);
                 }
+
                 if (printResult.equals("0")) {
                     ChannelMap.writeMessageToClient(remoteAddress, "打印完成(finished)");
                 } else {
@@ -608,12 +618,7 @@ public class FuncLabelCreator {
                 //不允许无参
                 if (funcParams != null) {
                     String addr;
-                    try {
-                        int sn = Integer.parseInt(CommonClass.localSN);
-                        addr = String.valueOf(sn);
-                        String status = function.getPrinterStatus(addr);
-                        ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
-                    } catch (NumberFormatException e) {
+                    if (CommonClass.localSN.isEmpty()) {
                         try {
                             // 如果长度为3判定为最后一组参数是地址,否则是第二组
                             long serial = funcParams.length == 3 ? Long.parseLong(funcParams[2]) : Long.parseLong(funcParams[1]);
@@ -627,6 +632,9 @@ public class FuncLabelCreator {
                             String status = function.getPrinterStatus(addr);
                             ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_NET:" + status); // 必定是0,如果不是会被catch
                         }
+                    } else {
+                        String status = function.getPrinterStatus(CommonClass.localSN);
+                        ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
                     }
                 }
                 break;

@@ -1,5 +1,6 @@
 package server;
 
+import common.CommonClass;
 import data_processing.LabelData;
 import data_processing.PrintQueue;
 import io.netty.channel.Channel;
@@ -32,7 +33,7 @@ public class ChannelMap {
     public static void addQueue(String remoteAddress, LabelData labelData) {
         try {
             queueConcurrentMap.get(remoteAddress).addQueue(labelData);
-        }catch (Exception e) {
+        } catch (Exception e) {
             writeMessageToClient(remoteAddress, "PrintQueue|打印任务已满,请等候");// 返回队列已满的消息
         }
     }
@@ -51,6 +52,11 @@ public class ChannelMap {
 
     public static void writeMessageToClient(String remoteAddress, String serverMessage) {
         Channel channel = findChannel(remoteAddress);
-        channel.writeAndFlush(new TextWebSocketFrame(serverMessage));
+
+        if (CommonClass.tcp_receive) {
+            channel.writeAndFlush(serverMessage);
+        } else {
+            channel.writeAndFlush(new TextWebSocketFrame(serverMessage));
+        }
     }
 }

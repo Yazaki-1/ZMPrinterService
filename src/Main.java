@@ -2,6 +2,7 @@ import com.alibaba.fastjson2.JSONObject;
 import common.CommonClass;
 import common.LogType;
 import layout.PrinterService;
+import server.PrinterTcpSocketServer;
 import server.PrinterWebSocketServer;
 import utils.RegUtil;
 
@@ -26,12 +27,14 @@ public class Main {
             CommonClass.hideVisible = Integer.parseInt(object.getString("hide")) != 0;
             CommonClass.tray = Integer.parseInt(object.getString("tray")) != 0;
             CommonClass.auto_start = Integer.parseInt(object.getString("auto_start")) != 0;
+            CommonClass.tcp_receive = Integer.parseInt(object.getString("tcp")) != 0;
         } catch (IOException | NumberFormatException e) {
             CommonClass.localPort = 1808;
             CommonClass.localSN = "";
             CommonClass.hideVisible = false;
             CommonClass.tray = false;
             CommonClass.auto_start = false;
+            CommonClass.tcp_receive = false;
         }
         if (!CommonClass.hideVisible) {
             PrinterService service = new PrinterService();
@@ -47,11 +50,20 @@ public class Main {
             }
             int port = CommonClass.localPort == null ? 1808 : CommonClass.localPort;
             System.out.println(port + " " + CommonClass.localSN);
-            PrinterWebSocketServer server = new PrinterWebSocketServer(port);
-            try {
-                server.start_server();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (CommonClass.tcp_receive) {
+                PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(port);
+                try {
+                    tcp_server.start_server();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                PrinterWebSocketServer ws_server = new PrinterWebSocketServer(port);
+                try {
+                    ws_server.start_server();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

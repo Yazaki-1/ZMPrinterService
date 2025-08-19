@@ -3,5 +3,6 @@
   "sn": "",
   "hide": "0",
   "tray": "0",
-  "auto_start": "0"
+  "auto_start": "0",
+  "tcp": "0"
 }

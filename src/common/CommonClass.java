@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CommonClass {
-    public static final String SOFT_VERSION = "3.1.2.1 Last-Version";
+    public static final String SOFT_VERSION = "3.1.3 Last-Version";
     private static final String configDataDir =
             (System.getProperty("os.name").toLowerCase().contains("windows") ?
                     System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
@@ -27,6 +27,7 @@ public class CommonClass {
     public static boolean hideVisible = false;
     public static boolean tray = false;
     public static boolean auto_start = false;
+    public static boolean tcp_receive = false;
 
     //保存数据到log文件，被synchronized修饰的代码块及方法，在同一时间，只能被单个线程访问。
     public static synchronized void saveLog(String data, LogType logType) {
