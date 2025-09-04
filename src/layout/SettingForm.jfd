@@ -1,0 +1,133 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.6" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {space :0:0:x, comp apply:::p::p, space :::p, comp cancel:::p::p, space :::p}, comp tabbedPane1::l:::x}"
+			"$verticalGroup": "par l {seq l {space :::p, comp tabbedPane1:::p:320:p, space ::23:x, par b {comp cancel::b:p::p, comp apply::b:p::p}, space :::p}}"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+				name: "tabbedPane1"
+				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+					"columns": 1
+					"rows": 0
+				} ) {
+					name: "panel8"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, comp autoLabel:::p:120:p, space :::p, comp set_auto_start::::230:x, space :::p}}"
+						"$verticalGroup": "par l {seq l {par t:::p {comp autoLabel::l::40:x, comp set_auto_start::l::40:x}, space :0:0:x}}"
+					} ) {
+						name: "AutoStartPanel"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "autoLabel"
+							"text": "开机启动"
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "set_auto_start"
+							"text": "设置开机自动启动"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, comp defaultPortLabel:::p:120:p, space :::p, comp ipBox::::230:x, space :::p}}"
+						"$verticalGroup": "par l {par b:l {comp defaultPortLabel::b:p:40:p, comp ipBox::b:p::p}}"
+					} ) {
+						name: "DefaultPorPanel"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "defaultPortLabel"
+							"text": "服务默认端口"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "ipBox"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, comp sysTrayLabel:::p:120:p, space :::p, comp autoTray::::230:x, space :::p}}"
+						"$verticalGroup": "par l {par b:t {comp autoTray::b:p:40:p, comp sysTrayLabel::b:p:40:p}}"
+					} ) {
+						name: "SystemTrayPanel"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "sysTrayLabel"
+							"text": "系统托盘"
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "autoTray"
+							"text": "启动自动缩小(重启软件生效)"
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, comp label4:::p:120:p, space :::p, comp connectBox:::p:224:p, space :::x}}"
+						"$verticalGroup": "par l {par b:l {comp label4::b::40:x, comp connectBox::b:p::p}}"
+					} ) {
+						name: "panel5"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "服务连接类型"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "connectBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "WebSocket"
+								addElement( "WebSocket" )
+								addElement( "TCP" )
+							}
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "String"
+							}
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {seq l {space :::p, comp label5:::p:120:p, space :::p, comp languageBox:::p:224:p, space :::x}}"
+						"$verticalGroup": "par l {seq t {space :0:0:x, par b {comp label5::b:p:40:p, comp languageBox::b:p::p}}}"
+					} ) {
+						name: "panel6"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label5"
+							"text": "语言(Language)"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "languageBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "简体中文(Simplified Chinese)"
+								addElement( "简体中文(Simplified Chinese)" )
+								addElement( "English" )
+							}
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "String"
+							}
+						} )
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {space :0:368:x}"
+						"$verticalGroup": "par l {space :0:40:x}"
+					} ) {
+						name: "panel7"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {space :0:368:x}"
+						"$verticalGroup": "par l {space :0:40:x}"
+					} ) {
+						name: "panel9"
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "基础设置"
+				} )
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "cancel"
+				"text": "取消"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "apply"
+				"text": "应用"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 370, 420 )
+		} )
+	}
+}
+
+
