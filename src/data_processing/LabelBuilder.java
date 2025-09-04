@@ -140,7 +140,7 @@ public class LabelBuilder {
                 }
             }
             case "setting":
-                throw new FunctionalException("3001|调用LSF模板不能使用Setting");
+                throw new FunctionalException("3008|调用LSF模板不能使用Setting");
             case "batch":
                 addPrintQueue(printer, label, contents, clientRemote);
                 break;
@@ -195,8 +195,8 @@ public class LabelBuilder {
                 throw new FunctionalException("4005|其他异常 => 未定义的printerInterface");
             }
         } catch (ConnectException e) {
-            ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
-            CommonClass.saveAndShow(clientRemote + "    " + e.getMessage(), LogType.ErrorData);
+            ChannelMap.writeMessageToClient(clientRemote, ErrorCatcher.CatchConnectError(e.getMessage()));
+            CommonClass.saveAndShow(clientRemote + "    " + ErrorCatcher.CatchConnectError(e.getMessage()), LogType.ErrorData);
         }
     }
 

@@ -9,7 +9,6 @@ import common.LogType;
 import server.PrinterTcpSocketServer;
 import server.PrinterWebSocketServer;
 import utils.NetUtils;
-import utils.RegUtil;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,32 +20,33 @@ import javax.swing.GroupLayout;
  * @author PH
  */
 public class PrinterService extends JFrame {
-    private Thread serverThread;
+    public Thread serverThread;
     private JTextField portBox;
     public static JTextArea service_message;
+    public ServiceTrayMenu serviceTrayMenu = null;
 
     public PrinterService() {
         initComponents();//初始化Swing组件
         serverThread = new Thread(() -> {
             if (CommonClass.tcp_receive) {
-                System.out.println("tcp服务启动, port:" + portBox.getText());
+                System.out.println(CommonClass.i18nMessage.getString("tcp") + portBox.getText());
                 PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(Integer.parseInt(portBox.getText()));
                 try {
                     tcp_server.start_server();
                 } catch (InterruptedException _e) {
-                    String msg = "tcp服务重启,端口:" + portBox.getText();
+                    String msg = CommonClass.i18nMessage.getString("tcp_restart") + portBox.getText();
                     CommonClass.saveLog(msg, LogType.ServiceData);
                 } catch (Exception e) {
                     String message = e.getMessage() + "\n";
                     CommonClass.showServiceMsg(message);
                 }
-            }else {
-                System.out.println("ws服务启动, port:" + portBox.getText());
+            } else {
+                System.out.println(CommonClass.i18nMessage.getString("ws") + portBox.getText());
                 PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
                 try {
                     server.start_server();
                 } catch (InterruptedException _e) {
-                    String msg = "ws服务重启,端口:" + portBox.getText();
+                    String msg = CommonClass.i18nMessage.getString("ws_restart") + portBox.getText();
                     CommonClass.saveLog(msg, LogType.ServiceData);
                 } catch (Exception e) {
                     String message = e.getMessage() + "\n";
@@ -111,7 +111,7 @@ public class PrinterService extends JFrame {
                 bottomLayout.add(panel6);
 
                 //---- restart ----
-                restart.setText("重启服务");
+                restart.setText(CommonClass.i18nMessage.getString("btn.restart"));
                 bottomLayout.add(restart);
 
                 //---- label4 ----
@@ -119,7 +119,7 @@ public class PrinterService extends JFrame {
                 bottomLayout.add(label4);
 
                 //---- quit ----
-                quit.setText("退出程序");
+                quit.setText(CommonClass.i18nMessage.getString("btn.quit"));
                 bottomLayout.add(quit);
             }
 
@@ -155,7 +155,7 @@ public class PrinterService extends JFrame {
                     panel8.add(label8);
 
                     //---- configuration ----
-                    configuration.setText("一键配置");
+                    configuration.setText(CommonClass.i18nMessage.getString("btn.configuration"));
                     panel8.add(configuration);
 
                     //---- label7 ----
@@ -163,7 +163,7 @@ public class PrinterService extends JFrame {
                     panel8.add(label7);
 
                     //---- calibration ----
-                    calibration.setText("RFID校准");
+                    calibration.setText(CommonClass.i18nMessage.getString("btn.calibration"));
                     panel8.add(calibration);
                 }
 
@@ -241,7 +241,6 @@ public class PrinterService extends JFrame {
         pack();
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
-
         // 窗体运行
         addWindowListener(new WindowAdapter() {
             @Override
@@ -258,7 +257,15 @@ public class PrinterService extends JFrame {
                 ipBox.setText(ip);
                 ipBox.setCaretPosition(0);
 
-                systemTray();
+                if (serviceTrayMenu == null) {
+                    serviceTrayMenu = new ServiceTrayMenu();
+                    serviceTrayMenu.getTrayIcon().addActionListener(e -> {
+                        // 双击托盘图标时的操作
+                        setVisible(!isVisible());
+                        setState(JFrame.NORMAL);
+                        toFront();
+                    });
+                }
 
                 if (CommonClass.tray) {
                     setVisible(false);
@@ -298,17 +305,17 @@ public class PrinterService extends JFrame {
                     try {
                         tcp_server.start_server();
                     } catch (InterruptedException _e) {
-                        String msg = "服务重启,端口:" + portBox.getText();
+                        String msg = CommonClass.i18nMessage.getString("tcp_restart") + portBox.getText();
                         CommonClass.saveLog(msg, LogType.ServiceData);
                     } catch (Exception _e) {
                         CommonClass.showServiceMsg(_e.getMessage());
                     }
-                }else {
+                } else {
                     PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
                     try {
                         server.start_server();
                     } catch (InterruptedException _e) {
-                        String msg = "服务重启,端口:" + portBox.getText();
+                        String msg = CommonClass.i18nMessage.getString("ws_restart") + portBox.getText();
                         CommonClass.saveLog(msg, LogType.ServiceData);
                     } catch (Exception _e) {
                         CommonClass.showServiceMsg(_e.getMessage());
@@ -323,7 +330,7 @@ public class PrinterService extends JFrame {
 
         // 消息窗口右键功能
         JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem clearItem = new JMenuItem("清空内容");
+        JMenuItem clearItem = new JMenuItem(CommonClass.i18nMessage.getString("clear"));
         clearItem.addActionListener(e -> service_message.setText("")); // 清空文本内容
         popupMenu.add(clearItem);
 
@@ -352,92 +359,5 @@ public class PrinterService extends JFrame {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-    }
-
-    // 系统托盘和右键按钮事件
-    private void systemTray() {
-        if (SystemTray.isSupported()) {
-            // 获取系统托盘
-            SystemTray tray = SystemTray.getSystemTray();
-            Image image = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/logo16.png"))).getImage();
-            TrayIcon trayIcon = getTrayIcon(image);
-
-            try {
-                tray.add(trayIcon);
-            } catch (AWTException e) {
-                CommonClass.saveLog("系统托盘添加失败: " + e.getMessage(), LogType.ErrorData);
-            }
-        }
-    }
-
-    private TrayIcon getTrayIcon(Image image) {
-        TrayIcon trayIcon = new TrayIcon(image);
-        // 添加鼠标点击事件监听器
-        trayIcon.addActionListener(e -> {
-            // 双击托盘图标时的操作
-            setVisible(!this.isVisible());
-            setState(JFrame.NORMAL);
-            toFront();
-        });
-        trayIcon.setPopupMenu(getPopupMenu());
-        return trayIcon;
-    }
-
-    private PopupMenu getPopupMenu() {
-        PopupMenu popupMenu = new PopupMenu();
-        MenuItem menuItem = new MenuItem("Open");
-        menuItem.addActionListener(e -> {
-            setExtendedState(Frame.NORMAL);//窗体恢复正常化状态
-            setVisible(true);//双击托盘图标显示窗体
-            toFront();
-        });
-        popupMenu.add(menuItem);//添加一个菜单项
-
-        String osName = System.getProperty("os.name");
-        if (osName.toLowerCase().contains("windows")) {
-            CheckboxMenuItem checkboxMenuItem = new CheckboxMenuItem("Auto Start");
-
-            int i = RegUtil.INSTANCE.get_reg();
-
-            if (i == -1) {
-                CommonClass.saveAndShow("获取自动启动状态失败!可能是权限不足的问题.", LogType.ErrorData);
-            } else {
-                checkboxMenuItem.setState(i == 1);
-            }
-
-            checkboxMenuItem.addItemListener(l -> {
-                int setAutoStart = checkboxMenuItem.getState() ? 1 : 0;
-                String regPath = System.getProperty("user.dir") + "\\ZMPrinterService.exe";
-                int result = RegUtil.INSTANCE.set_auto_start(setAutoStart, regPath);
-                if (result == 0) {
-                    CommonClass.saveAndShow("设置自动启动失败!可能是权限不足的问题.", LogType.ErrorData);
-                }
-            });
-
-            popupMenu.add(checkboxMenuItem);//添加一个菜单项
-        }
-
-        menuItem = new MenuItem("Quit");
-        menuItem.addActionListener(e -> {
-            System.exit(0);//关闭程序
-        });
-        popupMenu.add(menuItem);//添加一个菜单项
-
-        menuItem = new MenuItem("About");
-        String messageBody = "ZMPrintService Ver" +
-                CommonClass.SOFT_VERSION +
-                "是网页前端打印服务器，\n" +
-                "它启动后使得在所有浏览器上都可以使用网页控制打印机。\n" +
-                "建议将此应用程序设置为开机自动运行。\n\n" +
-                "ZMPrintService is a web print server.\n" +
-                "After it is started, it is possible to use web pages to control the printer on all browsers.\n" +
-                "It is recommended to set this application to run automatically after system startup.\n\n" +
-                "ZMIN Technologies.";
-        menuItem.addActionListener(e ->
-                JOptionPane.showMessageDialog(null, messageBody,
-                        "About",
-                        JOptionPane.INFORMATION_MESSAGE));
-        popupMenu.add(menuItem);//添加一个菜单项
-        return popupMenu;
     }
 }

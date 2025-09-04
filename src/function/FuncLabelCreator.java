@@ -610,6 +610,7 @@ public class FuncLabelCreator {
                 break;
             }
             // 查询打印机状态
+            case "ZM_ErrorReportEx":
             case "ZM_ErrorReport_USB":
             case "ZM_GetPrinterStatus":
             case "ZM_GetPrinterStatus_NET":
@@ -623,7 +624,7 @@ public class FuncLabelCreator {
                             // 如果长度为3判定为最后一组参数是地址,否则是第二组
                             long serial = funcParams.length == 3 ? Long.parseLong(funcParams[2]) : Long.parseLong(funcParams[1]);
                             // 如果为500,则用""作为地址
-                            addr = serial == 500 ? "" : String.valueOf(serial);
+                            addr = (serial == 500 || serial == 0) ? "" : String.valueOf(serial);
                             String status = function.getPrinterStatus(addr);
                             ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
                         } catch (NumberFormatException ex) {

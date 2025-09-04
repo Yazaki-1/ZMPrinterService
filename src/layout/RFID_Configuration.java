@@ -8,6 +8,7 @@ import com.ZMPrinter.PrinterOperator;
 import com.ZMPrinter.PrinterOperatorImpl;
 import com.ZMPrinter.conn.ConnectException;
 import common.CommonClass;
+import data_processing.ErrorCatcher;
 import function.CalibrationFunctionImpl;
 import utils.ConfigureUtils;
 
@@ -481,7 +482,7 @@ public class RFID_Configuration extends JDialog {
                         }
                     }, 20);
                 }catch (ConnectException ex) {
-                    showErrorMessage(ex.getMessage());
+                    showErrorMessage(ErrorCatcher.CatchConnectError(ex.getMessage()));
                 }
             } catch (IOException ex) {
                 showErrorMessage("配置文件异常!");
@@ -521,7 +522,7 @@ public class RFID_Configuration extends JDialog {
                     else printerOperator.sendToPrinter(selectPrinter, commands.getBytes(), commands.length());
                     showInformationDialog("设置完成,请【重启】打印机生效!!!");
                 }catch (ConnectException ex) {
-                    showErrorMessage(ex.getMessage());
+                    showErrorMessage(ErrorCatcher.CatchConnectError(ex.getMessage()));
                 }
             }else {
                 showErrorMessage("未选择打印机");
@@ -609,7 +610,7 @@ public class RFID_Configuration extends JDialog {
                         printerVO.setVo(printerInfoVO);
                         showPrinterMessage(printerVO);
                     } catch (ConnectException e) {
-                        showErrorMessage(e.getMessage());
+                        showErrorMessage(ErrorCatcher.CatchConnectError(e.getMessage()));
                     }
                 } else {
                     topPanel.setEnabled(false);
@@ -749,7 +750,7 @@ public class RFID_Configuration extends JDialog {
                     }
                 }
             } catch (ConnectException e) {
-                throw new RuntimeException(e.getMessage());
+                throw new RuntimeException(ErrorCatcher.CatchConnectError(e.getMessage()));
             }
         }
     }

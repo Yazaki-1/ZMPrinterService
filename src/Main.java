@@ -1,44 +1,17 @@
-import com.alibaba.fastjson2.JSONObject;
 import common.CommonClass;
 import common.LogType;
 import layout.PrinterService;
 import server.PrinterTcpSocketServer;
 import server.PrinterWebSocketServer;
+import utils.DataJsonUtil;
 import utils.RegUtil;
-
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) {
-        try {
-            String dataPath =
-                    (System.getProperty("os.name").toLowerCase().contains("windows") ?
-                            System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
-                            System.getProperty("user.home") + "/zmsoft/ZMPrinterService/") + "bin/data.json";
-            System.out.println(dataPath);
-            String jsonContent = new String(Files.readAllBytes(Paths.get(dataPath)));
-
-            JSONObject object = JSONObject.parseObject(jsonContent);
-            CommonClass.localPort = Integer.parseInt(object.getString("port"));
-            CommonClass.localSN = object.getString("sn");
-            CommonClass.hideVisible = Integer.parseInt(object.getString("hide")) != 0;
-            CommonClass.tray = Integer.parseInt(object.getString("tray")) != 0;
-            CommonClass.auto_start = Integer.parseInt(object.getString("auto_start")) != 0;
-            CommonClass.tcp_receive = Integer.parseInt(object.getString("tcp")) != 0;
-        } catch (IOException | NumberFormatException e) {
-            CommonClass.localPort = 1808;
-            CommonClass.localSN = "";
-            CommonClass.hideVisible = false;
-            CommonClass.tray = false;
-            CommonClass.auto_start = false;
-            CommonClass.tcp_receive = false;
-        }
+        DataJsonUtil.read();
         if (!CommonClass.hideVisible) {
-            PrinterService service = new PrinterService();
-            service.setVisible(true);
+            CommonClass.PARENT_LAYOUT = new PrinterService();
+            CommonClass.PARENT_LAYOUT.setVisible(true);
         } else {
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 String regPath = System.getProperty("user.dir") + "\\ZMPrinterService.exe";

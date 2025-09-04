@@ -4,6 +4,7 @@
 
 package layout;
 
+import common.CommonClass;
 import common.PrinterDataFileCommon;
 import function.CalibrationFunction;
 import function.CalibrationFunctionImpl;
@@ -44,7 +45,7 @@ public class NetPrinter extends JDialog {
         JButton testConnectBtn = new JButton();
 
         //======== this ========
-        setTitle("添加网络打印机");
+        setTitle(CommonClass.i18nMessage.getString("add_net"));
         Container contentPane = getContentPane();
 
         //======== netMsgPanel ========
@@ -55,7 +56,7 @@ public class NetPrinter extends JDialog {
             {
 
                 //---- label1 ----
-                label1.setText("IP地址：");
+                label1.setText(CommonClass.i18nMessage.getString("ip_addr"));
 
                 GroupLayout ipPanelLayout = new GroupLayout(ipPanel);
                 ipPanel.setLayout(ipPanelLayout);
@@ -119,11 +120,11 @@ public class NetPrinter extends JDialog {
             btnPanel.add(panel6);
 
             //---- addPrinterBtn ----
-            addPrinterBtn.setText("添加网络打印机");
+            addPrinterBtn.setText(CommonClass.i18nMessage.getString("add_net"));
             btnPanel.add(addPrinterBtn);
 
             //---- testConnectBtn ----
-            testConnectBtn.setText("测试连接");
+            testConnectBtn.setText(CommonClass.i18nMessage.getString("test.connect"));
             btnPanel.add(testConnectBtn);
         }
 
@@ -157,12 +158,11 @@ public class NetPrinter extends JDialog {
                 ipText.setText("");
             }
         });
-//        initComponentsListener();
         testConnectBtn.addActionListener(e -> {
             try {
                 String addr = ipText.getText();
                 if (calibrationFunction.checkConnection(addr)) {
-                    testConnectMessage.setText("连接测试成功!");
+                    testConnectMessage.setText(CommonClass.i18nMessage.getString("success.test"));
                     testConnectMessage.setForeground(new Color(69, 234, 72));
                     isCheck = true;
                 }
@@ -174,27 +174,28 @@ public class NetPrinter extends JDialog {
 
         addPrinterBtn.addActionListener(e -> {
             if (!isCheck) {
-                JOptionPane.showMessageDialog(this, "请先测试链接是否可用！", "Warning", JOptionPane.WARNING_MESSAGE);
+                Object[] warn = {CommonClass.i18nMessage.getString("ok")};
+                JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("test.first"), "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, warn, warn[0]);
             } else {
-                Object[] options = {"确定", "取消"};
-                int check = JOptionPane.showOptionDialog(this, "使用网络打印机校准还需要检查12301端口是否开放!\n确定添加网络打印机?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                Object[] options = {CommonClass.i18nMessage.getString("ok"), CommonClass.i18nMessage.getString("cancel")};
+                int check = JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("calibration.port"), "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                 if (check == 0) {
                     // *文本框出现变化会将isCheck变为false*
                     String addr = ipText.getText();
                     if (RFID_Calibration.map.containsKey(addr)) {
-                        JOptionPane.showOptionDialog(this, "该网络打印机已存在!", "Error", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
-                    }else {
+                        JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("has_printer"), "Error", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+                    } else {
                         try {
                             PrinterVO printerVO = calibrationFunction.addNetPrinter(addr);
                             boolean b = PrinterDataFileCommon.addPrinter(addr, printerVO);
                             if (b) {
-                                int addCheck = JOptionPane.showOptionDialog(this, "添加成功!", "Success", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+                                int addCheck = JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("success.add"), "Success", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
                                 if (addCheck == 0) {
                                     parentDialog.refreshPrintListBox();
                                     this.setVisible(false);
                                 }
-                            }else {
-                                JOptionPane.showOptionDialog(this, "添加失败!", "Error", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
+                            } else {
+                                JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("failed.add"), "Error", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
                             }
                         } catch (Exception ex) {
                             testConnectMessage.setText(ex.getMessage());
@@ -209,21 +210,4 @@ public class NetPrinter extends JDialog {
     private JTextField ipText;
     private JLabel testConnectMessage;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on11
-
-//    private void initComponentsListener() {
-//        ipText.setDocument(new PlainDocument() {
-//            @Override
-//            public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
-//                String tmp = getText(0, offset).concat(str);
-//                if (tmp.length() <= 3) {
-//
-//                }
-////                Matcher m = Pattern.compile("([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}").matcher("192.168.8.8");
-////                if (m.matches()) {
-////                    System.out.println("111");
-////                }
-////                super.insertString(offset, str, a);
-//            }
-//        });
-//    }*/
 }

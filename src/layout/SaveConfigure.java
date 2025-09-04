@@ -4,6 +4,7 @@
 
 package layout;
 
+import common.CommonClass;
 import utils.ConfigureUtils;
 
 import java.awt.*;
@@ -192,7 +193,7 @@ public class SaveConfigure extends JDialog {
                             }
                         }
 
-                        Object[] options = {"确定"};
+                        Object[] options = {CommonClass.i18nMessage.getString("ok")};
                         int check = JOptionPane.showOptionDialog(this, "保存成功！", "Success", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                         if (check == 0) {
                             setVisible(false);
@@ -233,7 +234,7 @@ public class SaveConfigure extends JDialog {
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
     private boolean warningOption() {
-        Object[] options = {"确定", "取消"};
+        Object[] options = {CommonClass.i18nMessage.getString("ok"), CommonClass.i18nMessage.getString("cancel")};
         int check = JOptionPane.showOptionDialog(this, "是否保存配置?请确认配置能正常使用!", "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         return check == 0;
     }

@@ -5,6 +5,7 @@ import com.ZMPrinter.PrinterOperatorImpl;
 import com.ZMPrinter.conn.ConnectException;
 import common.CommonClass;
 import common.PrinterDataFileCommon;
+import data_processing.ErrorCatcher;
 import function.CalibrationException;
 import function.CalibrationFunction;
 import function.CalibrationFunctionImpl;
@@ -196,19 +197,19 @@ public class RFID_Calibration extends JDialog {
                 {
 
                     //---- printer_dpi_label ----
-                    printer_dpi_label.setText("打印机分辨率：null");
+                    printer_dpi_label.setText(CommonClass.i18nMessage.getString("printer_dpi") + "null");
 
                     //---- paper_sensor_label ----
-                    paper_sensor_label.setText("感应器类型：null");
+                    paper_sensor_label.setText(CommonClass.i18nMessage.getString("paper_sensor") + "null");
 
                     //---- print_mode_label ----
-                    print_mode_label.setText("打印模式：null");
+                    print_mode_label.setText(CommonClass.i18nMessage.getString("print_mode") + "null");
 
                     //---- firmware_label ----
-                    firmware_label.setText("Firmware版本：V0.00XX");
+                    firmware_label.setText(CommonClass.i18nMessage.getString("firmware") + "V0.00XX");
 
                     //---- label99 ----
-                    label99.setText("当前打印机：");
+                    label99.setText(CommonClass.i18nMessage.getString("current_printer"));
 
                     GroupLayout printerInfo_panelLayout = new GroupLayout(printerInfo_panel);
                     printerInfo_panel.setLayout(printerInfo_panelLayout);
@@ -252,7 +253,7 @@ public class RFID_Calibration extends JDialog {
                 {
 
                     //---- protocol_label ----
-                    protocol_label.setText("协议：");
+                    protocol_label.setText("协议:");
 
                     //---- protocol_comboBox ----
                     protocol_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{
@@ -337,13 +338,13 @@ public class RFID_Calibration extends JDialog {
                     }));
 
                     //---- write_power_label1 ----
-                    write_power_label1.setText("写功率：");
+                    write_power_label1.setText(CommonClass.i18nMessage.getString("write_power"));
 
                     //---- read_power_label1 ----
-                    read_power_label1.setText("读功率：");
+                    read_power_label1.setText(CommonClass.i18nMessage.getString("read_power"));
 
                     //---- dr_value_label ----
-                    dr_value_label.setText("校准模式：");
+                    dr_value_label.setText(CommonClass.i18nMessage.getString("dr_value"));
 
                     //---- dr_value_comboBox ----
                     dr_value_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{
@@ -361,7 +362,7 @@ public class RFID_Calibration extends JDialog {
                     frequency_comboBox.setSelectedIndex(1);
 
                     //---- frequency_label ----
-                    frequency_label.setText("工作频率：");
+                    frequency_label.setText(CommonClass.i18nMessage.getString("frequency"));
 
                     GroupLayout uhf_paramLayout = new GroupLayout(uhf_param);
                     uhf_param.setLayout(uhf_paramLayout);
@@ -435,7 +436,7 @@ public class RFID_Calibration extends JDialog {
                 {
 
                     //---- HF_power_label1 ----
-                    HF_power_label1.setText("模块功率：");
+                    HF_power_label1.setText(CommonClass.i18nMessage.getString("hf_power"));
 
                     //---- HF_power_comboBox ----
                     HF_power_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{
@@ -446,11 +447,11 @@ public class RFID_Calibration extends JDialog {
                     }));
 
                     //---- HF_type_label ----
-                    HF_type_label.setText("协议类型：");
+                    HF_type_label.setText(CommonClass.i18nMessage.getString("hf_type"));
 
                     //---- HF_type_comboBox ----
                     HF_type_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{
-                            "默认",
+                            CommonClass.i18nMessage.getString("default"),
                             "15693",
                             "14443A",
                             "NFC/UltraLight"
@@ -498,21 +499,20 @@ public class RFID_Calibration extends JDialog {
                 {
 
                     //---- refreshPrinterInfo_button ----
-                    refreshPrinterInfo_button.setText("刷新");
+                    refreshPrinterInfo_button.setText(CommonClass.i18nMessage.getString("refresh"));
 
                     //---- setPrinter_button ----
-                    setPrinter_button.setText("更改设置");
-                    setPrinter_button.setActionCommand("更改设置");
+                    setPrinter_button.setText(CommonClass.i18nMessage.getString("setting"));
 
                     //---- addNetP ----
-                    addNetP.setText("添加网络打印机");
+                    addNetP.setText(CommonClass.i18nMessage.getString("add_net"));
                     addNetP.addActionListener(e -> {
                         NetPrinter printer = new NetPrinter(this, this);
                         printer.setVisible(true);
                     });
 
                     //---- delNetPrinter ----
-                    delNetPrinter.setText("删除网络打印机");
+                    delNetPrinter.setText(CommonClass.i18nMessage.getString("del_net"));
 
                     GroupLayout panel1Layout = new GroupLayout(panel1);
                     panel1.setLayout(panel1Layout);
@@ -571,42 +571,42 @@ public class RFID_Calibration extends JDialog {
                                         .addContainerGap())
                 );
             }
-            tabbedPane1.addTab("RFID标签打印机", RFID_printer);
+            tabbedPane1.addTab(CommonClass.i18nMessage.getString("rfid_printer"), RFID_printer);
 
             //======== net_param ========
             {
 
                 //---- label22 ----
-                label22.setText("设置打印机的网络参数为：");
+                label22.setText(CommonClass.i18nMessage.getString("net_printer_setting"));
 
                 //---- label23 ----
-                label23.setText("IP地址：");
+                label23.setText(CommonClass.i18nMessage.getString("ip_addr"));
 
                 //---- label24 ----
-                label24.setText("子网掩码：");
+                label24.setText(CommonClass.i18nMessage.getString("subnet_mask"));
 
                 //---- label25 ----
-                label25.setText("网关地址：");
+                label25.setText(CommonClass.i18nMessage.getString("gateway"));
 
                 //---- label26 ----
-                label26.setText("端口号：");
+                label26.setText(CommonClass.i18nMessage.getString("printer_port"));
 
                 //---- ip_port_textField ----
                 ip_port_textField.setText("9100");
                 ip_port_textField.setEditable(false);
 
                 //---- label27 ----
-                label27.setText("MAC及端口号为固定值不可改变。");
+                label27.setText(CommonClass.i18nMessage.getString("net_setting_warning"));
                 label27.setForeground(new Color(0x3399ff));
 
                 //---- net_set_button ----
-                net_set_button.setText("设置");
+                net_set_button.setText(CommonClass.i18nMessage.getString("setting"));
 
                 //---- ip_mac_textField ----
                 ip_mac_textField.setEditable(false);
 
                 //---- label28 ----
-                label28.setText("MAC：");
+                label28.setText(CommonClass.i18nMessage.getString("mac_addr"));
 
                 GroupLayout net_paramLayout = new GroupLayout(net_param);
                 net_param.setLayout(net_paramLayout);
@@ -676,13 +676,13 @@ public class RFID_Calibration extends JDialog {
                                         .addContainerGap(18, Short.MAX_VALUE))
                 );
             }
-            tabbedPane1.addTab("网络参数", net_param);
+            tabbedPane1.addTab(CommonClass.i18nMessage.getString("printer_net_params"), net_param);
 
             //======== advanceSetting ========
             {
 
                 //---- label4 ----
-                label4.setText("编写指令：");
+                label4.setText(CommonClass.i18nMessage.getString("write_commands"));
 
                 //======== scrollPane1 ========
                 {
@@ -690,10 +690,10 @@ public class RFID_Calibration extends JDialog {
                 }
 
                 //---- reset_button ----
-                reset_button.setText("恢复出厂设置");
+                reset_button.setText(CommonClass.i18nMessage.getString("reset"));
 
                 //---- command_button ----
-                command_button.setText("发送指令");
+                command_button.setText(CommonClass.i18nMessage.getString("send_commands"));
 
                 GroupLayout advanceSettingLayout = new GroupLayout(advanceSetting);
                 advanceSetting.setLayout(advanceSettingLayout);
@@ -725,15 +725,14 @@ public class RFID_Calibration extends JDialog {
                                         .addContainerGap())
                 );
             }
-            tabbedPane1.addTab("高级设置", advanceSetting);
+            tabbedPane1.addTab(CommonClass.i18nMessage.getString("option_setting"), advanceSetting);
         }
 
         //---- just_rfid ----
-        just_rfid.setText("RFID校准");
+        just_rfid.setText(CommonClass.i18nMessage.getString("rfid.calibration"));
 
         //---- getResult_button ----
-        getResult_button.setText("查询结果");
-        getResult_button.setActionCommand("查询结果");
+        getResult_button.setText(CommonClass.i18nMessage.getString("rfid.result"));
 
         //======== CalibrationData_picturePanel ========
         {
@@ -752,7 +751,7 @@ public class RFID_Calibration extends JDialog {
         }
 
         //---- CalibrationData_label ----
-        calibrationData_label.setText("标签纸校准曲线：");
+        calibrationData_label.setText(CommonClass.i18nMessage.getString("label.curve"));
 
         //======== RSSI_data_picturePanel ========
         {
@@ -771,7 +770,7 @@ public class RFID_Calibration extends JDialog {
         }
 
         //---- RSSI_data_label2 ----
-        RSSI_data_label2.setText("RFID信号图示：");
+        RSSI_data_label2.setText(CommonClass.i18nMessage.getString("rfid.signal"));
 
         //======== rfid_panel ========
         {
@@ -779,7 +778,7 @@ public class RFID_Calibration extends JDialog {
             //---- uhf_inlay_label ----
             uhf_inlay_label.setHorizontalAlignment(SwingConstants.LEFT);
             uhf_inlay_label.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
-            uhf_inlay_label.setText("芯片型号");
+            uhf_inlay_label.setText(CommonClass.i18nMessage.getString("uhf_inlay"));
 
             //---- set_an_textField ----
             set_an_textField.setText("0");
@@ -788,10 +787,10 @@ public class RFID_Calibration extends JDialog {
             set_an_label2.setText("mm");
 
             //---- set_an_button ----
-            set_an_button.setText("设定");
+            set_an_button.setText(CommonClass.i18nMessage.getString("little_set"));
 
             //---- set_an_label1 ----
-            set_an_label1.setText("指定AN值：");
+            set_an_label1.setText(CommonClass.i18nMessage.getString("set_an"));
 
             //---- set_wp_textField ----
             set_wp_textField.setText("0");
@@ -800,19 +799,19 @@ public class RFID_Calibration extends JDialog {
             set_wp_label2.setText("mm");
 
             //---- set_wp_button ----
-            set_wp_button.setText("设定");
+            set_wp_button.setText(CommonClass.i18nMessage.getString("little_set"));
 
             //---- set_wp_label1 ----
-            set_wp_label1.setText("指定读写位置：");
+            set_wp_label1.setText(CommonClass.i18nMessage.getString("set_write_position"));
 
             //---- readWriteLine_label ----
-            readWriteLine_label.setText("标签读写位置：00mm");
+            readWriteLine_label.setText(CommonClass.i18nMessage.getString("write_position") + "00mm");
 
             //---- rssiHeight_label ----
-            rssiHeight_label.setText("最大读写区域高度：00mm");
+            rssiHeight_label.setText(CommonClass.i18nMessage.getString("rssi.height") + "00mm");
 
             //---- rssiNumber_label ----
-            rssiNumber_label.setText("信号读写区域数量：0");
+            rssiNumber_label.setText(CommonClass.i18nMessage.getString("rssi.number") + "0");
 
             GroupLayout rfid_panelLayout = new GroupLayout(rfid_panel);
             rfid_panel.setLayout(rfid_panelLayout);
@@ -874,10 +873,10 @@ public class RFID_Calibration extends JDialog {
         {
 
             //---- sensor_level_label ----
-            sensor_level_label.setText("当前探测等级：0");
+            sensor_level_label.setText(CommonClass.i18nMessage.getString("label.sensor_level"));
 
             //---- sensor_level_label2 ----
-            sensor_level_label2.setText("新探测等级：");
+            sensor_level_label2.setText(CommonClass.i18nMessage.getString("label.new_sensor_level"));
 
             //---- sensor_level_comboBox ----
             sensor_level_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{
@@ -909,11 +908,11 @@ public class RFID_Calibration extends JDialog {
             sensor_level_comboBox.setSelectedIndex(0);
 
             //---- sensor_level_button ----
-            sensor_level_button.setText("设定");
+            sensor_level_button.setText(CommonClass.i18nMessage.getString("little_set"));
             sensor_level_button.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 9));
 
             //---- RSSI_data_label ----
-            RSSI_data_label.setText("RFID信号数据：");
+            RSSI_data_label.setText(CommonClass.i18nMessage.getString("rssi.data"));
 
             //======== RSSI_data_scrollPane ========
             {
@@ -924,11 +923,11 @@ public class RFID_Calibration extends JDialog {
                 RSSI_data_scrollPane.setViewportView(RSSI_data_textArea);
             }
 
-            //---- sysMsg_label ----
-            sysMsg_label.setText("当前系统名称");
+            //---- 当前系统名称 ----
+            sysMsg_label.setText(CommonClass.i18nMessage.getString("uname"));
 
-            //---- sensorLevel_label3 ----
-            sensorLevel_label3.setText("最大打印长度：");
+            //---- 最大打印长度: ----
+            sensorLevel_label3.setText(CommonClass.i18nMessage.getString("max_print_length"));
 
             //---- maxLength_textField ----
             maxLength_textField.setText("0");
@@ -937,7 +936,7 @@ public class RFID_Calibration extends JDialog {
             label20.setText("mm");
 
             //---- maxLength_button ----
-            maxLength_button.setText("设定");
+            maxLength_button.setText(CommonClass.i18nMessage.getString("little_set"));
             maxLength_button.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 9));
 
             GroupLayout rfid_signal_panelLayout = new GroupLayout(rfid_signal_panel);
@@ -1001,16 +1000,17 @@ public class RFID_Calibration extends JDialog {
             );
         }
 
-        //---- label_height_label ----
-        label_height_label.setText("标签高度（含间隙）：00mm");
+        //---- 标签高度（含间隙）:00mm ----
+        label_height_label.setText(CommonClass.i18nMessage.getString("label.height_gap") + "00mm");
 
         //---- sensor_value_label ----
         sensor_value_label.setText("  ");
 
-        //---- just_label ----
-        just_label.setText("标签校准");
+        //---- 标签校准 ----
+        just_label.setText(CommonClass.i18nMessage.getString("label.calibration"));
 
-        saveResultButton.setText("保存校准结果");
+        //---- 保存校准结果 ----
+        saveResultButton.setText(CommonClass.i18nMessage.getString("save_result"));
         saveResultButton.setVisible(false);
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
@@ -1164,13 +1164,15 @@ public class RFID_Calibration extends JDialog {
         setPrinter_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
                 try {
-                    if (warningOption("即将更改RFID校验参数,是否继续?")) {
+                    //即将更改RFID校验参数,是否继续?
+                    if (warningOption(CommonClass.i18nMessage.getString("warning.set_rfid"))) {
                         printerOperator.getPrinterStatus(selectPrinter);
                         boolean isNet = selectPrinter.contains(".");
                         PrinterVO printerVO = map.get(selectPrinter);
                         if (printerVO != null) {
                             set_RFID_Params(printerVO, isNet);
-                            showInformationDialog("设置完成,请重新开始校准.");
+                            //设置完成,请重新开始校准.
+                            showInformationDialog(CommonClass.i18nMessage.getString("success.set_rfid"));
                         }
                     }
                 } catch (Exception ex) {
@@ -1218,7 +1220,8 @@ public class RFID_Calibration extends JDialog {
         //查询结果按钮事件
         getResult_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
-                if (warningOption("只有打印机纸张校准结束停止动作后才能查询结果,是否继续?")) {
+                //只有打印机纸张校准结束停止动作后才能查询结果,是否继续?
+                if (warningOption(CommonClass.i18nMessage.getString("warning.check_result"))) {
                     printerOperator.getPrinterStatus(selectPrinter);
                     getPrinterInfo(selectPrinter);
                     showResult(selectPrinter);
@@ -1236,14 +1239,17 @@ public class RFID_Calibration extends JDialog {
 
         set_wp_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
-                if (warningOption("是否设定读写位置为 " + set_wp_textField.getText() + "mm?")) {
+                //是否设定读写位置为
+                if (warningOption(CommonClass.i18nMessage.getString("warning.set_write_position") + " " + set_wp_textField.getText() + "mm?")) {
                     try {
                         printerOperator.getPrinterStatus(selectPrinter);
                         boolean isNet = selectPrinter.contains(".");
                         String wpValue = set_wp_textField.getText();
                         String commandstring = "#UM>WP" + String.format("%03d", Integer.parseInt(wpValue));//设置读写位置
                         calibrationFunction.sendCommand(selectPrinter, commandstring, isNet);
-                        showInformationDialog("设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时生效.\n\n注意：无需再做校准操作,直接开始打印即可.");
+                        //设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时生效.
+                        //注意:无需再做校准操作,直接开始打印即可.
+                        showInformationDialog(CommonClass.i18nMessage.getString("success.set_write_position") + "\n\n" + CommonClass.i18nMessage.getString("success.behind_set_wp"));
                     } catch (Exception ex) {
                         showErrorMessage(ex.getMessage());
                     }
@@ -1253,14 +1259,16 @@ public class RFID_Calibration extends JDialog {
 
         set_an_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
-                if (warningOption("是否设定AN值为 " + set_an_textField.getText() + "mm?")) {
+                //是否设定AN值为
+                if (warningOption(CommonClass.i18nMessage.getString("warning.set_an_value") + " " + set_an_textField.getText() + "mm?")) {
                     try {
                         printerOperator.getPrinterStatus(selectPrinter);
                         boolean isNet = selectPrinter.contains(".");
                         String anValue = set_an_textField.getText();
                         String commandstring = "#UM>AN" + String.format("%02d", Integer.parseInt(anValue));//设置AN值
                         calibrationFunction.sendCommand(selectPrinter, commandstring, isNet);
-                        showInformationDialog("设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时生效,请重新开始校准.");
+                        //设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时生效,请重新开始校准.
+                        showInformationDialog(CommonClass.i18nMessage.getString("success.set_params"));
                     } catch (Exception ex) {
                         showErrorMessage(ex.getMessage());
                     }
@@ -1270,14 +1278,15 @@ public class RFID_Calibration extends JDialog {
 
         maxLength_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
-                if (warningOption("是否设定最大打印长度为 " + maxLength_textField.getText() + "mm?")) {
+                //是否设定最大打印长度为
+                if (warningOption(CommonClass.i18nMessage.getString("warning.set_max_print_length") + " " + maxLength_textField.getText() + "mm?")) {
                     try {
                         printerOperator.getPrinterStatus(selectPrinter);
                         boolean isNet = selectPrinter.contains(".");
                         String maxLength = maxLength_textField.getText();
                         String commandString = "#UM>DM" + String.format("%04d", Integer.parseInt(maxLength));//设置AN值
                         calibrationFunction.sendCommand(selectPrinter, commandString, isNet);
-                        showInformationDialog("设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时生效,请重新开始校准.");
+                        showInformationDialog(CommonClass.i18nMessage.getString("success.set_params"));
                     } catch (Exception ex) {
                         showErrorMessage(ex.getMessage());
                     }
@@ -1287,7 +1296,8 @@ public class RFID_Calibration extends JDialog {
 
         net_set_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
-                if (warningOption("即将更改打印机网络参数,是否继续?")) {
+                //即将更改打印机网络参数,是否继续?
+                if (warningOption(CommonClass.i18nMessage.getString("warning.set_net_params"))) {
                     try {
                         printerOperator.getPrinterStatus(selectPrinter);
                         boolean isNet = selectPrinter.contains(".");
@@ -1309,7 +1319,8 @@ public class RFID_Calibration extends JDialog {
                                 PrinterDataFileCommon.renamePrinter(oldAddr, printerIp);
                                 refreshPrintListBox();
                             }
-                            showInformationDialog("设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时,请重启打印机生效!\n重启打印机后点击刷新按钮显示更改后的打印机");
+                            //设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时,请重启打印机后点击刷新按钮生效!
+                            showInformationDialog(CommonClass.i18nMessage.getString("success.set_net_params"));
                         }
                     } catch (Exception ex) {
                         throw new CalibrationException(ex.getMessage());
@@ -1322,13 +1333,14 @@ public class RFID_Calibration extends JDialog {
         sensor_level_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
                 String sensor_level = Objects.requireNonNull(sensor_level_comboBox.getSelectedItem()).toString();
-                if (warningOption("是否设定探测等级为 " + sensor_level + " ?")) {
+                //是否设定探测等级为
+                if (warningOption(CommonClass.i18nMessage.getString("warning.set_sensor_level") + " " + sensor_level + " ?")) {
                     try {
                         printerOperator.getPrinterStatus(selectPrinter);
                         boolean isNet = selectPrinter.contains(".");
                         String commandString = "#UM>DL" + String.format("%02d", Integer.parseInt(sensor_level));//设置探测等级
                         calibrationFunction.sendCommand(selectPrinter, commandString, isNet);
-                        showInformationDialog("设置完成,打印机的“纸张”和“碳带”指示灯同时闪烁时生效,请重新开始校准.");
+                        showInformationDialog(CommonClass.i18nMessage.getString("success.set_params"));
                     } catch (Exception ex) {
                         showErrorMessage(ex.getMessage());
                     }
@@ -1362,16 +1374,21 @@ public class RFID_Calibration extends JDialog {
         reset_button.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
                 if (selectPrinter.contains(".")) {
-                    showErrorMessage("不支持网络打印机初始化,因为会重置ip地址");
+                    //不支持网络打印机初始化,因为会重置ip地址
+                    showErrorMessage(CommonClass.i18nMessage.getString("warning.net_cant_reset"));
                 } else {
-                    if (warningOption("重置打印机会将保存的一些参数如打印正反向、纸张间隙等删除，您可能需要重新校准纸张和设置其他参数，是否继续？")) {
+                    //重置打印机会将保存的一些参数如打印正反向,纸张间隙等删除.您可能需要重新校准纸张和设置其他参数,是否继续?
+                    if (warningOption(CommonClass.i18nMessage.getString("warning.reset"))) {
                         try {
                             calibrationFunction.initializationPrinter(selectPrinter, false);
-                            if (warningOption("打印机的纸张和碳带指示灯会闪烁，请关闭打印机2秒后重开！")) {
+                            //打印机的纸张和碳带指示灯会闪烁,请关闭打印机2秒后重开!
+                            if (warningOption(CommonClass.i18nMessage.getString("reset.next_step"))) {
                                 calibrationFunction.resetPrinter(selectPrinter, false);
-                                showInformationDialog("重置打印机完成，请关闭打印机2秒后重开！");
+                                //重置打印机完成,请关闭打印机2秒后重开!
+                                showInformationDialog(CommonClass.i18nMessage.getString("success.reset"));
                             } else {
-                                showErrorMessage("未自动复位，需要手动进行复位操作！");
+                                //未自动复位,需要手动进行复位操作!
+                                showErrorMessage(CommonClass.i18nMessage.getString("error.reset"));
                             }
                         } catch (Exception ex) {
                             showErrorMessage(ex.getMessage());
@@ -1457,13 +1474,13 @@ public class RFID_Calibration extends JDialog {
                 }
             }
         });
-        // 如果之前选择的设备断线了导致选择的打印机为空，并且map有数据，将选择设为第一个
+        // 如果之前选择的设备断线了导致选择的打印机为空,并且map有数据,将选择设为第一个
         if (selectPrinter.isEmpty() && !map.isEmpty()) {
             printerListBox.setSelectedIndex(0);
             String content = printerListBox.getItemAt(0);
             selectPrinter = content.split(",")[1];
         }
-        // 在填充了selectPrinter之后不为空则getInfo，否则判断为没有打印机
+        // 在填充了selectPrinter之后不为空则getInfo,否则判断为没有打印机
         noPrinterUI();
         if (!selectPrinter.isEmpty()) {
             getPrinterInfo(selectPrinter);
@@ -1485,7 +1502,8 @@ public class RFID_Calibration extends JDialog {
                 try {
                     String modelRead = LayoutUtils.getPrinterMessage(key, modelByte);
                     String[] r = modelRead.split(",");
-                    printerInfoVO.setPrintModel(r[0].equals("1") ? "热转印" : "热敏");
+                    //transfer=热转印,direct=热敏
+                    printerInfoVO.setPrintModel(CommonClass.i18nMessage.getString(r[0].equals("1") ? "thermal.transfer" : "thermal.direct"));
                     printerInfoVO.setPaperSensor(Integer.valueOf(r[1]));
 
                     String netMsgRead = LayoutUtils.getPrinterMessage(key, netMsgByte);
@@ -1519,7 +1537,8 @@ public class RFID_Calibration extends JDialog {
                         String rfidRead = LayoutUtils.getPrinterMessage(key, rfidByte).replace("\r", "").replace("\n", "");
                         String[] readList = rfidRead.split(",");
                         if (readList.length == 1 && readList[0].isEmpty()) {
-                            throw new RuntimeException("查询功率返回异常!");
+                            //查询功率返回异常!
+                            throw new RuntimeException(CommonClass.i18nMessage.getString("error.check_power"));
                         }
                         if (printerVO.getPrinterType() == PrinterType.HF) { // 高频
                             uhf_param.setVisible(false);
@@ -1547,12 +1566,12 @@ public class RFID_Calibration extends JDialog {
                                 String[] moduleList = moduleRead.split(",");
                                 frequency_label.setVisible(true);
                                 frequency_comboBox.setVisible(true);
-                                if (moduleList.length == 2) { // 普通的RFID模块：9,915125 或 1,860000
+                                if (moduleList.length == 2) { // 普通的RFID模块:9,915125 或 1,860000
                                     if (moduleList[0].equals("1"))
                                         frequency_comboBox.setSelectedIndex(0);//860000,即Auto8
                                     else
                                         frequency_comboBox.setSelectedIndex(1);//自动,Auto频段
-                                } else if (moduleList.length == 5 && moduleList[0].equals("1")) { // 鲲鹏3合一模块,且是ISO协议：1,9,000000,000,0
+                                } else if (moduleList.length == 5 && moduleList[0].equals("1")) { // 鲲鹏3合一模块,且是ISO协议:1,9,000000,000,0
                                     if (moduleList[1].equals("1"))
                                         frequency_comboBox.setSelectedIndex(0);//860000,即Auto8
                                     else
@@ -1627,7 +1646,7 @@ public class RFID_Calibration extends JDialog {
                     printerVO.setVo(printerInfoVO);
                     showPrinterMessage(printerVO);
                 } catch (ConnectException e) {
-                    showErrorMessage(e.getMessage());
+                    showErrorMessage(ErrorCatcher.CatchConnectError(e.getMessage()));
                 }
             }
         }
@@ -1635,10 +1654,13 @@ public class RFID_Calibration extends JDialog {
 
     private void showPrinterMessage(PrinterVO v) {
         PrinterInfoVO printerInfoVO = v.getVo();
-        firmware_label.setText("Firmware: " + v.getFirmware());
-        printer_dpi_label.setText("打印机分辨率: " + (int) v.getDpi() + " DPI");
-        print_mode_label.setText("打印模式: " + printerInfoVO.getPrintModel());
-        paper_sensor_label.setText("感应器类型: " + (printerInfoVO.getPaperSensor() == 0 ? "穿透式" : "反射式"));
+        firmware_label.setText(CommonClass.i18nMessage.getString("firmware") + " " + v.getFirmware());
+        printer_dpi_label.setText(CommonClass.i18nMessage.getString("printer_dpi") + " " + (int) v.getDpi() + " DPI");
+        print_mode_label.setText(CommonClass.i18nMessage.getString("print_mode") + " " + printerInfoVO.getPrintModel());
+        //transmissive=穿透式,reflective=反射式
+        paper_sensor_label.setText(CommonClass.i18nMessage.getString("paper_sensor") +
+                " " +
+                CommonClass.i18nMessage.getString(printerInfoVO.getPaperSensor() == 0 ? "paper_sensor.transmissive" : "paper_sensor.reflective"));
 
         ip_textField.setText(printerInfoVO.getPrinterIp());
         ip_subMask_textField.setText(printerInfoVO.getSubMask());
@@ -1662,8 +1684,8 @@ public class RFID_Calibration extends JDialog {
                     String readData = LayoutUtils.getPrinterMessage(addr, commandString.getBytes(StandardCharsets.UTF_8));
 
                     float labelGapHeightPixel = 0;
-                    float labelHeightPixel = 0;//标签的高度，mm
-                    float labelGapPixel = 0;//间隙的高度，mm
+                    float labelHeightPixel = 0;//标签的高度,mm
+                    float labelGapPixel = 0;//间隙的高度,mm
                     int adThreshold = -1;//AD阀值
 
                     if (readData.contains("$")) {
@@ -1677,7 +1699,7 @@ public class RFID_Calibration extends JDialog {
                                 adThreshold = Integer.parseInt(atData[1]);
 
                                 if (sensorLevel > 0) {
-                                    sensor_level_label.setText("当前探测等级：" + sensorLevel);
+                                    sensor_level_label.setText(CommonClass.i18nMessage.getString("label.sensor_level") + sensorLevel);
                                     sensor_level_comboBox.setSelectedItem(String.valueOf(sensorLevel));
                                 }
 
@@ -1692,15 +1714,15 @@ public class RFID_Calibration extends JDialog {
                                 // 自动分析得到标签高度和间隙高度
                                 Map<String, Float> map = LayoutUtils.GetCalibraLabelHeight(dataArr3, printerInfoVO.getPaperSensor(), adThreshold, printerVO.getDpi());
                                 if (map == null) {
-                                    labelHeightPixel = 0;//标签的高度，mm
-                                    labelGapPixel = 0;//间隙的高度，mm
+                                    labelHeightPixel = 0;//标签的高度,mm
+                                    labelGapPixel = 0;//间隙的高度,mm
                                 } else {
                                     labelHeightPixel = map.get("labelHeight");
                                     labelGapPixel = map.get("labelGap");
                                 }
 
                                 //将信号范围画出
-                                int labelWidthDots = dataArr3.length - 1;//标签加间隙的高度，单位是mm
+                                int labelWidthDots = dataArr3.length - 1;//标签加间隙的高度,单位是mm
                                 int labelHeight;//探测器返回值最高1024
                                 int maxLength;//显示最大打印长度
                                 int minValue = 1024;
@@ -1713,7 +1735,7 @@ public class RFID_Calibration extends JDialog {
                                 }
                                 labelHeight = maxValue - minValue + 1;
                                 maxLength = (int) (labelWidthDots / (printerVO.getDpi() / 25.4f) + 0.5f);
-                                sensor_value_label.setText("Max:" + maxValue + "   Min:" + minValue + "   Threshold:" + adThreshold);//显示最大打印长度，探测最大值和最小值
+                                sensor_value_label.setText("Max:" + maxValue + "   Min:" + minValue + "   Threshold:" + adThreshold);//显示最大打印长度,探测最大值和最小值
                                 maxLength_textField.setText(String.valueOf(maxLength));
                                 BufferedImage calibrationImage = new BufferedImage(labelWidthDots, labelHeight, 1);//用于显示校准的图片
 
@@ -1788,7 +1810,6 @@ public class RFID_Calibration extends JDialog {
                     if (printerVO.getPrinterType() != PrinterType.NORMAL) {
                         String command = selectPrinter.contains(".") ? "SL\r\n" : "SI\r\n";
                         String readRfidData = LayoutUtils.getPrinterMessage(addr, command.getBytes(StandardCharsets.UTF_8));
-                        System.out.println("readRfidData => " + readRfidData);
                         RSSI_data_textArea.setText(readRfidData);//RFID的原始数据
 
                         if (readRfidData.contains(",")) {
@@ -1798,14 +1819,14 @@ public class RFID_Calibration extends JDialog {
                                 dataArr[0] = RSSI_data[1];
                             }
 
-                            int rssiBlock = 0;//RFID信号读取区域块，一般是一块，信号不好可能会出现多块
+                            int rssiBlock = 0;//RFID信号读取区域块,一般是一块,信号不好可能会出现多块
                             int rssiBlockHeight = 0;//最强那一块区域的高度
                             int rssiBlockHeightTemp = 0;//当前块区域的高度
 
                             //region 将信号范围画出
-                            int rfidLabelHeight = dataArr.length - 1;//dataArr最后一行是读写位置和回退步数，不是信号值
+                            int rfidLabelHeight = dataArr.length - 1;//dataArr最后一行是读写位置和回退步数,不是信号值
                             float step0 = 1f * RSSI_data_picturePanel.getHeight() / rfidLabelHeight;//将图片高度分割成多条
-                            int step = Math.round(step0);//浮点转整型，四舍五入
+                            int step = Math.round(step0);//浮点转整型,四舍五入
                             int RSSI_imageWidth = RSSI_data_picturePanel.getWidth();
                             int RSSI_imageHeight = step * rfidLabelHeight;
                             int readWriteLine = 0;
@@ -1819,7 +1840,7 @@ public class RFID_Calibration extends JDialog {
                             for (int i = 0; i < rfidLabelHeight; i++) {
                                 int RSSI_value = Integer.parseInt(dataArr[i]);
                                 if (RSSI_value == 0 || (RSSI_value > 1 && RSSI_value < 150)) {//没有信号
-                                    if (rssiBlockHeightTemp > 0)//上一个信号块结束后，得到的上一个信号块的高度
+                                    if (rssiBlockHeightTemp > 0)//上一个信号块结束后,得到的上一个信号块的高度
                                         rssiBlock++;
                                     rssiBlockHeightTemp = 0;
 
@@ -1863,13 +1884,13 @@ public class RFID_Calibration extends JDialog {
                             gr2.dispose();
 
                             if (labelHeightPixel > 1f && labelGapPixel > 1f)
-                                label_height_label.setText("标签高度(间隙):" + labelHeightPixel + "(" + labelGapPixel + ")mm");
+                                label_height_label.setText(CommonClass.i18nMessage.getString("label.height") + labelHeightPixel + "(" + labelGapPixel + ")mm");
                             else
-                                label_height_label.setText("标签高度（含间隙）：" + String.format("%.2f", labelGapHeightPixel) + "mm");
+                                label_height_label.setText(CommonClass.i18nMessage.getString("label.height_gap") + String.format("%.2f", labelGapHeightPixel) + "mm");
 
-                            rssiNumber_label.setText("信号读写区域数量：" + rssiBlock);
-                            rssiHeight_label.setText("最大读写区域高度：" + rssiBlockHeight + "mm");//最大区域高度
-                            readWriteLine_label.setText("标签读写位置：" + readWriteLine + "mm");//显示读写位置
+                            rssiNumber_label.setText(CommonClass.i18nMessage.getString("rssi.number") + rssiBlock);
+                            rssiHeight_label.setText(CommonClass.i18nMessage.getString("rssi.height") + rssiBlockHeight + "mm");//最大区域高度
+                            readWriteLine_label.setText(CommonClass.i18nMessage.getString("write_position") + readWriteLine + "mm");//显示读写位置
                             set_wp_textField.setText(String.valueOf(readWriteLine));//文本框显示读写位置
                         }
 
@@ -1879,20 +1900,20 @@ public class RFID_Calibration extends JDialog {
                             String inlayRead = LayoutUtils.getPrinterMessage(addr, getInlayCommand);
                             inlayRead = inlayRead.substring(1, inlayRead.length() - 1);
                             if (inlayRead.contains("000000000000")) {
-                                uhf_inlay_label.setText("芯片类型");
+                                uhf_inlay_label.setText(CommonClass.i18nMessage.getString("uhf_inlay"));
                             } else {
                                 uhf_inlay_label.setText(DataUtils.getInlayChipName(inlayRead));
                             }
                         }
                     } else { // 普通打印机
                         if (labelHeightPixel > 1f && labelGapPixel > 1f)
-                            label_height_label.setText("标签高度(间隙):" + labelHeightPixel + "(" + labelGapPixel + ")mm");
+                            label_height_label.setText(CommonClass.i18nMessage.getString("label.height")  + labelHeightPixel + "(" + labelGapPixel + ")mm");
                         else
-                            label_height_label.setText("标签高度（含间隙）：" + String.format("%.2f", labelGapHeightPixel) + "mm");
+                            label_height_label.setText(CommonClass.i18nMessage.getString("label.height_gap")  + String.format("%.2f", labelGapHeightPixel) + "mm");
 
-                        uhf_inlay_label.setText("芯片类型");
+                        uhf_inlay_label.setText(CommonClass.i18nMessage.getString("uhf_inlay"));
                     }
-                    this.repaint();//重画，将调用paint
+                    this.repaint();//重画,将调用paint
                 }
             } catch (Exception ex) {
                 throw new RuntimeException(ex.getMessage());
@@ -1927,7 +1948,8 @@ public class RFID_Calibration extends JDialog {
                     }
                 }
             } else {
-                showErrorMessage("普通打印机没有RFID功能");
+                //普通打印机没有RFID功能
+                showErrorMessage(CommonClass.i18nMessage.getString("warning.normal_printer"));
             }
         } catch (Exception e) {
             showErrorMessage(e.getMessage());
@@ -1939,12 +1961,6 @@ public class RFID_Calibration extends JDialog {
         String writePower = Objects.requireNonNull(write_power_comboBox.getSelectedItem()).toString();
         String commandString = "RW" + readPower + "," + writePower + "\r\n";//设置读写功率
         commandString += "AP" + readPower + "," + writePower + "\r\n";//设置读写功率
-//        if (Objects.equals(dr_value_comboBox.getSelectedItem(), "2") || Objects.equals(dr_value_comboBox.getSelectedItem(), "3"))//自动功率模式
-//        {
-//            commandString = "AP" + readPower + "," + writePower + "\r\n";//设置自动校准的读写功率（自动和手动的读写功率分两个位置存储）
-//            commandString += "#UM>DR2\r\n";
-//        } else
-//
         commandString += "#UM>DR" + Objects.requireNonNull(dr_value_comboBox.getSelectedItem()) + "\r\n";
 
         if (protocol_comboBox.isVisible())//三标协议
@@ -1978,7 +1994,7 @@ public class RFID_Calibration extends JDialog {
     }
 
     private boolean warningOption(String message) {
-        Object[] options = {"确定", "取消"};
+        Object[] options = {CommonClass.i18nMessage.getString("ok"), CommonClass.i18nMessage.getString("cancel")};
         int check = JOptionPane.showOptionDialog(this, message, "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         return check == 0;
     }
@@ -1997,17 +2013,17 @@ public class RFID_Calibration extends JDialog {
         sensor_value_label.setVisible(false);
         rfid_panel.setVisible(false);
         RSSI_data_scrollPane.setVisible(false);
-        label_height_label.setText("标签高度（含间隙）：00mm");
+        label_height_label.setText(CommonClass.i18nMessage.getString("label.height_gap") + "00mm");
         set_an_textField.setText("0");
         set_wp_textField.setText("0");
         RSSI_data_textArea.setText("");
-        sensor_level_label.setText("当前探测等级：");
+        sensor_level_label.setText(CommonClass.i18nMessage.getString("label.sensor_level"));
         sensor_level_comboBox.setSelectedIndex(0);
         maxLength_textField.setText("0");
 
-        firmware_label.setText("Firmware版本：V0.00XX");
-        print_mode_label.setText("打印模式：null");
-        paper_sensor_label.setText("感应器类型：null");
-        printer_dpi_label.setText("打印机分辨率：null");
+        firmware_label.setText(CommonClass.i18nMessage.getString("firmware") + "V0.00XX");
+        print_mode_label.setText(CommonClass.i18nMessage.getString("print_mode") + "null");
+        paper_sensor_label.setText(CommonClass.i18nMessage.getString("paper_sensor") + "null");
+        printer_dpi_label.setText(CommonClass.i18nMessage.getString("printer_dpi") + "null");
     }
 }

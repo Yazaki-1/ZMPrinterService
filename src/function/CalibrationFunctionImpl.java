@@ -5,7 +5,9 @@ import com.ZMPrinter.PrinterOperatorImpl;
 import com.ZMPrinter.conn.ConnectException;
 import com.ZMPrinter.conn.TcpConnector;
 import com.ZMPrinter.conn.UsbConnector;
+import common.CommonClass;
 import common.PrinterDataFileCommon;
+import data_processing.ErrorCatcher;
 import layout.PrinterVO;
 import layout.RFID_Calibration;
 
@@ -38,10 +40,10 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
                     RFID_Calibration.map.put(d, RQ_toVO(firmwareMessage));
                 }
             });
-        }catch (ConnectException e) {
-            if(!e.getMessage().startsWith("1008")) {
-                throw new CalibrationException(e.getMessage());
-            }else {
+        } catch (ConnectException e) {
+            if (!e.getMessage().startsWith("1008")) {
+                throw new CalibrationException(ErrorCatcher.CatchConnectError(e.getMessage()));
+            } else {
                 // 1008代表没有USB打印机连接，需要将map中的序列号移除
                 List<String> usbKey = new ArrayList<>();
                 RFID_Calibration.map.forEach((key, value) -> {
@@ -90,7 +92,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
     @Override
     public void sendCommand(String addr, String command, boolean isNET) {
         if (command == null || command.isEmpty()) {
-            throw new CalibrationException("指令不能为空.");
+            throw new CalibrationException(CommonClass.i18nMessage.getString("instruction_empty"));
         }
         command += "\r\n";
         try {
@@ -101,7 +103,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
                 sendToPrinter(addr, isNET, data);
             }
         } catch (UnsupportedEncodingException e) {
-            throw new CalibrationException("指令字符串转byte[]异常:" + e.getMessage());
+            throw new CalibrationException(CommonClass.i18nMessage.getString("string_byte") + e.getMessage());
         } catch (CalibrationException e) {
             throw new CalibrationException(e.getMessage());
         }
@@ -120,7 +122,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             byte[] resetCommands = {0x23, 0x55, 0x4D, 0x3E, 0x49, 0x46, 0x0D, 0x0A};//打印机设置值
             sendToPrinter(addr, isNET, resetCommands);
         } catch (ConnectException | CalibrationException e) {
-            throw new CalibrationException(e.getMessage());
+            throw new CalibrationException(ErrorCatcher.CatchConnectError(e.getMessage()));
         }
     }
 
@@ -153,19 +155,12 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
                     PrinterOperator printerOperator = new PrinterOperatorImpl();
                     printerOperator.getPrinterStatus(addr);
                 } catch (Exception e) {
-                    throw new CalibrationException("测试59100端口连接失败,请检查IP地址是否能正常使用!");
+                    throw new CalibrationException(CommonClass.i18nMessage.getString("failed.port"));
                 }
                 return true;
-            }else {
-                throw new CalibrationException("测试连接失败,请检查IP地址是否能正常使用!");
+            } else {
+                throw new CalibrationException(CommonClass.i18nMessage.getString("failed.ip"));
             }
-//            InetAddress inetAddress = InetAddress.getByName(addr);
-//            System.out.println(addr);
-//            if (inetAddress.isReachable(500)) {
-//
-//            } else {
-//                throw new CalibrationException("测试连接失败,请检查IP地址是否能正常使用!");
-//            }
         } catch (Exception e) {
             throw new CalibrationException(e.getMessage());
         }

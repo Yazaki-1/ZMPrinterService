@@ -40,7 +40,7 @@ public class PrinterTcpSocketServer {
 
             // 绑定端口，开始接收进来的连接
             Channel channel = bootstrap.bind(port).sync().channel();
-            String message = "打印服务启动,端口: " + port + "\n";
+            String message = CommonClass.i18nMessage.getString("tcp") + port + "\n";
             CommonClass.saveAndShow(message, LogType.ServiceData);
             //关闭channel和块，直到它被关闭
             channel.closeFuture().sync();

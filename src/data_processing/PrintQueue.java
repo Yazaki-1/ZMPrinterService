@@ -77,8 +77,8 @@ public class PrintQueue {
 
                                 } catch (ConnectException e) {
                                     // catch发送数据的异常,停止打印
-                                    CommonClass.saveAndShow(labelData.getClientRemote() + "    " + e.getMessage(), LogType.ErrorData);
-                                    ChannelMap.writeMessageToClient(labelData.getClientRemote(), e.getMessage());
+                                    CommonClass.saveAndShow(labelData.getClientRemote() + "    " + ErrorCatcher.CatchConnectError(e.getMessage()), LogType.ErrorData);
+                                    ChannelMap.writeMessageToClient(labelData.getClientRemote(), ErrorCatcher.CatchConnectError(e.getMessage()));
                                     started = false;
                                     index = 0;
                                 } catch (InterruptedException e) {
@@ -90,8 +90,8 @@ public class PrintQueue {
                                 // 异常,需要暂停,同时需要缓存!
                                 cachedMessage = labelData;
                             }
-                            CommonClass.saveAndShow(labelData.getClientRemote() + "    " + e.getMessage(), LogType.ErrorData);
-                            ChannelMap.writeMessageToClient(labelData.getClientRemote(), e.getMessage());
+                            CommonClass.saveAndShow(labelData.getClientRemote() + "    " + ErrorCatcher.CatchConnectError(e.getMessage()), LogType.ErrorData);
+                            ChannelMap.writeMessageToClient(labelData.getClientRemote(), ErrorCatcher.CatchConnectError(e.getMessage()));
                             started = false;
                         }
                     } else {

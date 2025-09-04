@@ -10,7 +10,7 @@ public class PrinterTcpSocketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        String message = ctx.channel().remoteAddress().toString() + "    已连接.";
+        String message = ctx.channel().remoteAddress().toString() + "    " + CommonClass.i18nMessage.getString("connected");
         CommonClass.saveAndShow(message, LogType.ServiceData);
         ChannelMap.addChannel(ctx.channel());
     }
@@ -32,7 +32,7 @@ public class PrinterTcpSocketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        String message = ctx.channel().remoteAddress() + "    已断开.";
+        String message = ctx.channel().remoteAddress() + "    " + CommonClass.i18nMessage.getString("closed");
         CommonClass.saveAndShow(message, LogType.ServiceData);
         String remoteAddress = ctx.channel().remoteAddress().toString();
         if (ChannelMap.hasChannel(remoteAddress)) {
@@ -43,7 +43,7 @@ public class PrinterTcpSocketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        String message = ctx.channel().remoteAddress() + "    触发异常:" + cause.getMessage();
+        String message = ctx.channel().remoteAddress() + "    " + CommonClass.i18nMessage.getString("exception_caught") + cause.getMessage();
         CommonClass.saveAndShow(message, LogType.ErrorData);
         ChannelMap.removeChannel(ctx.channel().remoteAddress().toString());
     }
