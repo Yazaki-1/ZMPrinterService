@@ -590,16 +590,16 @@ public class FuncLabelCreator {
                             CommonClass.saveAndShow("未连接打印机", LogType.ServiceData);
                             break;
                         } else {
-                            printResult = printerOperator.sendToPrinter(serials.get(0), commands, len);
+                            printResult = printerOperator.sendToPrinter(serials.get(0), commands, len, 1);
                         }
                     } else if (funcBody.getPrinter().printermbsn.isEmpty()) {
                         //设了网络打印机ip
                         printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printernetip, commands);
                     } else {
-                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len);
+                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len, 1);
                     }
                 } else {
-                    printResult = printerOperator.sendToPrinter(CommonClass.localSN, commands, len);
+                    printResult = printerOperator.sendToPrinter(CommonClass.localSN, commands, len, 1);
                 }
 
                 if (printResult.equals("0")) {
@@ -684,10 +684,13 @@ public class FuncLabelCreator {
                         configuration.put("area", area);
                         configuration.put("feed", feed);
 
+                        Integer timeout = Integer.parseInt(funcParams[5]);
+
                         LabelType labelType = setLabelType(funcParams.length == 7 ? Integer.parseInt(funcParams[6]) : 1);
 
-                        String tagData = function.readTagData(funcParams[1], labelType, configuration);
+                        String tagData = function.readTagData(funcParams[1], labelType, configuration, timeout, 1);
                         ChannelMap.writeMessageToClient(remoteAddress, "UHFTagData:" + tagData);
+                        CommonClass.saveLog("UHFTagData:" + tagData, LogType.ServiceData);
                     }
                 } catch (NumberFormatException e) {
                     throw new FunctionalException("4001|ZM_GetUHFTagData参数异常:" + e.getMessage());
@@ -713,8 +716,9 @@ public class FuncLabelCreator {
                         int feed = Integer.parseInt(funcParams[4]);
                         configuration.put("power", power);
                         configuration.put("feed", feed);
+                        Integer timeout = Integer.parseInt(funcParams[5]);
 
-                        String tagData = function.readTagData(funcParams[1], LabelType.HF, configuration);
+                        String tagData = function.readTagData(funcParams[1], LabelType.HF, configuration, timeout, 1);
                         ChannelMap.writeMessageToClient(remoteAddress, "HFTagData:" + tagData);
                     }
                 } catch (NumberFormatException e) {

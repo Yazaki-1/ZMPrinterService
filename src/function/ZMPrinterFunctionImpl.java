@@ -165,7 +165,7 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
         boolean isNet = serial.contains(".");
         int index = isNet ? 2 : 1;
         byte[] command = ("RQ" + index + ",1\r\n").getBytes(StandardCharsets.UTF_8);
-        String info = isNet ? printerOperator.sendAndReadPrinter(serial, command, 12301, null) : printerOperator.sendAndReadPrinter(serial, command, command.length);
+        String info = isNet ? printerOperator.sendAndReadPrinter(serial, command, 12301, null) : printerOperator.sendAndReadPrinter(serial, command, command.length, 1500, 1);
         info = info.replace("dpi", "").replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         String[] infos = info.split(",");
         String name = infos[0];
@@ -177,14 +177,14 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
     public String getPrinterStatus(String address) throws ConnectException {
         if (address.isEmpty()) {
             List<String> printers = printerOperator.getPrinters();
-            return printerOperator.getPrinterStatus(printers.get(0));
+            return printerOperator.getPrinterStatus(printers.get(0), 1);
         } else {
-            return printerOperator.getPrinterStatus(address);
+            return printerOperator.getPrinterStatus(address, 1);
         }
     }
 
     @Override
-    public String readTagData(String addr, LabelType labelType, Map<String, Integer> configuration) throws ConnectException, IllegalAccessException {
+    public String readTagData(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout, int use_default) throws ConnectException, IllegalAccessException {
         try {
             long serial = Long.parseLong(addr);
             String serialNumber = serial == 1 ? "" : addr;
@@ -194,7 +194,7 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
                     serialNumber = printers.get(0);
                 }
             }
-            return printerOperator.readTag(serialNumber, labelType, configuration);
+            return printerOperator.readTag(serialNumber, labelType, configuration, timeout, use_default);
         } catch (NumberFormatException e) {
             // 未通过Parse,catch为ip
             if (addr.contains(",") && addr.contains(":")) {

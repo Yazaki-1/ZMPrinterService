@@ -38,9 +38,9 @@ public class PrintQueue {
                         try {
                             String connectType = DataUtils.getConnectType(labelData.getPrinter().printerinterface);
                             if (connectType.equals("USB")) {
-                                status = printerOperator.getPrinterStatus(labelData.getPrinter().printermbsn);
+                                status = printerOperator.getPrinterStatus(labelData.getPrinter().printermbsn, 1);
                             } else if (connectType.equals("NET")) {
-                                status = printerOperator.getPrinterStatus(labelData.getPrinter().printernetip);
+                                status = printerOperator.getPrinterStatus(labelData.getPrinter().printernetip, 1);
                             } else {
                                 status = "0"; //driver
                             }
@@ -51,7 +51,7 @@ public class PrintQueue {
 
                                     switch (connectType) {
                                         case "USB":
-                                            writeResult = printerOperator.sendToPrinter(labelData.getPrinter().printermbsn, data, labelData.getDataLen());
+                                            writeResult = printerOperator.sendToPrinter(labelData.getPrinter().printermbsn, data, labelData.getDataLen(), 1);
                                             break;
                                         case "NET":
                                             writeResult = printerOperator.sendToPrinter(labelData.getPrinter().printernetip, data);
@@ -72,7 +72,7 @@ public class PrintQueue {
 
                                     if (writeResult != null) {
                                         index++;
-                                        ChannelMap.writeMessageToClient(labelData.getClientRemote(), "打印机: " + labelData.getPrinter().printermbsn + ",第" + index + "张打印完成");
+                                        ChannelMap.writeMessageToClient(labelData.getClientRemote(), "Printer: " + labelData.getPrinter().printermbsn + " " + CommonClass.i18nMessage.getString("print.finish") + ", index: " + index);
                                     }
 
                                 } catch (ConnectException e) {

@@ -165,7 +165,7 @@ public class LabelBuilder {
                             printer.printermbsn = printers.get(0);
                         }
                     }
-                    writeResult = printerOperator.sendToPrinter(printer.printermbsn, data, data.length);
+                    writeResult = printerOperator.sendToPrinter(printer.printermbsn, data, data.length, 1);
                     break;
                 }
                 case "NET": {
@@ -182,7 +182,7 @@ public class LabelBuilder {
             }
 
             if (writeResult != null) {
-                String message = "打印完成(Print finished)";
+                String message = CommonClass.i18nMessage.getString("print.finish");
                 try {
                     // 防止lsf文件插入数据抢管道数据
                     Thread.sleep(200);
@@ -195,8 +195,9 @@ public class LabelBuilder {
                 throw new FunctionalException("4005|其他异常 => 未定义的printerInterface");
             }
         } catch (ConnectException e) {
-            ChannelMap.writeMessageToClient(clientRemote, ErrorCatcher.CatchConnectError(e.getMessage()));
-            CommonClass.saveAndShow(clientRemote + "    " + ErrorCatcher.CatchConnectError(e.getMessage()), LogType.ErrorData);
+            String message = ErrorCatcher.CatchConnectError(e.getMessage());
+            ChannelMap.writeMessageToClient(clientRemote, message);
+            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
         }
     }
 
@@ -214,7 +215,7 @@ public class LabelBuilder {
         long printWaiting = (long) (labelHeight / speed * 1000 / 3);
         byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
         if (data == null) {
-            String message = "3003|生成标签数据异常为空,请检查Json内容";
+            String message = ErrorCatcher.CatchConnectError("3003|生成标签数据异常为空,请检查Json内容");
             CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
             ChannelMap.writeMessageToClient(clientRemote, message);
         } else {
@@ -230,10 +231,11 @@ public class LabelBuilder {
             builder.append(param).append("\r\n");
         }
         byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
-        String writeResult = UsbConnector.writeToPrinter(printer.printermbsn, bytes, bytes.length);
+        String writeResult = UsbConnector.writeToPrinter(printer.printermbsn, bytes, bytes.length, 1);
         if (writeResult.equals("|")) {
-            CommonClass.saveAndShow(clientRemote + "    " + writeResult, LogType.ErrorData);
-            ChannelMap.writeMessageToClient(clientRemote, writeResult);
+            String message = ErrorCatcher.CatchConnectError(writeResult);
+            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
+            ChannelMap.writeMessageToClient(clientRemote, message);
         }
     }
 

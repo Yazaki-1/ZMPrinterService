@@ -458,10 +458,10 @@ public class RFID_Configuration extends JDialog {
                 contents.forEach(c -> instruct.append(c).append("\r\n"));
                 System.out.println(instruct);
                 try{
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
 
                     if (selectPrinter.contains(".")) printerOperator.sendToPrinter(selectPrinter, instruct.toString().getBytes(StandardCharsets.UTF_8));
-                    else printerOperator.sendToPrinter(selectPrinter, instruct.toString().getBytes(), instruct.length());
+                    else printerOperator.sendToPrinter(selectPrinter, instruct.toString().getBytes(), instruct.length(), 1);
 
                     Timer timer = new Timer();
                     timer.schedule(new TimerTask() {
@@ -473,7 +473,7 @@ public class RFID_Configuration extends JDialog {
                                 }catch(InterruptedException e){
                                     throw new RuntimeException(e);
                                 }
-                                startConfig.setText("配置中...(" + i + "s)");
+                                startConfig.setText("配置中..." + "(" + i + "s)");
                             }
                             startConfig.setText(text);
                             setComponentEnable(true);
@@ -516,10 +516,10 @@ public class RFID_Configuration extends JDialog {
                 System.out.println(commands);
 
                 try{
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
 
                     if (selectPrinter.contains(".")) printerOperator.sendToPrinter(selectPrinter, commands.getBytes(StandardCharsets.UTF_8));
-                    else printerOperator.sendToPrinter(selectPrinter, commands.getBytes(), commands.length());
+                    else printerOperator.sendToPrinter(selectPrinter, commands.getBytes(), commands.length(), 1);
                     showInformationDialog("设置完成,请【重启】打印机生效!!!");
                 }catch (ConnectException ex) {
                     showErrorMessage(ErrorCatcher.CatchConnectError(ex.getMessage()));
@@ -629,7 +629,7 @@ public class RFID_Configuration extends JDialog {
                 if (printerVO != null) {
                     PrinterInfoVO printerInfoVO = printerVO.getVo();
                     PrinterOperator printerOperator = new PrinterOperatorImpl();
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
                     String commandString = selectPrinter.contains(".") ? "AL\r\n" : "AD\r\n"; //获取校准曲线的数据
                     String readData = LayoutUtils.getPrinterMessage(addr, commandString.getBytes(StandardCharsets.UTF_8));
                     System.out.println(readData);

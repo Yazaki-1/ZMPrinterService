@@ -36,7 +36,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
                 // USB打印机
                 byte[] command = "RQ1,1\r\n".getBytes(StandardCharsets.UTF_8);
                 if (!RFID_Calibration.map.containsKey(d)) {
-                    String firmwareMessage = printerOperator.sendAndReadPrinter(d, command, command.length);
+                    String firmwareMessage = printerOperator.sendAndReadPrinter(d, command, command.length, 1500, 1);
                     RFID_Calibration.map.put(d, RQ_toVO(firmwareMessage));
                 }
             });
@@ -85,7 +85,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             RFID_Calibration.map.put(addr, printerVO);
             return printerVO;
         } catch (Exception e) {
-            throw new CalibrationException(e.getMessage());
+            throw new CalibrationException(ErrorCatcher.CatchConnectError(e.getMessage()));
         }
     }
 
@@ -97,7 +97,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
         command += "\r\n";
         try {
             PrinterOperator printerOperator = new PrinterOperatorImpl();
-            String status = printerOperator.getPrinterStatus(addr);
+            String status = printerOperator.getPrinterStatus(addr, 1);
             if (status.equals("0")) {
                 byte[] data = command.getBytes("GB2312");
                 sendToPrinter(addr, isNET, data);
@@ -105,7 +105,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
         } catch (UnsupportedEncodingException e) {
             throw new CalibrationException(CommonClass.i18nMessage.getString("string_byte") + e.getMessage());
         } catch (CalibrationException e) {
-            throw new CalibrationException(e.getMessage());
+            throw new CalibrationException(ErrorCatcher.CatchConnectError(e.getMessage()));
         }
 
     }
@@ -117,7 +117,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             String status = zmPrinterFunction.getPrinterStatus(addr);
             // 实际上会被catch而不是进来if判断
             if (status.equals("|")) {
-                throw new CalibrationException(status);
+                throw new CalibrationException(ErrorCatcher.CatchConnectError(status));
             }
             byte[] resetCommands = {0x23, 0x55, 0x4D, 0x3E, 0x49, 0x46, 0x0D, 0x0A};//打印机设置值
             sendToPrinter(addr, isNET, resetCommands);
@@ -132,7 +132,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             byte[] resetCommands = {0x5E, 0x40, 0x0D, 0x0A};//打印机设置值
             sendToPrinter(addr, isNET, resetCommands);
         } catch (CalibrationException e) {
-            throw new CalibrationException(e.getMessage());
+            throw new CalibrationException(ErrorCatcher.CatchConnectError(e.getMessage()));
         }
     }
 
@@ -153,7 +153,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             if (connect >= 1) {
                 try {
                     PrinterOperator printerOperator = new PrinterOperatorImpl();
-                    printerOperator.getPrinterStatus(addr);
+                    printerOperator.getPrinterStatus(addr, 1);
                 } catch (Exception e) {
                     throw new CalibrationException(CommonClass.i18nMessage.getString("failed.port"));
                 }
@@ -162,7 +162,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
                 throw new CalibrationException(CommonClass.i18nMessage.getString("failed.ip"));
             }
         } catch (Exception e) {
-            throw new CalibrationException(e.getMessage());
+            throw new CalibrationException(ErrorCatcher.CatchConnectError(e.getMessage()));
         }
     }
 
@@ -171,11 +171,11 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
         if (isNET) { //TCP
             writeResult = TcpConnector.writeToPrinter(addr, data);
         } else {
-            writeResult = UsbConnector.writeToPrinter(addr, data, data.length);
+            writeResult = UsbConnector.writeToPrinter(addr, data, data.length, 1);
         }
 
         if (writeResult.contains("|")) {
-            throw new CalibrationException(writeResult);
+            throw new CalibrationException(ErrorCatcher.CatchConnectError(writeResult));
         }
     }
 

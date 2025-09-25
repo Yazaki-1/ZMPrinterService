@@ -18,7 +18,7 @@ public class Main {
                 int autoStart = CommonClass.auto_start ? 1 : 0;
                 int result = RegUtil.INSTANCE.set_auto_start(autoStart, regPath);
                 if (result == 0) {
-                    CommonClass.saveAndShow("设置自动启动失败!可能是权限不足的问题.", LogType.ErrorData);
+                    CommonClass.saveLog(CommonClass.i18nMessage.getString("err.set_autoStart_permission"), LogType.ErrorData);
                 }
             }
             int port = CommonClass.localPort == null ? 1808 : CommonClass.localPort;

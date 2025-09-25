@@ -24,7 +24,7 @@ public class DataProcessing {
             ChannelMap.writeMessageToClient(remoteAddress, ErrorCatcher.CatchConnectError(e.getMessage()));
         } catch (Exception e) { // json序列化异常
             if (socketMessage.startsWith("{")) {
-                String message = "4006|Json格式有误: " + e.getMessage();
+                String message = ErrorCatcher.CatchConnectError("4006|Json格式有误: ") + e.getMessage();
                 CommonClass.saveAndShow(remoteAddress + "    " + message, LogType.ErrorData);
                 ChannelMap.writeMessageToClient(remoteAddress, message);
             } else {
@@ -36,7 +36,7 @@ public class DataProcessing {
                     CommonClass.saveAndShow(remoteAddress + "    " + message, LogType.ErrorData);
                     ChannelMap.writeMessageToClient(remoteAddress, message);
                 } catch (Exception otherException) {
-                    String message = "4005|其他异常:" + otherException.getMessage();
+                    String message = ErrorCatcher.CatchConnectError("4005|其他异常:") + otherException.getMessage();
                     CommonClass.saveAndShow(remoteAddress + "    " + message, LogType.ErrorData);
                     ChannelMap.writeMessageToClient(remoteAddress, message);
                 }

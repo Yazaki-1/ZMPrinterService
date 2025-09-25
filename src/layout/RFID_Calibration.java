@@ -1166,7 +1166,7 @@ public class RFID_Calibration extends JDialog {
                 try {
                     //即将更改RFID校验参数,是否继续?
                     if (warningOption(CommonClass.i18nMessage.getString("warning.set_rfid"))) {
-                        printerOperator.getPrinterStatus(selectPrinter);
+                        printerOperator.getPrinterStatus(selectPrinter, 1);
                         boolean isNet = selectPrinter.contains(".");
                         PrinterVO printerVO = map.get(selectPrinter);
                         if (printerVO != null) {
@@ -1196,7 +1196,7 @@ public class RFID_Calibration extends JDialog {
         just_rfid.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
                 try {
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
                     boolean isNet = selectPrinter.contains(".");
                     calibrationFunction.sendCommand(selectPrinter, "MR", isNet);
                     saveResultButton.setVisible(false);
@@ -1209,7 +1209,7 @@ public class RFID_Calibration extends JDialog {
         just_label.addActionListener(e -> {
             if (!selectPrinter.isEmpty()) {
                 try {
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
                     boolean isNet = selectPrinter.contains(".");
                     calibrationFunction.sendCommand(selectPrinter, "MD", isNet);
                 } catch (Exception ex) {
@@ -1222,7 +1222,7 @@ public class RFID_Calibration extends JDialog {
             if (!selectPrinter.isEmpty()) {
                 //只有打印机纸张校准结束停止动作后才能查询结果,是否继续?
                 if (warningOption(CommonClass.i18nMessage.getString("warning.check_result"))) {
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
                     getPrinterInfo(selectPrinter);
                     showResult(selectPrinter);
 
@@ -1242,7 +1242,7 @@ public class RFID_Calibration extends JDialog {
                 //是否设定读写位置为
                 if (warningOption(CommonClass.i18nMessage.getString("warning.set_write_position") + " " + set_wp_textField.getText() + "mm?")) {
                     try {
-                        printerOperator.getPrinterStatus(selectPrinter);
+                        printerOperator.getPrinterStatus(selectPrinter, 1);
                         boolean isNet = selectPrinter.contains(".");
                         String wpValue = set_wp_textField.getText();
                         String commandstring = "#UM>WP" + String.format("%03d", Integer.parseInt(wpValue));//设置读写位置
@@ -1262,7 +1262,7 @@ public class RFID_Calibration extends JDialog {
                 //是否设定AN值为
                 if (warningOption(CommonClass.i18nMessage.getString("warning.set_an_value") + " " + set_an_textField.getText() + "mm?")) {
                     try {
-                        printerOperator.getPrinterStatus(selectPrinter);
+                        printerOperator.getPrinterStatus(selectPrinter, 1);
                         boolean isNet = selectPrinter.contains(".");
                         String anValue = set_an_textField.getText();
                         String commandstring = "#UM>AN" + String.format("%02d", Integer.parseInt(anValue));//设置AN值
@@ -1281,7 +1281,7 @@ public class RFID_Calibration extends JDialog {
                 //是否设定最大打印长度为
                 if (warningOption(CommonClass.i18nMessage.getString("warning.set_max_print_length") + " " + maxLength_textField.getText() + "mm?")) {
                     try {
-                        printerOperator.getPrinterStatus(selectPrinter);
+                        printerOperator.getPrinterStatus(selectPrinter, 1);
                         boolean isNet = selectPrinter.contains(".");
                         String maxLength = maxLength_textField.getText();
                         String commandString = "#UM>DM" + String.format("%04d", Integer.parseInt(maxLength));//设置AN值
@@ -1299,7 +1299,7 @@ public class RFID_Calibration extends JDialog {
                 //即将更改打印机网络参数,是否继续?
                 if (warningOption(CommonClass.i18nMessage.getString("warning.set_net_params"))) {
                     try {
-                        printerOperator.getPrinterStatus(selectPrinter);
+                        printerOperator.getPrinterStatus(selectPrinter, 1);
                         boolean isNet = selectPrinter.contains(".");
 
                         String printerIp = ip_textField.getText();
@@ -1336,7 +1336,7 @@ public class RFID_Calibration extends JDialog {
                 //是否设定探测等级为
                 if (warningOption(CommonClass.i18nMessage.getString("warning.set_sensor_level") + " " + sensor_level + " ?")) {
                     try {
-                        printerOperator.getPrinterStatus(selectPrinter);
+                        printerOperator.getPrinterStatus(selectPrinter, 1);
                         boolean isNet = selectPrinter.contains(".");
                         String commandString = "#UM>DL" + String.format("%02d", Integer.parseInt(sensor_level));//设置探测等级
                         calibrationFunction.sendCommand(selectPrinter, commandString, isNet);
@@ -1679,7 +1679,7 @@ public class RFID_Calibration extends JDialog {
                 PrinterVO printerVO = map.get(selectPrinter);
                 if (printerVO != null) {
                     PrinterInfoVO printerInfoVO = printerVO.getVo();
-                    printerOperator.getPrinterStatus(selectPrinter);
+                    printerOperator.getPrinterStatus(selectPrinter, 1);
                     String commandString = selectPrinter.contains(".") ? "AL\r\n" : "AD\r\n"; //获取校准曲线的数据
                     String readData = LayoutUtils.getPrinterMessage(addr, commandString.getBytes(StandardCharsets.UTF_8));
 
