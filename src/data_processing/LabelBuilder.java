@@ -69,7 +69,7 @@ public class LabelBuilder {
                         try {
                             JSONArray array = label.getJSONArray("lsfFileVarList");
                             setLsfFileVar(array, contents, jsonData.getOperator(), finalLsfPrinter, labelFormat, clientRemote);
-                        } catch (FunctionalException e) {
+                        } catch (FunctionalException | ConnectException e) {
                             throw new FunctionalException(e.getMessage());
                         } catch (Exception e) {
                             throw new FunctionalException("3007|Json反序列化异常:" + e.getMessage());

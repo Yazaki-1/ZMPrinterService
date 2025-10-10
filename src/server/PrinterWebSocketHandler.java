@@ -39,7 +39,7 @@ public class PrinterWebSocketHandler extends SimpleChannelInboundHandler<WebSock
             String webSocketMessage = ((TextWebSocketFrame) webSocketFrame).text();
             webSocketMessage = webSocketMessage.replace("imagedata", "imagedata1").replace("QR Code(2D)", "QR Code").replace("objectName", "ObjectName");
             CommonClass.saveLog(remoteAddress + "    " + webSocketMessage, LogType.ServiceData);
-
+            System.out.println(webSocketMessage);
             DataProcessing.process(remoteAddress, webSocketMessage);
         }
     }
