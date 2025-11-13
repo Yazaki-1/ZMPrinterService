@@ -76,7 +76,7 @@ public class DataJsonUtil {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            CommonClass.saveLog(e.getMessage(), LogType.ErrorData);
+            CommonClass.saveLog("No data found: " + e.getMessage(), LogType.ErrorData);
             CommonClass.localPort = 1808;
             CommonClass.localSN = "";
             CommonClass.hideVisible = false;

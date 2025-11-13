@@ -33,6 +33,7 @@ public class SettingForm extends JFrame {
         // JFormDesigner - Variables declaration - DO 1 NOT MODIFY  //GE1N-BEGIN:variables  @formatter:off
         JTabbedPane tabbedPane1 = new JTabbedPane();
         JPanel panel8 = new JPanel();
+        JPanel sslPanel = new JPanel();
         JPanel autoStartPanel = new JPanel();
         JLabel autoLabel = new JLabel();
         set_auto_start = new JCheckBox();
@@ -249,6 +250,12 @@ public class SettingForm extends JFrame {
                 panel8.add(panel9);
             }
             tabbedPane1.addTab("基础设置", panel8);
+
+            //
+            {
+                sslPanel.setLayout(new GridLayout(0, 1));
+            }
+            tabbedPane1.addTab("基础设置", sslPanel);
         }
 
         //---- cancel ----

@@ -136,8 +136,8 @@ public class LabelBuilder {
                 if (preview_one) {
                     preview(printer, label, contents, clientRemote, border);
                     preview_one = false;
-                    break;
                 }
+                break;
             }
             case "setting":
                 throw new FunctionalException("3008|调用LSF模板不能使用Setting");
@@ -170,6 +170,14 @@ public class LabelBuilder {
                 }
                 case "NET": {
                     writeResult = printerOperator.sendToPrinter(printer.printernetip, data);
+                    try {
+                        float speed = printer.printSpeed * 25.4f;
+                        float labelHeight = label.labelheight;
+                        long printWaiting = (long) (labelHeight / speed * 1000 / 3);
+                        Thread.sleep(printWaiting);
+                    }catch (InterruptedException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 }
                 case "DRIVER": {
