@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class FuncLabelCreator {
 
     private final static ZMPrinterFunction function = new ZMPrinterFunctionImpl();
     private final static Map<String, FuncBody> bodyMap = new HashMap<>();
+    private static final Pattern BASIC_CHINESE_PATTERN = Pattern.compile("[\\u4E00-\\u9FA5]");
 
     public static void analysis(String remoteAddress, String msg) throws FunctionalException {
         String funcHead;
@@ -264,6 +266,7 @@ public class FuncLabelCreator {
                         labelObject.Xposition = Integer.parseInt(funcParams[1]) / funcBody.getPixel();//X坐标，单位mm
                         labelObject.Yposition = Integer.parseInt(funcParams[2]) / funcBody.getPixel();//Y坐标，单位mm
                         labelObject.textfont = funcParams[5];//字体名称
+                        labelObject.textfont = funcParams[5].equals("Arial") && containsBasicChinese(funcParams[12]) ? "黑体" : funcParams[5];
                         int dire = Integer.parseInt(funcParams[6]);
                         if (dire < 5) {
                             labelObject.direction = dire - 1;
@@ -674,7 +677,7 @@ public class FuncLabelCreator {
                 //        参数2为需要操作的标签区域（0为TID，1为EPC，2为TID+EPC）；
                 //        参数3为模块读取功率(值为0~25dBm，0为不指定，使用打印机已经设定的功率)；
                 //        参数4为读取操作完成后标签停止位置（0为回到原始位置，1为走纸到撕纸位置，2为走纸到打印位置，3为走纸到写入位置（需要写数据））；
-                //        参数5为读取超时时间，单位毫秒（建议设置值为2000） 无效
+                //        参数5为读取超时时间，单位毫秒（建议设置值为2000）
                 //        参数6为标签类型，1-UHF, 2-GJB, 3-GB, 4-GM
                 try {
                     if (funcParams != null) {
@@ -731,13 +734,17 @@ public class FuncLabelCreator {
                 break;
             }
             // 继续打印
+            case "ZM_PcxGraphicsDel":
+            case "ZM_PcxGraphicsDownload":
+            case "ZM_DrawPcxGraphics":
+            case "ZM_SetDirection":
             case "StartPrint": {
-                ChannelMap.startQueue(remoteAddress);
+                System.out.println("StartPrint");
                 break;
             }
             // 清空打印队列
             case "ClearPrintList": {
-                ChannelMap.cleanQueue(remoteAddress);
+                System.out.println("ClearPrintList");
                 break;
             }
             // 清空标签内容
@@ -764,5 +771,10 @@ public class FuncLabelCreator {
             default:
                 throw new FunctionalException("4001|LabelType参数异常");
         }
+    }
+
+    public static boolean containsBasicChinese(String str) {
+        if (str == null || str.isEmpty()) return false;
+        return BASIC_CHINESE_PATTERN.matcher(str).find();
     }
 }

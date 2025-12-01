@@ -41,13 +41,14 @@ public class PrinterService extends JFrame {
                     CommonClass.showServiceMsg(message);
                 }
             } else {
-                System.out.println(CommonClass.i18nMessage.getString("ws") + portBox.getText());
+                String start_msg = CommonClass.ssl ? CommonClass.i18nMessage.getString("wss") : CommonClass.i18nMessage.getString("ws");
+                System.out.println(start_msg + portBox.getText());
                 PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
                 try {
                     server.start_server();
                 } catch (InterruptedException _e) {
-                    String msg = CommonClass.i18nMessage.getString("ws_restart") + portBox.getText();
-                    CommonClass.saveLog(msg, LogType.ServiceData);
+                    String re_msg = CommonClass.ssl ? CommonClass.i18nMessage.getString("wss_restart") : CommonClass.i18nMessage.getString("ws_restart");
+                    CommonClass.saveLog(re_msg + portBox.getText(), LogType.ServiceData);
                 } catch (Exception e) {
                     String message = e.getMessage() + "\n";
                     CommonClass.showServiceMsg(message);

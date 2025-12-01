@@ -74,6 +74,25 @@ public class DataJsonUtil {
                 Locale locale = new Locale("zh", "CN");
                 CommonClass.i18nMessage = ResourceBundle.getBundle("i18n/messages", locale);
             }
+
+            Boolean ssl = object.getBoolean("ssl");
+            if (ssl != null) {
+                CommonClass.ssl = ssl;
+            }else {
+                CommonClass.ssl = false;
+            }
+
+            String certPath = object.getString("cert_path");
+            if (sn != null)
+                CommonClass.certPath = certPath;
+            else
+                CommonClass.certPath = "";
+
+            String certPassword = object.getString("cert_password");
+            if (sn != null)
+                CommonClass.password = certPassword;
+            else
+                CommonClass.password = "";
         } catch (IOException e) {
             System.out.println(e.getMessage());
             CommonClass.saveLog("No data found: " + e.getMessage(), LogType.ErrorData);
@@ -85,6 +104,7 @@ public class DataJsonUtil {
             CommonClass.tcp_receive = false;
             Locale locale = new Locale("zh", "CN");
             CommonClass.i18nMessage = ResourceBundle.getBundle("i18n/messages", locale);
+            CommonClass.ssl = false;
         }
     }
 

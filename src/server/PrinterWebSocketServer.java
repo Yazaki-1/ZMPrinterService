@@ -12,6 +12,10 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.ssl.SslHandler;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 public class PrinterWebSocketServer {
 
@@ -32,8 +36,19 @@ public class PrinterWebSocketServer {
                     .childHandler(
                             new ChannelInitializer<SocketChannel>() {
                                 @Override
-                                protected void initChannel(SocketChannel socketChannel) {
+                                protected void initChannel(SocketChannel socketChannel){
                                     ChannelPipeline pipeline = socketChannel.pipeline();
+                                    if (CommonClass.ssl) {
+                                        try {
+                                            SSLContext sslContext = SslUtil.createSSLContext();
+                                            //SSLEngine 此类允许使用ssl安全套接层协议进行安全通信
+                                            SSLEngine engine = sslContext.createSSLEngine();
+                                            engine.setUseClientMode(false);
+                                            pipeline.addFirst(new SslHandler(engine));
+                                        }catch (Exception e){
+                                            CommonClass.saveAndShow("Ssl Service startup failed, please check certificate accuracy!", LogType.ErrorData);
+                                        }
+                                    }
                                     pipeline.addLast(new HttpServerCodec()); // HTTP 协议解析，用于握手阶段
                                     pipeline.addLast(new HttpObjectAggregator(65535)); // HTTP 协议解析，用于握手阶段
                                     pipeline.addLast(new WebSocketServerCompressionHandler()); // WebSocket 数据压缩扩展
@@ -47,7 +62,7 @@ public class PrinterWebSocketServer {
 
             // 绑定端口，开始接收进来的连接
             Channel channel = bootstrap.bind(port).sync().channel();
-            String message = CommonClass.i18nMessage.getString("ws") + " " + port + "\n";
+            String message = CommonClass.ssl ? CommonClass.i18nMessage.getString("wss") + " " + port + "\n" : CommonClass.i18nMessage.getString("ws") + " " + port + "\n";
             CommonClass.saveAndShow(message, LogType.ServiceData);
             //关闭channel和块，直到它被关闭
             channel.closeFuture().sync();

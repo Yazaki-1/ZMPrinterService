@@ -17,7 +17,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -95,9 +98,9 @@ public class LabelBuilder {
             ZMLabel labelFormat = jsonData.getLabelFormat();
 
             switch (jsonData.getOperator()) {
-                case "print":
-                    printLabel(printer, labelFormat, labelObjectList, clientRemote);
-                    break;
+//                case "print":
+//                    printLabel(printer, labelFormat, labelObjectList, clientRemote);
+//                    break;*/
                 case "preview":
                     int border = jsonData.getOperator().endsWith("0") ? 0 : 1;
                     preview(printer, labelFormat, labelObjectList, clientRemote, border);
@@ -105,6 +108,7 @@ public class LabelBuilder {
                 case "setting":
                     setting(printer, jsonData.getParameters(), clientRemote);
                     break;
+                case "print":
                 case "batch":
                     addPrintQueue(printer, labelFormat, labelObjectList, clientRemote);
                     break;
@@ -129,9 +133,9 @@ public class LabelBuilder {
         printUtility.setVarValue(contents, lsfMaps);
         int border = operator.endsWith("0") ? 0 : 1;
         switch (operator) {
-            case "print":
-                printLabel(printer, label, contents, clientRemote);
-                break;
+//            case "print":
+//                printLabel(printer, label, contents, clientRemote);
+//                break;*/
             case "preview": {
                 if (preview_one) {
                     preview(printer, label, contents, clientRemote, border);
@@ -141,6 +145,7 @@ public class LabelBuilder {
             }
             case "setting":
                 throw new FunctionalException("3008|调用LSF模板不能使用Setting");
+            case "print":
             case "batch":
                 addPrintQueue(printer, label, contents, clientRemote);
                 break;
@@ -149,6 +154,7 @@ public class LabelBuilder {
         }
     }
 
+    @Deprecated
     public static void printLabel(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
         PrinterOperator printerOperator = new PrinterOperatorImpl();
 
@@ -165,7 +171,30 @@ public class LabelBuilder {
                             printer.printermbsn = printers.get(0);
                         }
                     }
-                    writeResult = printerOperator.sendToPrinter(printer.printermbsn, data, data.length, 1);
+                    String serial = printer.printermbsn;
+                    if (printer.printerinterface == PrinterStyle.RFID_USB || printer.printerinterface == PrinterStyle.GJB_USB || printer.printerinterface == PrinterStyle.GBGM_USB) {
+                        PrintLabelFactory.printLabel(serial, data, clientRemote);
+                    }else {
+                        writeResult = UsbConnector.writeToPrinter(serial, ByteBuffer.wrap(data).array(), data.length, 0);
+                        try {
+                            float speed = printer.printSpeed * 25.4f;
+                            float labelHeight = label.labelheight;
+                            long printWaiting = (long) (labelHeight / speed * 1000 / 3);
+                            Thread.sleep(printWaiting);
+                        }catch (InterruptedException e) {
+                            System.out.println(e.getMessage());
+                        }
+                        if (writeResult.contains("|")) {
+                            String message = ErrorCatcher.CatchConnectError(writeResult);
+                            ChannelMap.writeMessageToClient(clientRemote, message);
+                            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
+                        }else {
+                            String message = CommonClass.i18nMessage.getString("print.finish");
+                            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+                            ChannelMap.writeMessageToClient(clientRemote, message);
+                        }
+                    }
+                    writeResult = "1";
                     break;
                 }
                 case "NET": {
@@ -190,15 +219,17 @@ public class LabelBuilder {
             }
 
             if (writeResult != null) {
-                String message = CommonClass.i18nMessage.getString("print.finish");
-                try {
-                    // 防止lsf文件插入数据抢管道数据
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    throw new FunctionalException("4005|其他异常 => " + e.getMessage());
+                if (!writeResult.equals("1")) {
+                    String message = CommonClass.i18nMessage.getString("print.finish");
+                    try {
+                        // 防止lsf文件插入数据抢管道数据
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        throw new FunctionalException("4005|其他异常 => " + e.getMessage());
+                    }
+                    CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+                    ChannelMap.writeMessageToClient(clientRemote, message);
                 }
-                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
-                ChannelMap.writeMessageToClient(clientRemote, message);
             } else {
                 throw new FunctionalException("4005|其他异常 => 未定义的printerInterface");
             }
@@ -254,6 +285,14 @@ public class LabelBuilder {
             ImageIO.write(labelImage, "png", stream);
             String base64Image = Base64.getEncoder().encodeToString(stream.toByteArray());
             ChannelMap.writeMessageToClient(clientRemote, "ZM_PrintLabel_Preview:data:image/png;base64," + base64Image);
+
+            byte[] bytes = printUtility.CreateLabelCommand(printer, label, contents);
+            String filePath = "write.txt";
+            try {
+                Files.write(Paths.get(filePath), bytes);
+            }catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
         } catch (IOException e) {
             throw new FunctionalException("3005|图片预览错误:" + e.getMessage());
         }

@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class LabelData implements Serializable {
     private static final long serialVersionUID = 1L;
+    private final String serial;
     private final ZMPrinter printer;
     private final long printWaiting;
     private final byte[] data;
@@ -13,6 +14,7 @@ public class LabelData implements Serializable {
     private final int dataLen;
 
     public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote) {
+        this.serial = "";
         this.printer = printer;
         this.printWaiting = printWaiting;
         this.data = data;
@@ -38,5 +40,9 @@ public class LabelData implements Serializable {
 
     public int getDataLen() {
         return dataLen;
+    }
+
+    public String getSerial() {
+        return serial;
     }
 }

@@ -17,7 +17,7 @@ public class LayoutUtils {
             dataRead = printerOperator.sendAndReadPrinter(addr, data, 12301, "127.0.0.1");
             dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         } else {
-            dataRead = printerOperator.sendAndReadPrinter(addr, data, data.length, 2000, 1).replace("\r", "").replace("\n", "");
+            dataRead = printerOperator.sendAndReadPrinter(addr, data, data.length, 5000, 1).replace("\r", "").replace("\n", "");
         }
         return dataRead;
     }

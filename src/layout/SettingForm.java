@@ -33,7 +33,6 @@ public class SettingForm extends JFrame {
         // JFormDesigner - Variables declaration - DO 1 NOT MODIFY  //GE1N-BEGIN:variables  @formatter:off
         JTabbedPane tabbedPane1 = new JTabbedPane();
         JPanel panel8 = new JPanel();
-        JPanel sslPanel = new JPanel();
         JPanel autoStartPanel = new JPanel();
         JLabel autoLabel = new JLabel();
         set_auto_start = new JCheckBox();
@@ -250,12 +249,6 @@ public class SettingForm extends JFrame {
                 panel8.add(panel9);
             }
             tabbedPane1.addTab("基础设置", panel8);
-
-            //
-            {
-                sslPanel.setLayout(new GridLayout(0, 1));
-            }
-            tabbedPane1.addTab("基础设置", sslPanel);
         }
 
         //---- cancel ----
@@ -316,7 +309,7 @@ public class SettingForm extends JFrame {
                     CommonClass.saveLog(CommonClass.i18nMessage.getString("err.set_autoStart_permission"), LogType.ErrorData);
                     CommonClass.auto_start = false;
                 }
-            }else {
+            } else {
                 CommonClass.auto_start = false;
             }
 
@@ -329,7 +322,7 @@ public class SettingForm extends JFrame {
             if (Objects.equals(languageBox.getSelectedItem(), "English")) {
                 CommonClass.language = "en_US";
                 CommonClass.i18nMessage = ResourceBundle.getBundle("i18n/messages", new Locale("en", "US"));
-            }else if (Objects.requireNonNull(languageBox.getSelectedItem()).toString().contains("Simplified Chinese")) {
+            } else if (Objects.requireNonNull(languageBox.getSelectedItem()).toString().contains("Simplified Chinese")) {
                 CommonClass.language = "zh_CN";
                 CommonClass.i18nMessage = ResourceBundle.getBundle("i18n/messages", new Locale("zh", "CN"));
             }
@@ -340,7 +333,7 @@ public class SettingForm extends JFrame {
                 if (port < 1 || port > 65535) {
                     CommonClass.saveLog(CommonClass.i18nMessage.getString("error.port"), LogType.ErrorData);
                     showErrorMessage(CommonClass.i18nMessage.getString("error.port"));
-                }else {
+                } else {
                     CommonClass.localPort = port;
                 }
 

@@ -12,10 +12,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Deprecated
 public class PrintQueue {
 
     private final Timer queueTimer = new Timer();
-    private final Timer listenTimer = new Timer();
     private final PrinterOperator printerOperator = new PrinterOperatorImpl();
 
     private final LinkedBlockingQueue<LabelData> blockingQueue;
@@ -104,26 +104,29 @@ public class PrintQueue {
     }
 
     // 添加到打印队列
+    @Deprecated
     public void addQueue(LabelData labelData) {
         blockingQueue.add(labelData);
     }
 
     // 开始打印
+    @Deprecated
     public void startPrint() {
         this.started = true;
     }
 
     // 清空打印队列
+    @Deprecated
     public void cleanQueue() {
         this.index = 0;
         this.blockingQueue.clear();
     }
 
     // 释放
+    @Deprecated
     public void releaseQueue() {
         started = false;
         this.blockingQueue.clear();
         queueTimer.cancel();
-        listenTimer.cancel();
     }
 }
