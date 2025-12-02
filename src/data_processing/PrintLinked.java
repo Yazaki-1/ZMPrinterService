@@ -9,6 +9,7 @@ import common.CommonClass;
 import common.LogType;
 import server.ChannelMap;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintLinked {
@@ -29,7 +30,14 @@ public class PrintLinked {
                         case RFID_USB:
                         case GJB_USB:
                         case GBGM_USB:
-                            String serial = labelData.getSerial();
+                            String serial = labelData.getPrinter().printermbsn;
+                            if (serial.isEmpty()) { // 如果这台打印机mbsn为空值,默认选中USB第一台
+                                PrinterOperator printerOperator = new PrinterOperatorImpl();
+                                List<String> printers = printerOperator.getPrinters();
+                                if (!printers.isEmpty()) {
+                                    serial = printers.get(0);
+                                }
+                            }
                             try {
                                 printLabel_USB_R(serial, data);
                                 String message = CommonClass.i18nMessage.getString("print.finish");
