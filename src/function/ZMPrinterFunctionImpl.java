@@ -209,6 +209,7 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
                 } catch (NumberFormatException ex) {
                     throw new IllegalAccessException("port参数不对");
                 }
+                printerOperator.getPrinterStatus(printerIp, 0);
                 return printerOperator.readTag(printerIp, targetPort, targetIp, labelType, configuration);
             } else {
                 throw new IllegalAccessException("参数格式不正确");

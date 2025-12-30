@@ -45,7 +45,24 @@ public class PrintLinked {
                                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
                             } catch (ConnectException e) {
                                 blockingQueue.clear();
-                                ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
+                                String msg = ErrorCatcher.CatchConnectError(e.getMessage());
+                                msg = msg.startsWith("2") ? "PrinterStatus_USB:" + msg : msg;
+                                ChannelMap.writeMessageToClient(clientRemote, msg);
+                            }
+                            break;
+                        case USB:
+                            try {
+                                printerOperator.sendToPrinter(labelData.getPrinter().printermbsn, data, labelData.getDataLen(), 1);
+                                String message = CommonClass.i18nMessage.getString("print.finish");
+                                ChannelMap.writeMessageToClient(clientRemote, message);
+                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+                                // 需要更频繁一点
+                                Thread.sleep(labelData.getPrintWaiting());
+                            } catch (ConnectException e) {
+                                blockingQueue.clear();
+                                String msg = ErrorCatcher.CatchConnectError(e.getMessage());
+                                msg = msg.startsWith("2") ? "PrinterStatus_NET:" + msg : msg;
+                                ChannelMap.writeMessageToClient(clientRemote, msg);
                             }
                             break;
                         case RFID_NET:
@@ -62,20 +79,6 @@ public class PrintLinked {
                                 ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
                             }
                             break;
-                        case USB: {
-                            try {
-                                printerOperator.sendToPrinter(labelData.getPrinter().printermbsn, data, labelData.getDataLen(), 1);
-                                String message = CommonClass.i18nMessage.getString("print.finish");
-                                ChannelMap.writeMessageToClient(clientRemote, message);
-                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
-                                // 需要更频繁一点
-                                Thread.sleep(labelData.getPrintWaiting());
-                            }catch (ConnectException e) {
-                                blockingQueue.clear();
-                                ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
-                            }
-                            break;
-                        }
                         case NET: {
                             try {
                                 printerOperator.sendToPrinter(labelData.getPrinter().printernetip, data);
@@ -84,7 +87,7 @@ public class PrintLinked {
                                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
                                 // 需要更频繁一点
                                 Thread.sleep(labelData.getPrintWaiting());
-                            }catch (ConnectException e) {
+                            } catch (ConnectException e) {
                                 blockingQueue.clear();
                                 ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
                             }
@@ -98,7 +101,7 @@ public class PrintLinked {
                                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
                                 // 需要更频繁一点
                                 Thread.sleep(labelData.getPrintWaiting());
-                            }catch (ConnectException e) {
+                            } catch (ConnectException e) {
                                 blockingQueue.clear();
                                 ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
                             }
@@ -124,19 +127,13 @@ public class PrintLinked {
     }
 
     private void printLabel_USB_R(String serial, byte[] data) throws InterruptedException {
-        String ps = UsbConnector.getPrinterStatus(serial, 0);
-        if (ps.contains("|")) {
-            if (!ps.startsWith("2004"))
-                throw new ConnectException(ErrorCatcher.CatchConnectError(ps));
-            System.out.println("status: " + ps);
-        }
         System.out.println("Start Writing");
         String ws = UsbConnector.writeToPrinter(serial, data, data.length, 0);
         if (ws.contains("|")) {
             System.out.println("write: " + ws);
             throw new ConnectException(ErrorCatcher.CatchConnectError(ws));
         }
-
+        Thread.sleep(500);
         System.out.println("Start Reading");
         String readData = UsbConnector.read(serial, 15000, 0);
         if (readData.contains("|")) {
@@ -145,7 +142,7 @@ public class PrintLinked {
         } else {
             if (readData.equals("RP")) {
                 System.out.println("打印完成 -> RP");
-                ps = UsbConnector.getPrinterStatus(serial, 0);
+                String ps = UsbConnector.getPrinterStatus(serial, 0);
                 if (ps.contains("|")) {
                     throw new ConnectException(ErrorCatcher.CatchConnectError(ps));
                 }
@@ -157,6 +154,7 @@ public class PrintLinked {
 
     private void printLabel_NET_R(String ip, byte[] data) throws InterruptedException {
         String ps = TcpConnector.getPrinterStatus(ip);
+        System.out.println(ps);
         if (ps.contains("|")) {
             if (!ps.startsWith("2004"))
                 throw new ConnectException(ErrorCatcher.CatchConnectError(ps));

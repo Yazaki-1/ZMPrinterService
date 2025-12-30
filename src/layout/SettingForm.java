@@ -25,7 +25,7 @@ public class SettingForm extends JFrame {
     public SettingForm() {
         initComponents();
         setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/logo.png"))).getImage());
-        setTitle("设置");
+        setTitle(CommonClass.i18nMessage.getString("setting"));
     }
 
     private void initComponents() {
@@ -68,10 +68,10 @@ public class SettingForm extends JFrame {
                 {
 
                     //---- autoLabel ----
-                    autoLabel.setText("开机启动");
+                    autoLabel.setText(CommonClass.i18nMessage.getString("menu.auto_start"));
 
                     //---- set_auto_start ----
-                    set_auto_start.setText("设置开机自动启动");
+                    set_auto_start.setText(CommonClass.i18nMessage.getString("menu.set_auto"));
 
                     GroupLayout AutoStartPanelLayout = new GroupLayout(autoStartPanel);
                     autoStartPanel.setLayout(AutoStartPanelLayout);
@@ -99,7 +99,7 @@ public class SettingForm extends JFrame {
                 {
 
                     //---- defaultPortLabel ----
-                    defaultPortLabel.setText("服务默认端口");
+                    defaultPortLabel.setText(CommonClass.i18nMessage.getString("menu.default_port"));
 
                     GroupLayout DefaultPorPanelLayout = new GroupLayout(defaultPorPanel);
                     defaultPorPanel.setLayout(DefaultPorPanelLayout);
@@ -125,10 +125,10 @@ public class SettingForm extends JFrame {
                 {
 
                     //---- sysTrayLabel ----
-                    sysTrayLabel.setText("系统托盘");
+                    sysTrayLabel.setText(CommonClass.i18nMessage.getString("menu.systray"));
 
                     //---- autoTray ----
-                    autoTray.setText("启动自动缩小");
+                    autoTray.setText(CommonClass.i18nMessage.getString("menu.set_systray"));
 
                     GroupLayout SystemTrayPanelLayout = new GroupLayout(systemTrayPanel);
                     systemTrayPanel.setLayout(SystemTrayPanelLayout);
@@ -154,7 +154,7 @@ public class SettingForm extends JFrame {
                 {
 
                     //---- label4 ----
-                    label4.setText("服务连接类型");
+                    label4.setText(CommonClass.i18nMessage.getString("menu.link"));
 
                     //---- connectBox ----
                     connectBox.setModel(new DefaultComboBoxModel<>(new String[] {
@@ -186,7 +186,7 @@ public class SettingForm extends JFrame {
                 {
 
                     //---- label5 ----
-                    label5.setText("语言(Language)");
+                    label5.setText(CommonClass.i18nMessage.getString("menu.language"));
 
                     //---- languageBox ----
                     languageBox.setModel(new DefaultComboBoxModel<>(new String[] {
@@ -248,14 +248,14 @@ public class SettingForm extends JFrame {
                 }
                 panel8.add(panel9);
             }
-            tabbedPane1.addTab("基础设置", panel8);
+            tabbedPane1.addTab(CommonClass.i18nMessage.getString("menu.base"), panel8);
         }
 
         //---- cancel ----
-        cancel.setText("取消");
+        cancel.setText(CommonClass.i18nMessage.getString("cancel"));
 
         //---- apply ----
-        apply.setText("应用");
+        apply.setText(CommonClass.i18nMessage.getString("ok"));
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);

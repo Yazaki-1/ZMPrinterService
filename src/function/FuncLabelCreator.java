@@ -2,8 +2,10 @@ package function;
 
 import com.ZMPrinter.*;
 import com.ZMPrinter.barcodes.BarcodeStyle;
+import com.ZMPrinter.conn.ConnectException;
 import common.CommonClass;
 import common.LogType;
+import data_processing.ErrorCatcher;
 import data_processing.LabelBuilder;
 import server.ChannelMap;
 
@@ -22,6 +24,7 @@ public class FuncLabelCreator {
     private final static ZMPrinterFunction function = new ZMPrinterFunctionImpl();
     private final static Map<String, FuncBody> bodyMap = new HashMap<>();
     private static final Pattern BASIC_CHINESE_PATTERN = Pattern.compile("[\\u4E00-\\u9FA5]");
+    private static String rfidFormatData = null;
 
     public static void analysis(String remoteAddress, String msg) throws FunctionalException {
         String funcHead;
@@ -72,6 +75,7 @@ public class FuncLabelCreator {
             // 关闭端口
             case "ClosePort": {
                 bodyMap.remove(remoteAddress);
+                rfidFormatData = null;
                 break;
             }
             //打印Base64编码图片
@@ -579,8 +583,7 @@ public class FuncLabelCreator {
                 ChannelMap.writeMessageToClient(remoteAddress, "打印完成(finished)");
                 break;
             }
-            case "ZM_PrintLabel_R":// USB和NET的
-            case "ZM_PrintLabel": {
+            case "ZM_PrintLabel_R": {
                 PrinterOperator printerOperator = new PrinterOperatorImpl();
                 byte[] commands = funcBody.buildLabelCommand();
                 int len = commands.length;
@@ -591,6 +594,38 @@ public class FuncLabelCreator {
                         List<String> serials = printerOperator.getPrinters();
                         if (serials.isEmpty()) {
                             CommonClass.saveAndShow("未连接打印机", LogType.ServiceData);
+                            break;
+                        } else {
+                            printResult = printerOperator.sendToPrinter(serials.get(0), commands, len, 0);
+                        }
+                    } else if (funcBody.getPrinter().printermbsn.isEmpty()) {
+                        //设了网络打印机ip
+                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printernetip, commands);
+                    } else {
+                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len, 1);
+                    }
+                } else {
+                    printResult = printerOperator.sendToPrinter(CommonClass.localSN, commands, len, 0);
+                }
+
+                if (printResult.equals("0")) {
+                    ChannelMap.writeMessageToClient(remoteAddress, "ZM_PrintLabel_R Complete:0||EPC:" + rfidFormatData);
+                } else {
+                    throw new FunctionalException("4006|未知异常(函数没有抛出异常但是结果异常),返回值:" + printResult);
+                }
+                break;
+            }
+            case "ZM_PrintLabel": {// USB和NET的
+                PrinterOperator printerOperator = new PrinterOperatorImpl();
+                byte[] commands = funcBody.buildLabelCommand();
+                int len = commands.length;
+                String printResult;
+                if (CommonClass.localSN.isEmpty()) {
+                    if (funcBody.getPrinter().printermbsn.isEmpty() && funcBody.getPrinter().printernetip.isEmpty()) {
+                        //sn和ip都没设置默认选中第一个USB打印机
+                        List<String> serials = printerOperator.getPrinters();
+                        if (serials.isEmpty()) {
+                            CommonClass.saveAndShow("1008|未连接打印机", LogType.ServiceData);
                             break;
                         } else {
                             printResult = printerOperator.sendToPrinter(serials.get(0), commands, len, 1);
@@ -628,17 +663,17 @@ public class FuncLabelCreator {
                             long serial = funcParams.length == 3 ? Long.parseLong(funcParams[2]) : Long.parseLong(funcParams[1]);
                             // 如果为500,则用""作为地址
                             addr = (serial == 500 || serial == 0) ? "" : String.valueOf(serial);
-                            String status = function.getPrinterStatus(addr);
-                            ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
+                            String status = getPrinterStatusAndCatchStatusErr(addr);
+                            ChannelMap.writeMessageToClient(remoteAddress, status); // 必定是0,如果不是会被catch
                         } catch (NumberFormatException ex) {
                             // 未通过Parse,catch为ip
                             addr = funcParams.length == 3 ? funcParams[2] : funcParams[1];
-                            String status = function.getPrinterStatus(addr);
-                            ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_NET:" + status); // 必定是0,如果不是会被catch
+                            String status = getPrinterStatusAndCatchStatusErr(addr);
+                            ChannelMap.writeMessageToClient(remoteAddress, status); // 必定是0,如果不是会被catch
                         }
                     } else {
-                        String status = function.getPrinterStatus(CommonClass.localSN);
-                        ChannelMap.writeMessageToClient(remoteAddress, "PrinterStatus_USB:" + status); // 必定是0,如果不是会被catch
+                        String status = getPrinterStatusAndCatchStatusErr(CommonClass.localSN);
+                        ChannelMap.writeMessageToClient(remoteAddress, status); // 必定是0,如果不是会被catch
                     }
                 }
                 break;
@@ -659,6 +694,7 @@ public class FuncLabelCreator {
 
                         // 添加变量内容
                         function.addVariables(labelObject, funcParams[6]);
+                        rfidFormatData = funcParams[6];
 
                         funcBody.getLabelObjects().add(labelObject);
                     }
@@ -691,14 +727,12 @@ public class FuncLabelCreator {
 
                         LabelType labelType = setLabelType(funcParams.length == 7 ? Integer.parseInt(funcParams[6]) : 1);
 
-                        String tagData = function.readTagData(funcParams[1], labelType, configuration, timeout, 1);
+                        String tagData = readTagAndCatchStatusErr(funcParams[1], labelType, configuration, timeout);
                         ChannelMap.writeMessageToClient(remoteAddress, "UHFTagData:" + tagData);
                         CommonClass.saveLog("UHFTagData:" + tagData, LogType.ServiceData);
                     }
                 } catch (NumberFormatException e) {
                     throw new FunctionalException("4001|ZM_GetUHFTagData参数异常:" + e.getMessage());
-                } catch (IllegalAccessException e) {
-                    throw new FunctionalException("4002|函数式调用参数异常:" + e.getMessage());
                 }
                 break;
             }
@@ -721,14 +755,12 @@ public class FuncLabelCreator {
                         configuration.put("feed", feed);
                         Integer timeout = Integer.parseInt(funcParams[5]);
 
-                        String tagData = function.readTagData(funcParams[1], LabelType.HF, configuration, timeout, 1);
+                        String tagData = readTagAndCatchStatusErr(funcParams[1], LabelType.HF, configuration, timeout);
                         ChannelMap.writeMessageToClient(remoteAddress, "HFTagData:" + tagData);
+                        CommonClass.saveLog("HFTagData:" + tagData, LogType.ServiceData);
                     }
                 } catch (NumberFormatException e) {
                     String message = "4001|ZM_GetHFTagData参数异常:" + e.getMessage();
-                    throw new FunctionalException(message);
-                } catch (IllegalAccessException e) {
-                    String message = "4002|函数式调用参数异常:" + e.getMessage();
                     throw new FunctionalException(message);
                 }
                 break;
@@ -776,5 +808,36 @@ public class FuncLabelCreator {
     public static boolean containsBasicChinese(String str) {
         if (str == null || str.isEmpty()) return false;
         return BASIC_CHINESE_PATTERN.matcher(str).find();
+    }
+
+    private static String getPrinterStatusAndCatchStatusErr(String addr) {
+        String message_head = addr.contains(".") ? "PrinterStatus_NET:" : "PrinterStatus_USB:";
+        try {
+            String status = function.getPrinterStatus(addr);
+            return message_head + status;
+        } catch (ConnectException e) {
+            String catcher = ErrorCatcher.CatchConnectError(e.getMessage());
+            if (catcher.startsWith("2")) {
+                return message_head + catcher;
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private static String readTagAndCatchStatusErr(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout) {
+        String message_head = addr.contains(".") ? "PrinterStatus_NET:" : "PrinterStatus_USB:";
+        try {
+            return function.readTagData(addr, labelType, configuration, timeout, 0);
+        } catch (ConnectException e) {
+            String catcher = ErrorCatcher.CatchConnectError(e.getMessage());
+            if (catcher.startsWith("2")) {
+                return message_head + catcher;
+            } else {
+                throw e;
+            }
+        } catch (IllegalAccessException e) {
+            throw new FunctionalException("4002|函数式调用参数异常:" + e.getMessage());
+        }
     }
 }

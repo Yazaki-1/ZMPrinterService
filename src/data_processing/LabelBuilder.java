@@ -249,6 +249,8 @@ public class LabelBuilder {
             }
         }
 
+//        printer.printerinterface = PrinterStyle.USB;
+
         float speed = printer.printSpeed * 25.4f;
         float labelHeight = label.labelheight;
         long printWaiting = (long) (labelHeight / speed * 1000 / 3);

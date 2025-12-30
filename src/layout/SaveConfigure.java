@@ -86,23 +86,23 @@ public class SaveConfigure extends JDialog {
         }
 
         //---- label1 ----
-        label1.setText("为保存的标签设置一个名称");
+        label1.setText(CommonClass.i18nMessage.getString("save.name"));
         label1.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 14));
 
         //---- label2 ----
-        label2.setText("请上传一张标签图片");
+        label2.setText(CommonClass.i18nMessage.getString("save.upload_img"));
         label2.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 14));
 
         //---- uploadButton ----
-        uploadButton.setText("上传");
+        uploadButton.setText(CommonClass.i18nMessage.getString("save.upload"));
 
         //---- label3 ----
-        label3.setText("*请在保存标签参数之前确定RFID读写功率是否能正常使用！！！！");
+        label3.setText(CommonClass.i18nMessage.getString("save.check"));
         label3.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 14));
         label3.setForeground(new Color(0xff3333));
 
         //---- saveButton ----
-        saveButton.setText("保存");
+        saveButton.setText(CommonClass.i18nMessage.getString("save_result"));
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
@@ -152,7 +152,7 @@ public class SaveConfigure extends JDialog {
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
 
-        setTitle("保存标签配置");
+        setTitle(CommonClass.i18nMessage.getString("save.title"));
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -173,11 +173,11 @@ public class SaveConfigure extends JDialog {
                 try {
                     String fileName = labelName.getText();
                     if (fileName.isEmpty()) {
-                        fileName = "标签" + new Date().getTime();
+                        fileName = CommonClass.i18nMessage.getString("save.label") + new Date().getTime();
                     }
                     String finalName = fileName;
                     if (fileNames.stream().anyMatch(file -> file.toLowerCase().equals(finalName))) {
-                        showErrorMessage("已有重复名称的标签！");
+                        showErrorMessage(CommonClass.i18nMessage.getString("save.exist"));
                     } else {
                         try (FileWriter writer = new FileWriter(configDir + finalName + ".txt", true)) { // true for append mode
                             writer.write(instruct);
@@ -194,7 +194,7 @@ public class SaveConfigure extends JDialog {
                         }
 
                         Object[] options = {CommonClass.i18nMessage.getString("ok")};
-                        int check = JOptionPane.showOptionDialog(this, "保存成功！", "Success", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                        int check = JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("save.success"), "Success", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                         if (check == 0) {
                             setVisible(false);
                         }
@@ -222,7 +222,7 @@ public class SaveConfigure extends JDialog {
                         showErrorMessage(ex.getMessage());
                     }
                 } else {
-                    showErrorMessage("请选择JPG图片!");
+                    showErrorMessage(CommonClass.i18nMessage.getString("save.jpg"));
                 }
             }
         });
@@ -235,7 +235,7 @@ public class SaveConfigure extends JDialog {
 
     private boolean warningOption() {
         Object[] options = {CommonClass.i18nMessage.getString("ok"), CommonClass.i18nMessage.getString("cancel")};
-        int check = JOptionPane.showOptionDialog(this, "是否保存配置?请确认配置能正常使用!", "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int check = JOptionPane.showOptionDialog(this, CommonClass.i18nMessage.getString("save.warning"), "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         return check == 0;
     }
 
