@@ -7,7 +7,7 @@ public class ErrorCatcher {
         if (err.contains("|")) {
             String code = err.substring(0, err.indexOf("|"));
             String key = "msg_code." + code;
-            return CommonClass.i18nMessage.getString(key) + getErrorMsg(err);
+            return CommonClass.i18nMessage.getString(key) + ":" + getErrorMsg(err);
         } else {
             return err;
         }

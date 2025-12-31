@@ -41,7 +41,9 @@ public class LabelBuilder {
                 // 尝试getZMLabelObjectList,如果路径有误会catch异常
                 map = lsfDecoder.getZMLabelObjectList(jsonData.getLsfFilePath());
             } catch (FileNotFoundException e) {
-                throw new FunctionalException("3004|lsf文件路径错误:" + jsonData.getLsfFilePath());
+                throw new FunctionalException("3004|lsf文件路径错误 => " + jsonData.getLsfFilePath());
+            } catch (Exception e) {
+                throw new FunctionalException("3009|lsf路径异常 => " + jsonData.getLsfFilePath());
             }
 
             if (map != null) {
