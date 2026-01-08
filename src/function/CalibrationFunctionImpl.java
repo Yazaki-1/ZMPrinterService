@@ -62,7 +62,9 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             pm.keySet().forEach(p -> {
                 try {
                     checkConnection(p);
-                    String firmwareMessage = printerOperator.sendAndReadPrinter(p, command, 12301, "127.0.0.1");
+                    String serverIp = CommonClass.receiveServerIp;
+                    int port = CommonClass.receiveServerPort;
+                    String firmwareMessage = printerOperator.sendAndReadPrinter(p, command, port, serverIp);
                     firmwareMessage = firmwareMessage.replace("\u0002", "").replace("\u0003", "").replace("\r\n", "");
                     RFID_Calibration.map.put(p, RQ_toVO(firmwareMessage));
                 } catch (Exception e) {
@@ -78,7 +80,9 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
         try {
             PrinterOperator printerOperator = new PrinterOperatorImpl();
             byte[] c = "RQ2,1\r\n".getBytes(StandardCharsets.UTF_8);
-            String firmwareMessage = printerOperator.sendAndReadPrinter(addr, c, 12301, null);
+            String serverIp = CommonClass.receiveServerIp;
+            int port = CommonClass.receiveServerPort;
+            String firmwareMessage = printerOperator.sendAndReadPrinter(addr, c, port, serverIp);
             System.out.println(firmwareMessage);
             firmwareMessage = firmwareMessage.replace("\u0002", "").replace("\u0003", "").replace("\r\n", "");
             PrinterVO printerVO = RQ_toVO(firmwareMessage);

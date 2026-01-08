@@ -2,6 +2,7 @@ package layout;
 
 import com.ZMPrinter.PrinterOperator;
 import com.ZMPrinter.PrinterOperatorImpl;
+import common.CommonClass;
 
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
@@ -14,7 +15,9 @@ public class LayoutUtils {
         String dataRead;
         if (addr.contains(".")) {
             // 带.的是IP地址
-            dataRead = printerOperator.sendAndReadPrinter(addr, data, 12301, "127.0.0.1");
+            String serverIp = CommonClass.receiveServerIp;
+            int port = CommonClass.receiveServerPort;
+            dataRead = printerOperator.sendAndReadPrinter(addr, data, port, serverIp);
             dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         } else {
             dataRead = printerOperator.sendAndReadPrinter(addr, data, data.length, 5000, 1).replace("\r", "").replace("\n", "");

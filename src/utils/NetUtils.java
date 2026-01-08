@@ -1,9 +1,6 @@
 package utils;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.*;
 import java.util.Enumeration;
 
 public class NetUtils {
@@ -33,6 +30,15 @@ public class NetUtils {
             return currentIp.substring(0, currentIp.length() - 3);
         } catch (SocketException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static String isIp(String input) {
+        try {
+            InetAddress ipAddress = InetAddress.getByName(input);
+            return ipAddress.getHostAddress();
+        } catch (UnknownHostException e) {
+            return null;
         }
     }
 }

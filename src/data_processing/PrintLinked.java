@@ -9,7 +9,6 @@ import common.CommonClass;
 import common.LogType;
 import server.ChannelMap;
 
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintLinked {
@@ -30,26 +29,26 @@ public class PrintLinked {
                         case RFID_USB:
                         case GJB_USB:
                         case GBGM_USB:
-                            String serial = labelData.getPrinter().printermbsn;
-                            if (serial.isEmpty()) { // 如果这台打印机mbsn为空值,默认选中USB第一台
-                                PrinterOperator printerOperator = new PrinterOperatorImpl();
-                                List<String> printers = printerOperator.getPrinters();
-                                if (!printers.isEmpty()) {
-                                    serial = printers.get(0);
-                                }
-                            }
-                            try {
-                                printLabel_USB_R(serial, data);
-                                String message = CommonClass.i18nMessage.getString("print.finish");
-                                ChannelMap.writeMessageToClient(clientRemote, message);
-                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
-                            } catch (ConnectException e) {
-                                blockingQueue.clear();
-                                String msg = ErrorCatcher.CatchConnectError(e.getMessage());
-                                msg = msg.startsWith("2") ? "PrinterStatus_USB:" + msg : msg;
-                                ChannelMap.writeMessageToClient(clientRemote, msg);
-                            }
-                            break;
+//                            String serial = labelData.getPrinter().printermbsn;
+//                            if (serial.isEmpty()) { // 如果这台打印机mbsn为空值,默认选中USB第一台
+//                                PrinterOperator printerOperator = new PrinterOperatorImpl();
+//                                List<String> printers = printerOperator.getPrinters();
+//                                if (!printers.isEmpty()) {
+//                                    serial = printers.get(0);
+//                                }
+//                            }
+//                            try {
+//                                printLabel_USB_R(serial, data);
+//                                String message = CommonClass.i18nMessage.getString("print.finish");
+//                                ChannelMap.writeMessageToClient(clientRemote, message);
+//                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+//                            } catch (ConnectException e) {
+//                                blockingQueue.clear();
+//                                String msg = ErrorCatcher.CatchConnectError(e.getMessage());
+//                                msg = msg.startsWith("2") ? "PrinterStatus_USB:" + msg : msg;
+//                                ChannelMap.writeMessageToClient(clientRemote, msg);
+//                            }
+//                            break;
                         case USB:
                             try {
                                 printerOperator.sendToPrinter(labelData.getPrinter().printermbsn, data, labelData.getDataLen(), 1);
@@ -126,6 +125,7 @@ public class PrintLinked {
         printThread.interrupt();
     }
 
+    @Deprecated
     private void printLabel_USB_R(String serial, byte[] data) throws InterruptedException {
         System.out.println("Start Writing");
         String ws = UsbConnector.writeToPrinter(serial, data, data.length, 0);
@@ -162,7 +162,9 @@ public class PrintLinked {
                 Thread.sleep(300);
         }
         try {
-            String dataRead = printerOperator.sendAndReadPrinter(ip, data, 12301, "127.0.0.1");
+            String serverIp = CommonClass.receiveServerIp;
+            int port = CommonClass.receiveServerPort;
+            String dataRead = printerOperator.sendAndReadPrinter(ip, data, port, serverIp);
             dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
 
             if (dataRead.equals("PN")) {

@@ -83,16 +83,28 @@ public class DataJsonUtil {
             }
 
             String certPath = object.getString("cert_path");
-            if (sn != null)
+            if (certPath != null)
                 CommonClass.certPath = certPath;
             else
                 CommonClass.certPath = "";
 
             String certPassword = object.getString("cert_password");
-            if (sn != null)
+            if (certPassword != null)
                 CommonClass.password = certPassword;
             else
                 CommonClass.password = "";
+
+//            String receive_ip = object.getString("receive_ip");
+//            if (receive_ip != null)
+//                CommonClass.receiveServerIp = receive_ip;
+//            else
+            CommonClass.receiveServerIp = "127.0.0.1";
+
+            Integer receive_port = object.getInteger("receive_port");
+            if (receive_port != null)
+                CommonClass.receiveServerPort = receive_port;
+            else
+                CommonClass.receiveServerPort = 12301;
         } catch (IOException e) {
             System.out.println(e.getMessage());
             CommonClass.saveLog("No data found: " + e.getMessage(), LogType.ErrorData);
@@ -105,6 +117,8 @@ public class DataJsonUtil {
             Locale locale = new Locale("zh", "CN");
             CommonClass.i18nMessage = ResourceBundle.getBundle("i18n/messages", locale);
             CommonClass.ssl = false;
+            CommonClass.receiveServerIp = "127.0.0.1";
+            CommonClass.receiveServerPort = 12301;
         }
     }
 
@@ -120,6 +134,8 @@ public class DataJsonUtil {
             object.put("auto_start", CommonClass.auto_start ? 1 : 0);
             object.put("tcp", CommonClass.tcp_receive ? 1 : 0);
             object.put("language", CommonClass.language);
+            object.put("receive_ip", CommonClass.receiveServerIp);
+            object.put("receive_port", CommonClass.receiveServerPort);
 
             Files.write(Paths.get(dataPath), object.toJSONString().getBytes());
         } catch (IOException e) {

@@ -7,6 +7,7 @@ package layout;
 import common.CommonClass;
 import common.LogType;
 import utils.DataJsonUtil;
+import utils.NetUtils;
 import utils.RegUtil;
 
 import java.awt.*;
@@ -38,7 +39,11 @@ public class SettingForm extends JFrame {
         set_auto_start = new JCheckBox();
         JPanel defaultPorPanel = new JPanel();
         JLabel defaultPortLabel = new JLabel();
+        JLabel receiveIP = new JLabel();
+        JLabel receivePort = new JLabel();
         portBox = new JTextField();
+        receiveIpBox = new JTextField();
+        receivePortBox = new JTextField();
         JPanel systemTrayPanel = new JPanel();
         JLabel sysTrayLabel = new JLabel();
         autoTray = new JCheckBox();
@@ -218,32 +223,48 @@ public class SettingForm extends JFrame {
 
                 //======== panel7 ========
                 {
+                    receiveIP.setText(CommonClass.i18nMessage.getString("menu.receive_ip"));
 
-                    GroupLayout panel7Layout = new GroupLayout(panel7);
-                    panel7.setLayout(panel7Layout);
-                    panel7Layout.setHorizontalGroup(
-                        panel7Layout.createParallelGroup()
-                            .addGap(0, 368, Short.MAX_VALUE)
+                    GroupLayout receiveIpLayout = new GroupLayout(panel7);
+                    panel7.setLayout(receiveIpLayout);
+                    receiveIpLayout.setHorizontalGroup(
+                        receiveIpLayout.createParallelGroup()
+                                .addGroup(receiveIpLayout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(receiveIP, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(receiveIpBox, GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                                        .addContainerGap())
                     );
-                    panel7Layout.setVerticalGroup(
-                        panel7Layout.createParallelGroup()
-                            .addGap(0, 40, Short.MAX_VALUE)
+                    receiveIpLayout.setVerticalGroup(
+                        receiveIpLayout.createParallelGroup()
+                                .addGroup(receiveIpLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(receiveIP, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(receiveIpBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     );
                 }
                 panel8.add(panel7);
 
                 //======== panel9 ========
                 {
+                    receivePort.setText(CommonClass.i18nMessage.getString("menu.receive_port"));
 
-                    GroupLayout panel9Layout = new GroupLayout(panel9);
-                    panel9.setLayout(panel9Layout);
-                    panel9Layout.setHorizontalGroup(
-                        panel9Layout.createParallelGroup()
-                            .addGap(0, 368, Short.MAX_VALUE)
+                    GroupLayout receivePortLayout = new GroupLayout(panel9);
+                    panel9.setLayout(receivePortLayout);
+                    receivePortLayout.setHorizontalGroup(
+                        receivePortLayout.createParallelGroup()
+                                .addGroup(receivePortLayout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(receivePort, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(receivePortBox, GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                                        .addContainerGap())
                     );
-                    panel9Layout.setVerticalGroup(
-                        panel9Layout.createParallelGroup()
-                            .addGap(0, 40, Short.MAX_VALUE)
+                    receivePortLayout.setVerticalGroup(
+                        receivePortLayout.createParallelGroup()
+                                .addGroup(receivePortLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(receivePort, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(receivePortBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     );
                 }
                 panel8.add(panel9);
@@ -287,6 +308,9 @@ public class SettingForm extends JFrame {
         autoLabel.setVisible(OS);
         set_auto_start.setVisible(OS);
         portBox.setText(String.valueOf(CommonClass.localPort));
+        receiveIpBox.setText(CommonClass.receiveServerIp);
+        receiveIpBox.setEditable(false);
+        receivePortBox.setText(String.valueOf(CommonClass.receiveServerPort));
         autoTray.setSelected(CommonClass.tray);
         connectBox.setSelectedIndex(CommonClass.tcp_receive ? 1 : 0);
         languageBox.setSelectedIndex(CommonClass.language.equals("zh_CN") ? 0 : 1);
@@ -331,10 +355,23 @@ public class SettingForm extends JFrame {
             try {
                 int port = Integer.parseInt(portBox.getText());
                 if (port < 1 || port > 65535) {
-                    CommonClass.saveLog(CommonClass.i18nMessage.getString("error.port"), LogType.ErrorData);
                     showErrorMessage(CommonClass.i18nMessage.getString("error.port"));
                 } else {
                     CommonClass.localPort = port;
+                }
+
+                String ip = NetUtils.isIp(receiveIpBox.getText());
+                if (ip != null) {
+                    CommonClass.receiveServerIp = receiveIpBox.getText();
+                }else {
+                    showErrorMessage(CommonClass.i18nMessage.getString("error.ip"));
+                }
+
+                int r_port = Integer.parseInt(receivePortBox.getText());
+                if (r_port < 1 || r_port > 65535) {
+                    showErrorMessage(CommonClass.i18nMessage.getString("error.port"));
+                } else {
+                    CommonClass.receiveServerPort = r_port;
                 }
 
                 DataJsonUtil.write();
@@ -352,6 +389,9 @@ public class SettingForm extends JFrame {
             } catch (NumberFormatException ex) {
                 showErrorMessage(ex.getMessage());
             }
+
+            System.out.println(receiveIpBox.getText());
+            System.out.println(receivePortBox.getText());
         });
 
         cancel.addActionListener(e -> setVisible(false));
@@ -359,6 +399,8 @@ public class SettingForm extends JFrame {
 
     private JCheckBox set_auto_start;
     private JTextField portBox;
+    private JTextField receiveIpBox;
+    private JTextField receivePortBox;
     private JCheckBox autoTray;
     private JComboBox<String> connectBox;
     private JComboBox<String> languageBox;
@@ -367,4 +409,7 @@ public class SettingForm extends JFrame {
     private void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
+
+
+
 }

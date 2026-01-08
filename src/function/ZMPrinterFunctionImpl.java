@@ -2,6 +2,8 @@ package function;
 
 import com.ZMPrinter.*;
 import com.ZMPrinter.conn.ConnectException;
+import common.CommonClass;
+import utils.NetUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -163,9 +165,10 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
     @Override
     public String getNameAndSn(String serial) throws ConnectException {
         boolean isNet = serial.contains(".");
+        int port = CommonClass.receiveServerPort;
         int index = isNet ? 2 : 1;
         byte[] command = ("RQ" + index + ",1\r\n").getBytes(StandardCharsets.UTF_8);
-        String info = isNet ? printerOperator.sendAndReadPrinter(serial, command, 12301, null) : printerOperator.sendAndReadPrinter(serial, command, command.length, 1500, 1);
+        String info = isNet ? printerOperator.sendAndReadPrinter(serial, command, port, null) : printerOperator.sendAndReadPrinter(serial, command, command.length, 1500, 1);
         info = info.replace("dpi", "").replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         String[] infos = info.split(",");
         String name = infos[0];
@@ -197,20 +200,14 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
             return printerOperator.readTag(serialNumber, labelType, configuration, timeout, use_default);
         } catch (NumberFormatException e) {
             // 未通过Parse,catch为ip
-            if (addr.contains(",") && addr.contains(":")) {
+            String ip = NetUtils.isIp(addr);
+            if (ip != null) {
                 // 如果使用网络必须指定有ip和port,一般用于特殊环境防火墙开放
-                // 打印机IP,接收目标IP:接收目标端口   192.168.8.180,192.168.8.188:12301
-                String printerIp = addr.substring(0, addr.indexOf(","));
-                String[] targetIpAndPort = addr.substring(addr.indexOf(",") + 1).split(":");
-                String targetIp = targetIpAndPort[0];
-                int targetPort;
-                try {
-                    targetPort = Integer.parseInt(targetIpAndPort[1]);
-                } catch (NumberFormatException ex) {
-                    throw new IllegalAccessException("port参数不对");
-                }
-                printerOperator.getPrinterStatus(printerIp, 0);
-                return printerOperator.readTag(printerIp, targetPort, targetIp, labelType, configuration);
+                // 打印机IP,接收目标IP:接收目标端口
+                printerOperator.getPrinterStatus(ip, 0);
+                String receiveIp = CommonClass.receiveServerIp;
+                Integer receivePort = CommonClass.receiveServerPort;
+                return printerOperator.readTag(ip, receivePort, receiveIp, labelType, configuration);
             } else {
                 throw new IllegalAccessException("参数格式不正确");
             }

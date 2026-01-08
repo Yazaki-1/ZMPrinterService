@@ -37,6 +37,8 @@ public class CommonClass {
     public static boolean ssl = false;
     public static String certPath = "";
     public static String password = "";
+    public static String receiveServerIp = "127.0.0.1";
+    public static Integer receiveServerPort = null;
 
     //保存数据到log文件，被synchronized修饰的代码块及方法，在同一时间，只能被单个线程访问。
     public static synchronized void saveLog(String data, LogType logType) {
