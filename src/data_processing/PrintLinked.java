@@ -2,9 +2,10 @@ package data_processing;
 
 import com.ZMPrinter.PrinterOperator;
 import com.ZMPrinter.PrinterOperatorImpl;
-import com.ZMPrinter.conn.ConnectException;
-import com.ZMPrinter.conn.TcpConnector;
-import com.ZMPrinter.conn.UsbConnector;
+import com.ZMPrinter.conn.*;
+import com.ZMPrinter.printer_connector.TcpConnect;
+import com.ZMPrinter.printer_connector.TcpConnectImpl;
+import com.ZMPrinter.printer_connector.UsbConnect;
 import common.CommonClass;
 import common.LogType;
 import server.ChannelMap;
@@ -16,7 +17,6 @@ public class PrintLinked {
     private final LinkedBlockingQueue<LabelData> blockingQueue = new LinkedBlockingQueue<>();
     private volatile boolean started = true;
     private final Thread printThread;
-    private final PrinterOperator printerOperator = new PrinterOperatorImpl();
 
     public PrintLinked() {
         printThread = new Thread(() -> {
@@ -29,29 +29,24 @@ public class PrintLinked {
                         case RFID_USB:
                         case GJB_USB:
                         case GBGM_USB:
-//                            String serial = labelData.getPrinter().printermbsn;
-//                            if (serial.isEmpty()) { // 如果这台打印机mbsn为空值,默认选中USB第一台
-//                                PrinterOperator printerOperator = new PrinterOperatorImpl();
-//                                List<String> printers = printerOperator.getPrinters();
-//                                if (!printers.isEmpty()) {
-//                                    serial = printers.get(0);
-//                                }
-//                            }
-//                            try {
-//                                printLabel_USB_R(serial, data);
-//                                String message = CommonClass.i18nMessage.getString("print.finish");
-//                                ChannelMap.writeMessageToClient(clientRemote, message);
-//                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
-//                            } catch (ConnectException e) {
-//                                blockingQueue.clear();
-//                                String msg = ErrorCatcher.CatchConnectError(e.getMessage());
-//                                msg = msg.startsWith("2") ? "PrinterStatus_USB:" + msg : msg;
-//                                ChannelMap.writeMessageToClient(clientRemote, msg);
-//                            }
-//                            break;
+                            String serial = labelData.getPrinter().printermbsn;
+                            try {
+                                printLabel_USB_R(serial, data);
+                                String message = CommonClass.i18nMessage.getString("print.finish");
+                                ChannelMap.writeMessageToClient(clientRemote, message);
+                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+                            } catch (ConnectException e) {
+                                blockingQueue.clear();
+                                String msg = ErrorCatcher.CatchConnectError(e.getMessage());
+                                msg = msg.startsWith("2") ? "PrinterStatus_USB:" + msg : msg;
+                                ChannelMap.writeMessageToClient(clientRemote, msg);
+                                CommonClass.saveAndShow(clientRemote + "    " + msg, LogType.ServiceData);
+                            }
+                            break;
                         case USB:
                             try {
-                                printerOperator.sendToPrinter(labelData.getPrinter().printermbsn, data, labelData.getDataLen(), 1);
+                                UsbConnect usbConnect = new UsbConnect();
+                                usbConnect.write(labelData.getPrinter().printermbsn, data, labelData.getDataLen());
                                 String message = CommonClass.i18nMessage.getString("print.finish");
                                 ChannelMap.writeMessageToClient(clientRemote, message);
                                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
@@ -80,7 +75,8 @@ public class PrintLinked {
                             break;
                         case NET: {
                             try {
-                                printerOperator.sendToPrinter(labelData.getPrinter().printernetip, data);
+                                TcpConnect tcpConnect = new TcpConnectImpl();
+                                tcpConnect.sendToPrinter(labelData.getPrinter().printernetip, data);
                                 String message = CommonClass.i18nMessage.getString("print.finish");
                                 ChannelMap.writeMessageToClient(clientRemote, message);
                                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
@@ -94,6 +90,7 @@ public class PrintLinked {
                         }
                         default: {
                             try {
+                                PrinterOperator printerOperator = new PrinterOperatorImpl();
                                 printerOperator.sendToPrinterJob(labelData.getPrinter().printername, data);
                                 String message = CommonClass.i18nMessage.getString("print.finish");
                                 ChannelMap.writeMessageToClient(clientRemote, message);
@@ -125,30 +122,24 @@ public class PrintLinked {
         printThread.interrupt();
     }
 
-    @Deprecated
     private void printLabel_USB_R(String serial, byte[] data) throws InterruptedException {
-        System.out.println("Start Writing");
-        String ws = UsbConnector.writeToPrinter(serial, data, data.length, 0);
-        if (ws.contains("|")) {
-            System.out.println("write: " + ws);
-            throw new ConnectException(ErrorCatcher.CatchConnectError(ws));
+        UsbConnect usbConnect = new UsbConnect();
+        int status = usbConnect.status(serial);
+        if (status != 2004 && status != 0) {
+            throw new ConnectException(ErrorCatcher.CatchConnectError(status + "|"));
         }
-        Thread.sleep(500);
-        System.out.println("Start Reading");
-        String readData = UsbConnector.read(serial, 15000, 0);
-        if (readData.contains("|")) {
-            System.out.println("read: " + readData);
-            throw new ConnectException(ErrorCatcher.CatchConnectError(readData));
-        } else {
-            if (readData.equals("RP")) {
-                System.out.println("打印完成 -> RP");
-                String ps = UsbConnector.getPrinterStatus(serial, 0);
-                if (ps.contains("|")) {
-                    throw new ConnectException(ErrorCatcher.CatchConnectError(ps));
-                }
-            } else {
-                throw new ConnectException("1012|无法获取打印完成状态或者读取未知数据!");
+
+        usbConnect.write(serial, data, data.length);
+        String readData = usbConnect.read(serial, CommonClass.usbTimeout, 256);
+        if (readData.equals("RP")) {
+            System.out.println("打印完成 -> RP");
+            int rp_status = usbConnect.status(serial);
+            if (rp_status != 0) {
+                System.out.println(rp_status);
+                throw new ConnectException(ErrorCatcher.CatchConnectError(rp_status + "|"));
             }
+        } else {
+            throw new ConnectException("1012|无法获取打印完成状态或者读取未知数据!");
         }
     }
 
@@ -162,9 +153,10 @@ public class PrintLinked {
                 Thread.sleep(300);
         }
         try {
+            TcpConnect tcpConnect = new TcpConnectImpl();
             String serverIp = CommonClass.receiveServerIp;
             int port = CommonClass.receiveServerPort;
-            String dataRead = printerOperator.sendAndReadPrinter(ip, data, port, serverIp);
+            String dataRead = tcpConnect.sendAndReadPrinter(ip, data, port, serverIp);
             dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
 
             if (dataRead.equals("PN")) {

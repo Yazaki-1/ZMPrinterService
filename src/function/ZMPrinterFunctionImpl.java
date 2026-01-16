@@ -2,8 +2,11 @@ package function;
 
 import com.ZMPrinter.*;
 import com.ZMPrinter.conn.ConnectException;
+import com.ZMPrinter.printer_connector.TcpConnect;
+import com.ZMPrinter.printer_connector.TcpConnectImpl;
+import com.ZMPrinter.printer_connector.UsbConnect;
 import common.CommonClass;
-import utils.NetUtils;
+import data_processing.ErrorCatcher;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,15 +15,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
-
-    private static final PrinterOperator printerOperator = new PrinterOperatorImpl();
-
     @Override
     public byte[] buildBase64Image(String imageStr, int width, int height) throws IOException {
         Base64.Decoder decoder = Base64.getDecoder();
@@ -156,60 +154,135 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
 
     @Override
     public String getNameAndSn() throws ConnectException {
-        List<String> printers = printerOperator.getPrinters();
+        UsbConnect usbConnect = new UsbConnect();
+        List<String> printers = usbConnect.getPrinters();
+
+        if (printers.isEmpty()) {
+            throw new ConnectException("1008|");
+        }
+
         StringBuilder printerBuilder = new StringBuilder();
         printers.forEach(p -> printerBuilder.append(getNameAndSn(p)).append("|"));
         return printerBuilder.substring(0, printerBuilder.toString().length() - 1);
     }
 
     @Override
-    public String getNameAndSn(String serial) throws ConnectException {
+    public String getNameAndSn(String serial) {
         boolean isNet = serial.contains(".");
         int port = CommonClass.receiveServerPort;
         int index = isNet ? 2 : 1;
         byte[] command = ("RQ" + index + ",1\r\n").getBytes(StandardCharsets.UTF_8);
-        String info = isNet ? printerOperator.sendAndReadPrinter(serial, command, port, null) : printerOperator.sendAndReadPrinter(serial, command, command.length, 1500, 1);
-        info = info.replace("dpi", "").replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
-        String[] infos = info.split(",");
+        String readData;
+        if (isNet) {
+            TcpConnect tcpConnect = new TcpConnectImpl();
+            readData = tcpConnect.sendAndReadPrinter(serial, command, port, null);
+        } else {
+            UsbConnect usbConnect = new UsbConnect();
+            usbConnect.write(serial, command, command.length);
+            readData = usbConnect.read(serial, 3000, 256);
+        }
+        readData = readData.replace("dpi", "").replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
+        String[] infos = readData.split(",");
         String name = infos[0];
         String dpi = infos[3];
         return name + "," + serial + "," + dpi;
     }
 
     @Override
-    public String getPrinterStatus(String address) throws ConnectException {
-        if (address.isEmpty()) {
-            List<String> printers = printerOperator.getPrinters();
-            return printerOperator.getPrinterStatus(printers.get(0), 1);
+    public void getPrinterStatus(String address) throws ConnectException {
+        if (!address.isEmpty()) {
+            if (address.contains(".")) {
+                TcpConnect tcpConnect = new TcpConnectImpl();
+                tcpConnect.getPrinterStatus(address);
+            } else {
+                UsbConnect usbConnect = new UsbConnect();
+                int status = usbConnect.status(address);
+                if (status != 0) {
+                    throw new ConnectException(ErrorCatcher.CatchConnectError(status + "|"));
+                }
+            }
         } else {
-            return printerOperator.getPrinterStatus(address, 1);
+            UsbConnect usbConnect = new UsbConnect();
+            int status = usbConnect.status(address);
+            if (status != 0) {
+                throw new ConnectException(ErrorCatcher.CatchConnectError(status + "|"));
+            }
         }
     }
 
     @Override
-    public String readTagData(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout, int use_default) throws ConnectException, IllegalAccessException {
+    public String readTagData(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout, int buffer_size) throws ConnectException, IllegalAccessException {
         try {
             long serial = Long.parseLong(addr);
             String serialNumber = serial == 1 ? "" : addr;
-            if (serialNumber.isEmpty()) {
-                List<String> printers = printerOperator.getPrinters();
-                if (!printers.isEmpty()) {
-                    serialNumber = printers.get(0);
-                }
+
+            String readCommand = this.getReadCommand(labelType, configuration);
+            byte[] command = readCommand.getBytes(StandardCharsets.UTF_8);
+            UsbConnect usbConnect = new UsbConnect();
+            usbConnect.write(serialNumber, command, command.length);
+            String readData = usbConnect.read(serialNumber, timeout, buffer_size);
+            if (readData.equals("RP")) {
+                return usbConnect.read(serialNumber, timeout, buffer_size);
             }
-            return printerOperator.readTag(serialNumber, labelType, configuration, timeout, use_default);
+            return readData;
         } catch (NumberFormatException e) {
             // 未通过Parse,catch为ip
-            String ip = NetUtils.isIp(addr);
-            if (ip != null) {
+            if (addr.contains(".")) {
                 // 如果使用网络必须指定有ip和port,一般用于特殊环境防火墙开放
                 // 打印机IP,接收目标IP:接收目标端口
-                printerOperator.getPrinterStatus(ip, 0);
+                TcpConnect tcpConnect = new TcpConnectImpl();
+                tcpConnect.getPrinterStatus(addr);
                 String receiveIp = CommonClass.receiveServerIp;
                 Integer receivePort = CommonClass.receiveServerPort;
-                return printerOperator.readTag(ip, receivePort, receiveIp, labelType, configuration);
+                return tcpConnect.readTag(addr, receivePort, receiveIp, labelType, configuration);
             } else {
                 throw new IllegalAccessException("参数格式不正确");
+            }
+        }
+    }
+
+    private String getReadCommand(LabelType labelType, Map<String, Integer> configuration) {
+        if (configuration == null) {
+            throw new NullPointerException("configuration is null");
+        } else {
+            int area = configuration.getOrDefault("area", 0);
+            int protocol = configuration.getOrDefault("protocol", 1);
+            int retry = configuration.getOrDefault("retry", 0);
+            int feed = configuration.getOrDefault("feed", 2);
+            int power = configuration.getOrDefault("power", 0);
+            if (area >= 0 && area <= 3) {
+                if (feed >= 0 && feed <= 3) {
+                    if (protocol >= 1 && protocol <= 3) {
+                        if (retry >= 0 && retry <= 3) {
+                            if (power >= 0 && power <= 3) {
+                                switch (labelType) {
+                                    case UHF:
+                                        return "RD" + area + ",1,0," + feed + "\r\n";
+                                    case GJB:
+                                        return "RD" + area + ",1,0," + feed + ",\"00000000\",0,0,0\r\n";
+                                    case GB:
+                                        throw new IllegalArgumentException("暂不支持GB");
+                                    case GM:
+                                        throw new IllegalArgumentException("暂不支持GB_GM");
+                                    case HF:
+                                        return "HS2," + protocol + "," + retry + ",0\r\nHR0,1,0,3,0,1,1\r\n";
+                                    default:
+                                        throw new RuntimeException("No such label type");
+                                }
+                            } else {
+                                throw new IllegalArgumentException("power is out of range");
+                            }
+                        } else {
+                            throw new IllegalArgumentException("retry is out of range");
+                        }
+                    } else {
+                        throw new IllegalArgumentException("protocol is out of range");
+                    }
+                } else {
+                    throw new IllegalArgumentException("feed is out of range");
+                }
+            } else {
+                throw new IllegalArgumentException("area is out of range");
             }
         }
     }

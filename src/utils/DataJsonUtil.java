@@ -94,10 +94,6 @@ public class DataJsonUtil {
             else
                 CommonClass.password = "";
 
-//            String receive_ip = object.getString("receive_ip");
-//            if (receive_ip != null)
-//                CommonClass.receiveServerIp = receive_ip;
-//            else
             CommonClass.receiveServerIp = "127.0.0.1";
 
             Integer receive_port = object.getInteger("receive_port");
@@ -105,6 +101,12 @@ public class DataJsonUtil {
                 CommonClass.receiveServerPort = receive_port;
             else
                 CommonClass.receiveServerPort = 12301;
+
+            Integer usbTimeout = object.getInteger("timeout");
+            if (usbTimeout != null)
+                CommonClass.usbTimeout = usbTimeout;
+            else
+                CommonClass.usbTimeout = 5000;
         } catch (IOException e) {
             System.out.println(e.getMessage());
             CommonClass.saveLog("No data found: " + e.getMessage(), LogType.ErrorData);
@@ -119,6 +121,7 @@ public class DataJsonUtil {
             CommonClass.ssl = false;
             CommonClass.receiveServerIp = "127.0.0.1";
             CommonClass.receiveServerPort = 12301;
+            CommonClass.usbTimeout = 5000;
         }
     }
 

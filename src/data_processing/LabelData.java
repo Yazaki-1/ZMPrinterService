@@ -4,6 +4,7 @@ import com.ZMPrinter.ZMPrinter;
 
 import java.io.Serializable;
 
+@SuppressWarnings("unused")
 public class LabelData implements Serializable {
     private static final long serialVersionUID = 1L;
     private final String serial;

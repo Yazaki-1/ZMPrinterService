@@ -3,7 +3,7 @@ package data_processing;
 import com.ZMPrinter.*;
 import com.ZMPrinter.LSF.LSFDecoder;
 import com.ZMPrinter.conn.ConnectException;
-import com.ZMPrinter.conn.UsbConnector;
+import com.ZMPrinter.printer_connector.UsbConnect;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import common.CommonClass;
@@ -17,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -156,106 +155,96 @@ public class LabelBuilder {
         }
     }
 
-    @Deprecated
-    public static void printLabel(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
-        PrinterOperator printerOperator = new PrinterOperatorImpl();
-
-        byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
-        String connectType = DataUtils.getConnectType(printer.printerinterface);
-        try {
-            String writeResult;
-
-            switch (connectType) {
-                case "USB": {
-                    if (printer.printermbsn.isEmpty()) {
-                        List<String> printers = printerOperator.getPrinters();
-                        if (!printers.isEmpty()) {
-                            printer.printermbsn = printers.get(0);
-                        }
-                    }
-                    String serial = printer.printermbsn;
-                    if (printer.printerinterface == PrinterStyle.RFID_USB || printer.printerinterface == PrinterStyle.GJB_USB || printer.printerinterface == PrinterStyle.GBGM_USB) {
-                        PrintLabelFactory.printLabel(serial, data, clientRemote);
-                    }else {
-                        writeResult = UsbConnector.writeToPrinter(serial, ByteBuffer.wrap(data).array(), data.length, 0);
-                        try {
-                            float speed = printer.printSpeed * 25.4f;
-                            float labelHeight = label.labelheight;
-                            long printWaiting = (long) (labelHeight / speed * 1000 / 3);
-                            Thread.sleep(printWaiting);
-                        }catch (InterruptedException e) {
-                            System.out.println(e.getMessage());
-                        }
-                        if (writeResult.contains("|")) {
-                            String message = ErrorCatcher.CatchConnectError(writeResult);
-                            ChannelMap.writeMessageToClient(clientRemote, message);
-                            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
-                        }else {
-                            String message = CommonClass.i18nMessage.getString("print.finish");
-                            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
-                            ChannelMap.writeMessageToClient(clientRemote, message);
-                        }
-                    }
-                    writeResult = "1";
-                    break;
-                }
-                case "NET": {
-                    writeResult = printerOperator.sendToPrinter(printer.printernetip, data);
-                    try {
-                        float speed = printer.printSpeed * 25.4f;
-                        float labelHeight = label.labelheight;
-                        long printWaiting = (long) (labelHeight / speed * 1000 / 3);
-                        Thread.sleep(printWaiting);
-                    }catch (InterruptedException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                }
-                case "DRIVER": {
-                    writeResult = printerOperator.sendToPrinterJob(printer.printername, data);
-                    break;
-                }
-                default: {
-                    writeResult = null;
-                }
-            }
-
-            if (writeResult != null) {
-                if (!writeResult.equals("1")) {
-                    String message = CommonClass.i18nMessage.getString("print.finish");
-                    try {
-                        // 防止lsf文件插入数据抢管道数据
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        throw new FunctionalException("4005|其他异常 => " + e.getMessage());
-                    }
-                    CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
-                    ChannelMap.writeMessageToClient(clientRemote, message);
-                }
-            } else {
-                throw new FunctionalException("4005|其他异常 => 未定义的printerInterface");
-            }
-        } catch (ConnectException e) {
-            String message = ErrorCatcher.CatchConnectError(e.getMessage());
-            ChannelMap.writeMessageToClient(clientRemote, message);
-            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
-        }
-    }
+//    @Deprecated
+//    public static void printLabel(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
+//        PrinterOperator printerOperator = new PrinterOperatorImpl();
+//
+//        byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
+//        String connectType = DataUtils.getConnectType(printer.printerinterface);
+//        try {
+//            String writeResult;
+//
+//            switch (connectType) {
+//                case "USB": {
+//                    if (printer.printermbsn.isEmpty()) {
+//                        List<String> printers = printerOperator.getPrinters();
+//                        if (!printers.isEmpty()) {
+//                            printer.printermbsn = printers.get(0);
+//                        }
+//                    }
+//                    String serial = printer.printermbsn;
+//                    if (printer.printerinterface == PrinterStyle.RFID_USB || printer.printerinterface == PrinterStyle.GJB_USB || printer.printerinterface == PrinterStyle.GBGM_USB) {
+//                        PrintLabelFactory.printLabel(serial, data, clientRemote);
+//                    }else {
+//                        writeResult = UsbConnector.writeToPrinter(serial, ByteBuffer.wrap(data).array(), data.length);
+//                        try {
+//                            float speed = printer.printSpeed * 25.4f;
+//                            float labelHeight = label.labelheight;
+//                            long printWaiting = (long) (labelHeight / speed * 1000 / 3);
+//                            Thread.sleep(printWaiting);
+//                        }catch (InterruptedException e) {
+//                            System.out.println(e.getMessage());
+//                        }
+//                        if (writeResult.contains("|")) {
+//                            String message = ErrorCatcher.CatchConnectError(writeResult);
+//                            ChannelMap.writeMessageToClient(clientRemote, message);
+//                            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
+//                        }else {
+//                            String message = CommonClass.i18nMessage.getString("print.finish");
+//                            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+//                            ChannelMap.writeMessageToClient(clientRemote, message);
+//                        }
+//                    }
+//                    writeResult = "1";
+//                    break;
+//                }
+//                case "NET": {
+//                    writeResult = printerOperator.sendToPrinter(printer.printernetip, data);
+//                    try {
+//                        float speed = printer.printSpeed * 25.4f;
+//                        float labelHeight = label.labelheight;
+//                        long printWaiting = (long) (labelHeight / speed * 1000 / 3);
+//                        Thread.sleep(printWaiting);
+//                    }catch (InterruptedException e) {
+//                        System.out.println(e.getMessage());
+//                    }
+//                    break;
+//                }
+//                case "DRIVER": {
+//                    writeResult = printerOperator.sendToPrinterJob(printer.printername, data);
+//                    break;
+//                }
+//                default: {
+//                    writeResult = null;
+//                }
+//            }
+//
+//            if (writeResult != null) {
+//                if (!writeResult.equals("1")) {
+//                    String message = CommonClass.i18nMessage.getString("print.finish");
+//                    try {
+//                        // 防止lsf文件插入数据抢管道数据
+//                        Thread.sleep(200);
+//                    } catch (InterruptedException e) {
+//                        throw new FunctionalException("4005|其他异常 => " + e.getMessage());
+//                    }
+//                    CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+//                    ChannelMap.writeMessageToClient(clientRemote, message);
+//                }
+//            } else {
+//                throw new FunctionalException("4005|其他异常 => 未定义的printerInterface");
+//            }
+//        } catch (ConnectException e) {
+//            String message = ErrorCatcher.CatchConnectError(e.getMessage());
+//            ChannelMap.writeMessageToClient(clientRemote, message);
+//            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
+//        }
+//    }*/
 
     public static void addPrintQueue(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
-        if (printer.printermbsn.isEmpty() && printer.printernetip.isEmpty()) { // 如果这台打印机mbsn与ip皆为空值,默认选中USB第一台
-            PrinterOperator printerOperator = new PrinterOperatorImpl();
-            List<String> printers = printerOperator.getPrinters();
-            if (!printers.isEmpty()) {
-                printer.printermbsn = printers.get(0);
-            }
-        }
-
-//        printer.printerinterface = PrinterStyle.USB;
-
         float speed = printer.printSpeed * 25.4f;
         float labelHeight = label.labelheight;
-        long printWaiting = (long) (labelHeight / speed * 1000 / 3);
+        long printWaiting = (long) (labelHeight / speed * 1000);
         byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
         if (data == null) {
             String message = ErrorCatcher.CatchConnectError("3003|生成标签数据异常为空,请检查Json内容");
@@ -268,15 +257,17 @@ public class LabelBuilder {
     }
 
     public static void setting(ZMPrinter printer, String parameters, String clientRemote) {
+        UsbConnect usbConnect = new UsbConnect();
         String[] params = parameters.split("\\|");
         StringBuilder builder = new StringBuilder();
         for (String param : params) {
             builder.append(param).append("\r\n");
         }
         byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
-        String writeResult = UsbConnector.writeToPrinter(printer.printermbsn, bytes, bytes.length, 1);
-        if (writeResult.equals("|")) {
-            String message = ErrorCatcher.CatchConnectError(writeResult);
+        try {
+            usbConnect.write(printer.printermbsn, bytes, bytes.length);
+        }catch (ConnectException e) {
+            String message = ErrorCatcher.CatchConnectError(e.getMessage());
             CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
             ChannelMap.writeMessageToClient(clientRemote, message);
         }

@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public class PrinterVO implements Serializable {
-    private static final long serialVersionUID = 1L;
     private String name;
     private float dpi;
     private String firmware;

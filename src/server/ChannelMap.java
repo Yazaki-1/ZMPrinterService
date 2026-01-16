@@ -56,11 +56,14 @@ public class ChannelMap {
 
     public static void writeMessageToClient(String remoteAddress, String serverMessage) {
         Channel channel = findChannel(remoteAddress);
-
-        if (CommonClass.tcp_receive) {
-            channel.writeAndFlush(serverMessage);
-        } else {
-            channel.writeAndFlush(new TextWebSocketFrame(serverMessage));
+        if (channel != null) {
+            if (CommonClass.tcp_receive) {
+                channel.writeAndFlush(serverMessage);
+            } else {
+                channel.writeAndFlush(new TextWebSocketFrame(serverMessage));
+            }
+        }else {
+            removeChannel(remoteAddress);
         }
     }
 }

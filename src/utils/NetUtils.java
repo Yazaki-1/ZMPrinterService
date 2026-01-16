@@ -32,13 +32,4 @@ public class NetUtils {
             throw new RuntimeException(e);
         }
     }
-
-    public static String isIp(String input) {
-        try {
-            InetAddress ipAddress = InetAddress.getByName(input);
-            return ipAddress.getHostAddress();
-        } catch (UnknownHostException e) {
-            return null;
-        }
-    }
 }

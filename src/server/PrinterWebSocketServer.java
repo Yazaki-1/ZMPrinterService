@@ -11,7 +11,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.ssl.SslHandler;
 
 import javax.net.ssl.SSLContext;
@@ -51,7 +50,7 @@ public class PrinterWebSocketServer {
                                     }
                                     pipeline.addLast(new HttpServerCodec()); // HTTP 协议解析，用于握手阶段
                                     pipeline.addLast(new HttpObjectAggregator(65535)); // HTTP 协议解析，用于握手阶段
-                                    pipeline.addLast(new WebSocketServerCompressionHandler()); // WebSocket 数据压缩扩展
+//                                    pipeline.addLast(new WebSocketServerCompressionHandler()); // WebSocket 数据压缩扩展
                                     pipeline.addLast(new WebSocketServerProtocolHandler("/", null, true, 65536 * 2)); // WebSocket 握手、控制帧处理
                                     pipeline.addLast(new WebSocketFrameAggregator(16 * 1024 * 1024)); // websocket帧聚合
                                     pipeline.addLast(new PrinterWebSocketHandler());

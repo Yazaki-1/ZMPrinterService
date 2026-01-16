@@ -3,6 +3,9 @@ package function;
 import com.ZMPrinter.*;
 import com.ZMPrinter.barcodes.BarcodeStyle;
 import com.ZMPrinter.conn.ConnectException;
+import com.ZMPrinter.printer_connector.TcpConnect;
+import com.ZMPrinter.printer_connector.TcpConnectImpl;
+import com.ZMPrinter.printer_connector.UsbConnect;
 import common.CommonClass;
 import common.LogType;
 import data_processing.ErrorCatcher;
@@ -584,28 +587,23 @@ public class FuncLabelCreator {
                 break;
             }
             case "ZM_PrintLabel_R": {
-                PrinterOperator printerOperator = new PrinterOperatorImpl();
                 byte[] commands = funcBody.buildLabelCommand();
                 int len = commands.length;
                 String printResult;
                 if (CommonClass.localSN.isEmpty()) {
-                    if (funcBody.getPrinter().printermbsn.isEmpty() && funcBody.getPrinter().printernetip.isEmpty()) {
-                        //sn和ip都没设置默认选中第一个USB打印机
-                        List<String> serials = printerOperator.getPrinters();
-                        if (serials.isEmpty()) {
-                            CommonClass.saveAndShow("未连接打印机", LogType.ServiceData);
-                            break;
-                        } else {
-                            printResult = printerOperator.sendToPrinter(serials.get(0), commands, len, 0);
-                        }
-                    } else if (funcBody.getPrinter().printermbsn.isEmpty()) {
+                    if (!funcBody.getPrinter().printernetip.isEmpty()) {
                         //设了网络打印机ip
-                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printernetip, commands);
-                    } else {
-                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len, 1);
+                        TcpConnect tcpConnect = new TcpConnectImpl();
+                        printResult = tcpConnect.sendToPrinter(funcBody.getPrinter().printernetip, commands);
+                    }else {
+                        UsbConnect usbConnect = new UsbConnect();
+                        usbConnect.write(funcBody.getPrinter().printermbsn, commands, len);
+                        printResult = "0";
                     }
                 } else {
-                    printResult = printerOperator.sendToPrinter(CommonClass.localSN, commands, len, 0);
+                    UsbConnect usbConnect = new UsbConnect();
+                    usbConnect.write(CommonClass.localSN, commands, len);
+                    printResult = "0";
                 }
 
                 if (printResult.equals("0")) {
@@ -616,28 +614,23 @@ public class FuncLabelCreator {
                 break;
             }
             case "ZM_PrintLabel": {// USB和NET的
-                PrinterOperator printerOperator = new PrinterOperatorImpl();
                 byte[] commands = funcBody.buildLabelCommand();
                 int len = commands.length;
                 String printResult;
                 if (CommonClass.localSN.isEmpty()) {
-                    if (funcBody.getPrinter().printermbsn.isEmpty() && funcBody.getPrinter().printernetip.isEmpty()) {
-                        //sn和ip都没设置默认选中第一个USB打印机
-                        List<String> serials = printerOperator.getPrinters();
-                        if (serials.isEmpty()) {
-                            CommonClass.saveAndShow("1008|未连接打印机", LogType.ServiceData);
-                            break;
-                        } else {
-                            printResult = printerOperator.sendToPrinter(serials.get(0), commands, len, 1);
-                        }
-                    } else if (funcBody.getPrinter().printermbsn.isEmpty()) {
+                    if (!funcBody.getPrinter().printernetip.isEmpty()) {
                         //设了网络打印机ip
-                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printernetip, commands);
-                    } else {
-                        printResult = printerOperator.sendToPrinter(funcBody.getPrinter().printermbsn, commands, len, 1);
+                        TcpConnect tcpConnect = new TcpConnectImpl();
+                        printResult = tcpConnect.sendToPrinter(funcBody.getPrinter().printernetip, commands);
+                    }else {
+                        UsbConnect usbConnect = new UsbConnect();
+                        usbConnect.write(funcBody.getPrinter().printermbsn, commands, len);
+                        printResult = "0";
                     }
                 } else {
-                    printResult = printerOperator.sendToPrinter(CommonClass.localSN, commands, len, 1);
+                    UsbConnect usbConnect = new UsbConnect();
+                    usbConnect.write(CommonClass.localSN, commands, len);
+                    printResult = "0";
                 }
 
                 if (printResult.equals("0")) {
@@ -813,8 +806,8 @@ public class FuncLabelCreator {
     private static String getPrinterStatusAndCatchStatusErr(String addr) {
         String message_head = addr.contains(".") ? "PrinterStatus_NET:" : "PrinterStatus_USB:";
         try {
-            String status = function.getPrinterStatus(addr);
-            return message_head + status;
+            function.getPrinterStatus(addr);
+            return message_head + 0;
         } catch (ConnectException e) {
             String catcher = ErrorCatcher.CatchConnectError(e.getMessage());
             if (catcher.startsWith("2")) {
@@ -828,7 +821,7 @@ public class FuncLabelCreator {
     private static String readTagAndCatchStatusErr(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout) {
         String message_head = addr.contains(".") ? "PrinterStatus_NET:" : "PrinterStatus_USB:";
         try {
-            return function.readTagData(addr, labelType, configuration, timeout, 0);
+            return function.readTagData(addr, labelType, configuration, timeout, 512);
         } catch (ConnectException e) {
             String catcher = ErrorCatcher.CatchConnectError(e.getMessage());
             if (catcher.startsWith("2")) {

@@ -4,12 +4,15 @@
 
 package layout;
 
-import com.ZMPrinter.PrinterOperator;
-import com.ZMPrinter.PrinterOperatorImpl;
 import com.ZMPrinter.conn.ConnectException;
+import com.ZMPrinter.printer_connector.TcpConnect;
+import com.ZMPrinter.printer_connector.TcpConnectImpl;
+import com.ZMPrinter.printer_connector.UsbConnect;
 import common.CommonClass;
 import data_processing.ErrorCatcher;
 import function.CalibrationFunctionImpl;
+import function.ZMPrinterFunction;
+import function.ZMPrinterFunctionImpl;
 import utils.ConfigureUtils;
 
 import java.awt.*;
@@ -37,7 +40,8 @@ public class RFID_Configuration extends JDialog {
     private BufferedImage configureImage = null;
     private Map<String, BufferedImage> configureImageMap;
     private Map<String, File> configureFileMap;
-    private final PrinterOperator printerOperator = new PrinterOperatorImpl();
+//    private final PrinterOperator printerOperator = new PrinterOperatorImpl();
+    private final ZMPrinterFunction function = new ZMPrinterFunctionImpl();
 
     public RFID_Configuration(Window owner) {
         super(owner);
@@ -458,10 +462,16 @@ public class RFID_Configuration extends JDialog {
                 contents.forEach(c -> instruct.append(c).append("\r\n"));
                 System.out.println(instruct);
                 try{
-                    printerOperator.getPrinterStatus(selectPrinter, 1);
+                    function.getPrinterStatus(selectPrinter);
 
-                    if (selectPrinter.contains(".")) printerOperator.sendToPrinter(selectPrinter, instruct.toString().getBytes(StandardCharsets.UTF_8));
-                    else printerOperator.sendToPrinter(selectPrinter, instruct.toString().getBytes(), instruct.length(), 1);
+                    if (selectPrinter.contains(".")) {
+                        TcpConnect tcpConnect = new TcpConnectImpl();
+                        tcpConnect.sendToPrinter(selectPrinter, instruct.toString().getBytes(StandardCharsets.UTF_8));
+                    }
+                    else {
+                        UsbConnect usbConnect = new UsbConnect();
+                        usbConnect.write(selectPrinter, instruct.toString().getBytes(), instruct.length());
+                    }
 
                     Timer timer = new Timer();
                     timer.schedule(new TimerTask() {
@@ -516,10 +526,16 @@ public class RFID_Configuration extends JDialog {
                 System.out.println(commands);
 
                 try{
-                    printerOperator.getPrinterStatus(selectPrinter, 1);
+                    function.getPrinterStatus(selectPrinter);
 
-                    if (selectPrinter.contains(".")) printerOperator.sendToPrinter(selectPrinter, commands.getBytes(StandardCharsets.UTF_8));
-                    else printerOperator.sendToPrinter(selectPrinter, commands.getBytes(), commands.length(), 1);
+                    if (selectPrinter.contains(".")) {
+                        TcpConnect tcpConnect = new TcpConnectImpl();
+                        tcpConnect.sendToPrinter(selectPrinter, commands.getBytes(StandardCharsets.UTF_8));
+                    }
+                    else {
+                        UsbConnect usbConnect = new UsbConnect();
+                        usbConnect.write(selectPrinter, commands.getBytes(), commands.length());
+                    }
                     showInformationDialog(CommonClass.i18nMessage.getString("config.complete"));
                 }catch (ConnectException ex) {
                     showErrorMessage(ErrorCatcher.CatchConnectError(ex.getMessage()));
@@ -627,8 +643,7 @@ public class RFID_Configuration extends JDialog {
                 PrinterVO printerVO = RFID_Calibration.map.get(selectPrinter);
                 if (printerVO != null) {
                     PrinterInfoVO printerInfoVO = printerVO.getVo();
-                    PrinterOperator printerOperator = new PrinterOperatorImpl();
-                    printerOperator.getPrinterStatus(selectPrinter, 1);
+                    function.getPrinterStatus(selectPrinter);
                     String commandString = selectPrinter.contains(".") ? "AL\r\n" : "AD\r\n"; //获取校准曲线的数据
                     String readData = LayoutUtils.getPrinterMessage(addr, commandString.getBytes(StandardCharsets.UTF_8));
                     System.out.println(readData);

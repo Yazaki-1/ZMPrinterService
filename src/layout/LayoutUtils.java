@@ -1,7 +1,8 @@
 package layout;
 
-import com.ZMPrinter.PrinterOperator;
-import com.ZMPrinter.PrinterOperatorImpl;
+import com.ZMPrinter.printer_connector.TcpConnect;
+import com.ZMPrinter.printer_connector.TcpConnectImpl;
+import com.ZMPrinter.printer_connector.UsbConnect;
 import common.CommonClass;
 
 import java.awt.image.BufferedImage;
@@ -11,16 +12,18 @@ import java.util.Map;
 
 public class LayoutUtils {
     public static String getPrinterMessage(String addr, byte[] data) {
-        PrinterOperator printerOperator = new PrinterOperatorImpl();
         String dataRead;
         if (addr.contains(".")) {
             // 带.的是IP地址
             String serverIp = CommonClass.receiveServerIp;
             int port = CommonClass.receiveServerPort;
-            dataRead = printerOperator.sendAndReadPrinter(addr, data, port, serverIp);
+            TcpConnect tcpConnect = new TcpConnectImpl();
+            dataRead = tcpConnect.sendAndReadPrinter(addr, data, port, serverIp);
             dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
         } else {
-            dataRead = printerOperator.sendAndReadPrinter(addr, data, data.length, 5000, 1).replace("\r", "").replace("\n", "");
+            UsbConnect usbConnect = new UsbConnect();
+            usbConnect.write(addr, data, data.length);
+            dataRead = usbConnect.read(addr, 5000, 40960).replace("\r", "").replace("\n", "");
         }
         return dataRead;
     }

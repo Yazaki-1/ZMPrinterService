@@ -7,7 +7,6 @@ package layout;
 import common.CommonClass;
 import common.LogType;
 import utils.DataJsonUtil;
-import utils.NetUtils;
 import utils.RegUtil;
 
 import java.awt.*;
@@ -360,8 +359,8 @@ public class SettingForm extends JFrame {
                     CommonClass.localPort = port;
                 }
 
-                String ip = NetUtils.isIp(receiveIpBox.getText());
-                if (ip != null) {
+                String ip = receiveIpBox.getText();
+                if (ip.contains(".")) {
                     CommonClass.receiveServerIp = receiveIpBox.getText();
                 }else {
                     showErrorMessage(CommonClass.i18nMessage.getString("error.ip"));

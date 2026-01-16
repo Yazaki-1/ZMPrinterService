@@ -28,7 +28,7 @@ public interface ZMPrinterFunction {
 
     String getNameAndSn(String serial) throws ConnectException;
 
-    String getPrinterStatus(String address) throws ConnectException;
+    void getPrinterStatus(String address) throws ConnectException;
 
     String readTagData(String funcParams_One, LabelType labelType, Map<String, Integer> configuration, Integer timeout, int use_default) throws ConnectException, IllegalAccessException;
 }
