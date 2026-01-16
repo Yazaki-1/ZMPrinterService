@@ -503,7 +503,7 @@ public class RFID_Configuration extends JDialog {
         vertical_level.setModel(new SpinnerNumberModel(0, -8, 80, 0.5));
 
         offsetButton.addActionListener(e -> {
-            String dpiS = printer_dpi_label.getText().replace(CommonClass.i18nMessage.getString("printer_dpi"), "");
+            String dpiS = printer_dpi_label.getText().replace(CommonClass.i18nMessage.getString("printer_dpi"), "").trim();
             if (!dpiS.isEmpty()) {
                 String commands = "";
                 dpiS = dpiS.replace(" DPI", "");

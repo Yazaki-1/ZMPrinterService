@@ -1219,16 +1219,21 @@ public class RFID_Calibration extends JDialog {
             if (!selectPrinter.isEmpty()) {
                 //只有打印机纸张校准结束停止动作后才能查询结果,是否继续?
                 if (warningOption(CommonClass.i18nMessage.getString("warning.check_result"))) {
-                    function.getPrinterStatus(selectPrinter);
-                    getPrinterInfo(selectPrinter);
-                    showResult(selectPrinter);
+                    try {
+                        function.getPrinterStatus(selectPrinter);
+                        getPrinterInfo(selectPrinter);
+                        showResult(selectPrinter);
 
-                    PrinterVO printerVO = map.get(selectPrinter);
-                    if (printerVO != null) {
-                        if (printerVO.getPrinterType() == PrinterType.GJB || printerVO.getPrinterType() == PrinterType.UHF) {
-                            saveResultButton.setVisible(true);
+                        PrinterVO printerVO = map.get(selectPrinter);
+                        if (printerVO != null) {
+                            if (printerVO.getPrinterType() == PrinterType.GJB || printerVO.getPrinterType() == PrinterType.UHF) {
+                                saveResultButton.setVisible(true);
+                            }
                         }
+                    }catch (Exception ex) {
+                        showErrorMessage(ex.getMessage());
                     }
+
                 }
             }
 
