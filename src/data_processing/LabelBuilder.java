@@ -89,12 +89,15 @@ public class LabelBuilder {
         } else {
             //普通json
             List<ZMLabelobject> labelObjectList = jsonData.getLabelObjectList();
-            labelObjectList.forEach(l -> {
-                // 将所有text改为truetype
-                if (l.ObjectName.contains("text")) {
-                    l.ObjectName = l.ObjectName.replace("text", "truetype");
-                }
-            });
+            if (labelObjectList != null) {
+                labelObjectList.forEach(l -> {
+                    // 将所有text改为truetype
+                    if (l.ObjectName.contains("text")) {
+                        l.ObjectName = l.ObjectName.replace("text", "truetype");
+                    }
+                });
+            }
+
             ZMPrinter printer = jsonData.getPrinter();
             ZMLabel labelFormat = jsonData.getLabelFormat();
 
