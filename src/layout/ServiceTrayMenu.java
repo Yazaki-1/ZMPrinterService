@@ -108,8 +108,7 @@ public class ServiceTrayMenu {
             JMenuItem menuItem = getItem(" " + CommonClass.i18nMessage.getString("menu.about"), about);
             String messageBody = "ZMPrintService Ver" +
                     CommonClass.SOFT_VERSION +
-                    CommonClass.i18nMessage.getString("about_message") + "\n\n" +
-                    "ZMIN Technologies.";
+                    CommonClass.i18nMessage.getString("about_message") + "\n\n";
             menuItem.addActionListener(e ->
                     JOptionPane.showMessageDialog(null, messageBody,
                             "About",

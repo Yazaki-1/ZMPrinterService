@@ -105,9 +105,11 @@ public class LabelBuilder {
 //                case "print":
 //                    printLabel(printer, labelFormat, labelObjectList, clientRemote);
 //                    break;*/
+                case "preview0":
+                    preview(printer, labelFormat, labelObjectList, clientRemote, 0);
+                    break;
                 case "preview":
-                    int border = jsonData.getOperator().endsWith("0") ? 0 : 1;
-                    preview(printer, labelFormat, labelObjectList, clientRemote, border);
+                    preview(printer, labelFormat, labelObjectList, clientRemote, 1);
                     break;
                 case "setting":
                     setting(printer, jsonData.getParameters(), clientRemote);
