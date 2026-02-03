@@ -137,18 +137,22 @@ public class LabelBuilder {
             }
         });
         printUtility.setVarValue(contents, lsfMaps);
-        int border = operator.endsWith("0") ? 0 : 1;
         switch (operator) {
 //            case "print":
 //                printLabel(printer, label, contents, clientRemote);
 //                break;*/
-            case "preview": {
+            case "preview0":
                 if (preview_one) {
-                    preview(printer, label, contents, clientRemote, border);
+                    preview(printer, label, contents, clientRemote, 0);
                     preview_one = false;
                 }
                 break;
-            }
+            case "preview":
+                if (preview_one) {
+                    preview(printer, label, contents, clientRemote, 1);
+                    preview_one = false;
+                }
+                break;
             case "setting":
                 throw new FunctionalException("3008|调用LSF模板不能使用Setting");
             case "print":
