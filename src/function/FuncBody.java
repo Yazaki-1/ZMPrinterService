@@ -4,6 +4,7 @@ import com.ZMPrinter.PrintUtility;
 import com.ZMPrinter.ZMLabel;
 import com.ZMPrinter.ZMLabelobject;
 import com.ZMPrinter.ZMPrinter;
+import utils.DataUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class FuncBody implements Serializable {
 
     public byte[] buildLabelCommand() {
         PrintUtility printUtility = new PrintUtility();
+        DataUtils.checkHexData(labelObjects);
         return printUtility.CreateLabelCommand(printer, label, labelObjects);
     }
 

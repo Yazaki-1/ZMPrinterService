@@ -18,8 +18,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -116,6 +114,9 @@ public class LabelBuilder {
                     break;
                 case "print":
                 case "batch":
+                    if (labelObjectList != null) {
+                        DataUtils.checkHexData(labelObjectList);
+                    }
                     addPrintQueue(printer, labelFormat, labelObjectList, clientRemote);
                     break;
                 default:
@@ -289,14 +290,6 @@ public class LabelBuilder {
             ImageIO.write(labelImage, "png", stream);
             String base64Image = Base64.getEncoder().encodeToString(stream.toByteArray());
             ChannelMap.writeMessageToClient(clientRemote, "ZM_PrintLabel_Preview:data:image/png;base64," + base64Image);
-
-            byte[] bytes = printUtility.CreateLabelCommand(printer, label, contents);
-            String filePath = "write.txt";
-            try {
-                Files.write(Paths.get(filePath), bytes);
-            }catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
         } catch (IOException e) {
             throw new FunctionalException("3005|图片预览错误:" + e.getMessage());
         }

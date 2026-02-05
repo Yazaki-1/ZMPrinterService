@@ -5,12 +5,18 @@ import com.ZMPrinter.ZMLabelobject;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import data_processing.JsonData;
+import function.FunctionalException;
 
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DataUtils {
+
+    private static final Pattern pattern = Pattern.compile("^[0-9A-Fa-f]+$");
+
     public static <T> List<T> castList(Object obj, Class<T> tClass) {
         List<T> result = new ArrayList<>();
         if (obj instanceof List<?>) {
@@ -489,5 +495,26 @@ public class DataUtils {
         }
 
         return manufactureName + " " + modelName;
+    }
+
+    public static void checkHexData(List<ZMLabelobject> contents) {
+//        return data.matches("[0-9a-fA-F]*");
+        List<ZMLabelobject> rfidObjs = new ArrayList<>();
+        for (ZMLabelobject labelObject : contents) {
+            if (labelObject.ObjectName.contains("rfid")) {
+                rfidObjs.add(labelObject);
+            }
+        }
+        for (ZMLabelobject rfidObj : rfidObjs) {
+            // 若为16进制或者高频写入时的NDEF的16进制,则需要筛选判定数据是否合规的16进制数
+            // 2026/02/05: 当发送的数据为非16进制数时, 打印机会将大于F的数据转为F写入, 应出现异常!
+            if (rfidObj.RFIDDatatype == 1) {
+                String data = rfidObj.objectdata;
+                boolean checkResult = data.matches("[0-9a-fA-F]*");
+                if (!checkResult) {
+                    throw new FunctionalException("3010|");
+                }
+            }
+        }
     }
 }
