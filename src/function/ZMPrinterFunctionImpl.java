@@ -221,8 +221,15 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
             UsbConnect usbConnect = new UsbConnect();
             usbConnect.write(serialNumber, command, command.length);
             String readData = usbConnect.read(serialNumber, timeout, buffer_size);
+            if (isReadEmptyAndPrintBlank(readData, usbConnect, serialNumber)) {
+                return readData;
+            }
             if (readData.equals("RP")) {
-                return usbConnect.read(serialNumber, timeout, buffer_size);
+                String readData_twice = usbConnect.read(serialNumber, timeout, buffer_size);
+                if (isReadEmptyAndPrintBlank(readData_twice, usbConnect, serialNumber)) {
+                    return readData_twice;
+                }
+                return readData_twice;
             }
             return readData;
         } catch (NumberFormatException e) {
@@ -285,5 +292,14 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
                 throw new IllegalArgumentException("area is out of range");
             }
         }
+    }
+
+    private boolean isReadEmptyAndPrintBlank(String readData, UsbConnect usbConnect, String serialNumber) {
+        if (readData.equals("X")) {
+            String blank = "W1,1\r\n";
+            usbConnect.write(serialNumber, blank.getBytes(StandardCharsets.UTF_8), blank.length());
+            return true;
+        }
+        return false;
     }
 }
