@@ -135,6 +135,10 @@ public class LabelBuilder {
                 String k = jsonMap.get("varname").toString();
                 String v = jsonMap.get("varvalue").toString();
                 lsfMaps.put(k, v);
+            } else {
+                String k = lsfFileVar.get("varname").toString();
+                String v = lsfFileVar.get("varvalue").toString();
+                lsfMaps.put(k, v);
             }
         });
         printUtility.setVarValue(contents, lsfMaps);
@@ -276,7 +280,7 @@ public class LabelBuilder {
         byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
         try {
             usbConnect.write(printer.printermbsn, bytes, bytes.length);
-        }catch (ConnectException e) {
+        } catch (ConnectException e) {
             String message = ErrorCatcher.CatchConnectError(e.getMessage());
             CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
             ChannelMap.writeMessageToClient(clientRemote, message);
