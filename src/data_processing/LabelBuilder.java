@@ -259,14 +259,18 @@ public class LabelBuilder {
         float speed = printer.printSpeed * 25.4f;
         float labelHeight = label.labelheight;
         long printWaiting = (long) (labelHeight / speed * 1000);
-        byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
-        if (data == null) {
-            String message = ErrorCatcher.CatchConnectError("3003|生成标签数据异常为空,请检查Json内容");
-            CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
-            ChannelMap.writeMessageToClient(clientRemote, message);
-        } else {
-            LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote);
-            ChannelMap.addQueue(clientRemote, labelData);// 添加到打印队列
+        try {
+            byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
+            if (data == null) {
+                String message = ErrorCatcher.CatchConnectError("3003|生成标签数据异常为空,请检查Json内容");
+                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
+                ChannelMap.writeMessageToClient(clientRemote, message);
+            } else {
+                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote);
+                ChannelMap.addQueue(clientRemote, labelData);// 添加到打印队列
+            }
+        } catch (IllegalArgumentException e) {
+            throw new FunctionalException(e.getMessage());
         }
     }
 
@@ -296,6 +300,8 @@ public class LabelBuilder {
             ChannelMap.writeMessageToClient(clientRemote, "ZM_PrintLabel_Preview:data:image/png;base64," + base64Image);
         } catch (IOException e) {
             throw new FunctionalException("3005|图片预览错误:" + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new FunctionalException(e.getMessage());
         }
     }
 }
