@@ -261,12 +261,35 @@ public class LabelBuilder {
         long printWaiting = (long) (labelHeight / speed * 1000);
         try {
             byte[] data = printUtility.CreateLabelCommand(printer, label, contents);
+            BufferedImage image = printUtility.CreateLabelImage(printer, label, contents, 0);
+
             if (data == null) {
                 String message = ErrorCatcher.CatchConnectError("3003|生成标签数据异常为空,请检查Json内容");
                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
                 ChannelMap.writeMessageToClient(clientRemote, message);
             } else {
-                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote);
+                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote, image);
+
+//                if (printer.printerinterface == PrinterStyle.PDF) {
+//
+//                    labelData.setLabelWidth(label.labelwidth);
+//                    labelData.setLabelHeight(label.labelheight);
+//
+//                    for (ZMLabelobject labelObj : contents) {
+//                        if (labelObj.ObjectName.contains("rfiduhf")) {
+//                            StringBuilder rfidData = new StringBuilder();
+//                            if (labelObj.objectdata.isEmpty()) {
+//                                for (ObjectVariable v : labelObj.Variables) {
+//                                    rfidData.append(v.data);
+//                                }
+//                            }else {
+//                                rfidData = new StringBuilder(labelObj.objectdata);
+//                            }
+//                            labelData.setJobName(rfidData.toString());
+//                        }
+//                    }
+//                }
+
                 ChannelMap.addQueue(clientRemote, labelData);// 添加到打印队列
             }
         } catch (IllegalArgumentException e) {

@@ -2,6 +2,7 @@ package data_processing;
 
 import com.ZMPrinter.ZMPrinter;
 
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 @SuppressWarnings("unused")
@@ -13,8 +14,13 @@ public class LabelData implements Serializable {
     private final byte[] data;
     private final String clientRemote;
     private final int dataLen;
+    private final BufferedImage image;
+    private String jobName;
+    private float labelWidth;
+    private float labelHeight;
 
-    public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote) {
+    public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote, BufferedImage image) {
+        this.image = image;
         this.serial = "";
         this.printer = printer;
         this.printWaiting = printWaiting;
@@ -45,5 +51,33 @@ public class LabelData implements Serializable {
 
     public String getSerial() {
         return serial;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public float getLabelWidth() {
+        return labelWidth;
+    }
+
+    public void setLabelWidth(float labelWidth) {
+        this.labelWidth = labelWidth;
+    }
+
+    public float getLabelHeight() {
+        return labelHeight;
+    }
+
+    public void setLabelHeight(float labelHeight) {
+        this.labelHeight = labelHeight;
     }
 }

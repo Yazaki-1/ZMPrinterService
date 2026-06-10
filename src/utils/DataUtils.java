@@ -5,6 +5,7 @@ import com.ZMPrinter.ZMLabelobject;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import data_processing.JsonData;
+import function.FuncLabelCreator;
 import function.FunctionalException;
 
 import java.util.ArrayList;
@@ -51,6 +52,17 @@ public class DataUtils {
                                     if (objData != null && !objData.isEmpty())
                                         f.imagedata = Base64.getDecoder().decode(objData);
                                 });
+                    }
+                }
+            });
+
+            labelObjectList.forEach(item -> {
+                if (item.ObjectName.contains("text")) {
+                    String data = item.objectdata;
+                    if (FuncLabelCreator.containsBasicChinese(data)) {
+                        if (item.textfont.equals("Arial")) {
+                            item.textfont = "宋体";
+                        }
                     }
                 }
             });

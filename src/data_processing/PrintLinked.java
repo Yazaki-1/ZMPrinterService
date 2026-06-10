@@ -88,6 +88,18 @@ public class PrintLinked {
                             }
                             break;
                         }
+//                        case PDF: {
+//                            try {
+//                                PrinterOperator printerOperator = new PrinterOperatorImpl();
+//                                printerOperator.sendPdfToPrinterJob(labelData.getPrinter().printername, labelData.getImage(), labelData.getJobName(), labelData.getLabelWidth(), labelData.getLabelHeight());
+//                                String message = CommonClass.i18nMessage.getString("print.finish");
+//                                ChannelMap.writeMessageToClient(clientRemote, message);
+//                                CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ServiceData);
+//                            } catch (ConnectException e) {
+//                                blockingQueue.clear();
+//                                ChannelMap.writeMessageToClient(clientRemote, e.getMessage());
+//                            }
+//                        }
                         default: {
                             try {
                                 PrinterOperator printerOperator = new PrinterOperatorImpl();
