@@ -1,5 +1,6 @@
 package data_processing;
 
+import com.ZMPrinter.PrinterStyle;
 import com.ZMPrinter.ZMPrinter;
 
 import java.awt.image.BufferedImage;
@@ -18,15 +19,31 @@ public class LabelData implements Serializable {
     private String jobName;
     private float labelWidth;
     private float labelHeight;
+    private final boolean deadFlag;
+    private final PrinterStyle style;
 
-    public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote, BufferedImage image) {
+    public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote, BufferedImage image, PrinterStyle style) {
         this.image = image;
+        this.style = style;
         this.serial = "";
         this.printer = printer;
         this.printWaiting = printWaiting;
         this.data = data;
         this.clientRemote = clientRemote;
         this.dataLen = data.length;
+        this.deadFlag = false;
+    }
+
+    public LabelData(PrinterStyle style) {
+        this.style = style;
+        this.image = null;
+        this.serial = "";
+        this.printer = null;
+        this.printWaiting = 0L;
+        this.data = new byte[]{};
+        this.clientRemote = "";
+        this.dataLen = 0;
+        this.deadFlag = true;
     }
 
     public ZMPrinter getPrinter() {
@@ -79,5 +96,13 @@ public class LabelData implements Serializable {
 
     public void setLabelHeight(float labelHeight) {
         this.labelHeight = labelHeight;
+    }
+
+    public boolean isDeadFlag() {
+        return deadFlag;
+    }
+
+    public PrinterStyle getStyle() {
+        return style;
     }
 }

@@ -63,7 +63,7 @@ public class PrinterService extends JFrame {
         JPanel bottomLayout = new JPanel();
         JPanel panel6 = new JPanel();
         JLabel sys_msg_label = new JLabel();
-        JButton restart = new JButton();
+//        JButton restart = new JButton();
         JLabel label4 = new JLabel();
         JButton quit = new JButton();
         JPanel panel2 = new JPanel();
@@ -111,9 +111,9 @@ public class PrinterService extends JFrame {
                 }
                 bottomLayout.add(panel6);
 
-                //---- restart ----
-                restart.setText(CommonClass.i18nMessage.getString("btn.restart"));
-                bottomLayout.add(restart);
+//                //---- restart ----
+//                restart.setText(CommonClass.i18nMessage.getString("btn.restart"));
+//                bottomLayout.add(restart);
 
                 //---- label4 ----
                 label4.setText("     ");
@@ -298,33 +298,33 @@ public class PrinterService extends JFrame {
         });
 
         // 重启服务按钮响应事件
-        restart.addActionListener(e -> {
-            serverThread.interrupt();
-            serverThread = new Thread(() -> {
-                if (CommonClass.tcp_receive) {
-                    PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(Integer.parseInt(portBox.getText()));
-                    try {
-                        tcp_server.start_server();
-                    } catch (InterruptedException _e) {
-                        String msg = CommonClass.i18nMessage.getString("tcp_restart") + portBox.getText();
-                        CommonClass.saveLog(msg, LogType.ServiceData);
-                    } catch (Exception _e) {
-                        CommonClass.showServiceMsg(_e.getMessage());
-                    }
-                } else {
-                    PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
-                    try {
-                        server.start_server();
-                    } catch (InterruptedException _e) {
-                        String msg = CommonClass.i18nMessage.getString("ws_restart") + portBox.getText();
-                        CommonClass.saveLog(msg, LogType.ServiceData);
-                    } catch (Exception _e) {
-                        CommonClass.showServiceMsg(_e.getMessage());
-                    }
-                }
-            });
-            serverThread.start();
-        });
+//        restart.addActionListener(e -> {
+//            serverThread.interrupt();
+//            serverThread = new Thread(() -> {
+//                if (CommonClass.tcp_receive) {
+//                    PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(Integer.parseInt(portBox.getText()));
+//                    try {
+//                        tcp_server.start_server();
+//                    } catch (InterruptedException _e) {
+//                        String msg = CommonClass.i18nMessage.getString("tcp_restart") + portBox.getText();
+//                        CommonClass.saveLog(msg, LogType.ServiceData);
+//                    } catch (Exception _e) {
+//                        CommonClass.showServiceMsg(_e.getMessage());
+//                    }
+//                } else {
+//                    PrinterWebSocketServer server = new PrinterWebSocketServer(Integer.parseInt(portBox.getText()));
+//                    try {
+//                        server.start_server();
+//                    } catch (InterruptedException _e) {
+//                        String msg = CommonClass.i18nMessage.getString("ws_restart") + portBox.getText();
+//                        CommonClass.saveLog(msg, LogType.ServiceData);
+//                    } catch (Exception _e) {
+//                        CommonClass.showServiceMsg(_e.getMessage());
+//                    }
+//                }
+//            });
+//            serverThread.start();
+//        });
 
         // 退出按钮响应事件
         quit.addActionListener(e -> System.exit(0));

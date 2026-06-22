@@ -268,7 +268,7 @@ public class LabelBuilder {
                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
                 ChannelMap.writeMessageToClient(clientRemote, message);
             } else {
-                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote, image);
+                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote, image, printer.printerinterface);
 
 //                if (printer.printerinterface == PrinterStyle.PDF) {
 //

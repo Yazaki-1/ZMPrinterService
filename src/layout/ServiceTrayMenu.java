@@ -35,9 +35,18 @@ public class ServiceTrayMenu {
             trayIcon.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
+                    handlePopup(e);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    handlePopup(e);
+                }
+
+                private void handlePopup(MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON3) {
-                        systemTrayPopupMenu.setLocation(e.getX(), e.getY() - POPUP_HEIGHT);
-                        hiddenDialog.setLocation(e.getX(), e.getY() - POPUP_HEIGHT);
+                        systemTrayPopupMenu.setLocation(e.getXOnScreen(), e.getYOnScreen() - POPUP_HEIGHT);
+                        hiddenDialog.setLocation(e.getXOnScreen(), e.getYOnScreen() - POPUP_HEIGHT);
                         systemTrayPopupMenu.setInvoker(hiddenDialog);
                         hiddenDialog.setVisible(true);
                         systemTrayPopupMenu.setVisible(true);
