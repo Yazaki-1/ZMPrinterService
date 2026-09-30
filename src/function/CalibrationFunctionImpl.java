@@ -81,7 +81,7 @@ public class CalibrationFunctionImpl implements CalibrationFunction {
             String serverIp = CommonClass.receiveServerIp;
             int port = CommonClass.receiveServerPort;
             String firmwareMessage = tcpConnect.sendAndReadPrinter(addr, c, port, serverIp);
-            System.out.println(firmwareMessage);
+//            System.out.println(firmwareMessage);
             firmwareMessage = firmwareMessage.replace("\u0002", "").replace("\u0003", "").replace("\r\n", "");
             PrinterVO printerVO = RQ_toVO(firmwareMessage);
             RFID_Calibration.map.put(addr, printerVO);

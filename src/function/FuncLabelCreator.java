@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class FuncLabelCreator {
 
     private final static ZMPrinterFunction function = new ZMPrinterFunctionImpl();
     private final static Map<String, FuncBody> bodyMap = new HashMap<>();
-    private static final Pattern BASIC_CHINESE_PATTERN = Pattern.compile("[\\u4E00-\\u9FA5]");
     private static String rfidFormatData = null;
 
     public static void analysis(String remoteAddress, String msg) throws FunctionalException {
@@ -96,7 +94,7 @@ public class FuncLabelCreator {
 
                         if (funcParams.length == 4 || funcParams.length == 6) {
                             String imageBase64 = funcParams.length == 4 ? funcParams[3] : funcParams[5];
-                            System.out.println(imageBase64);
+//                            System.out.println(imageBase64);
                             if (imageBase64.contains(","))
                                 imageBase64 = imageBase64.substring(imageBase64.lastIndexOf(",") + 1);//去掉base64字符串头
                             if (funcParams.length == 4) {
@@ -183,7 +181,7 @@ public class FuncLabelCreator {
 //                }
 //                byte[] oneLabel = printUtility.CreateLabelCommand(printer, label, labelObjects);//生成一张页面的标签数据（可能多行多列）
 //                printLabels.add(oneLabel);*/
-                System.out.println("生成标签的打印数据");
+//                System.out.println("生成标签的打印数据");
                 break;
             }
             //设置分辨率
@@ -587,6 +585,20 @@ public class FuncLabelCreator {
                 break;
             }
             case "ZM_PrintLabel_R": {
+
+                int copy_num;
+
+                if (funcParams != null) {
+                    try {
+                        copy_num = Integer.parseInt(funcParams[2]);
+                    } catch (NumberFormatException e) {
+                        copy_num = 1;
+                    }
+                } else {
+                    copy_num = 1;
+                }
+                funcBody.getPrinter().copynum = copy_num;
+
                 byte[] commands = funcBody.buildLabelCommand();
                 int len = commands.length;
                 String printResult;
@@ -595,7 +607,7 @@ public class FuncLabelCreator {
                         //设了网络打印机ip
                         TcpConnect tcpConnect = new TcpConnectImpl();
                         printResult = tcpConnect.sendToPrinter(funcBody.getPrinter().printernetip, commands);
-                    }else {
+                    } else {
                         UsbConnect usbConnect = new UsbConnect();
                         usbConnect.write(funcBody.getPrinter().printermbsn, commands, len);
                         printResult = "0";
@@ -607,13 +619,31 @@ public class FuncLabelCreator {
                 }
 
                 if (printResult.equals("0")) {
-                    ChannelMap.writeMessageToClient(remoteAddress, "ZM_PrintLabel_R Complete:0||EPC:" + rfidFormatData);
+                    String msgData = "ZM_PrintLabel_R Complete:0";
+                    if (CommonClass.takeEPC) {
+                        msgData = msgData + "||EPC:" + rfidFormatData;
+                    }
+                    ChannelMap.writeMessageToClient(remoteAddress, msgData);
                 } else {
                     throw new FunctionalException("4006|未知异常(函数没有抛出异常但是结果异常),返回值:" + printResult);
                 }
                 break;
             }
             case "ZM_PrintLabel": {// USB和NET的
+
+                int copy_num;
+
+                if (funcParams != null) {
+                    try {
+                        copy_num = Integer.parseInt(funcParams[2]);
+                    } catch (NumberFormatException e) {
+                        copy_num = 1;
+                    }
+                } else {
+                    copy_num = 1;
+                }
+                funcBody.getPrinter().copynum = copy_num;
+
                 byte[] commands = funcBody.buildLabelCommand();
                 int len = commands.length;
                 String printResult;
@@ -622,7 +652,7 @@ public class FuncLabelCreator {
                         //设了网络打印机ip
                         TcpConnect tcpConnect = new TcpConnectImpl();
                         printResult = tcpConnect.sendToPrinter(funcBody.getPrinter().printernetip, commands);
-                    }else {
+                    } else {
                         UsbConnect usbConnect = new UsbConnect();
                         usbConnect.write(funcBody.getPrinter().printermbsn, commands, len);
                         printResult = "0";
@@ -715,14 +745,19 @@ public class FuncLabelCreator {
                         int feed = Integer.parseInt(funcParams[4]);
                         configuration.put("area", area);
                         configuration.put("feed", feed);
+//                        System.out.println(Arrays.toString(funcParams));
 
                         Integer timeout = Integer.parseInt(funcParams[5]);
 
                         LabelType labelType = setLabelType(funcParams.length == 7 ? Integer.parseInt(funcParams[6]) : 1);
 
                         String tagData = readTagAndCatchStatusErr(funcParams[1], labelType, configuration, timeout);
-                        ChannelMap.writeMessageToClient(remoteAddress, "UHFTagData:" + tagData);
-                        CommonClass.saveLog("UHFTagData:" + tagData, LogType.ServiceData);
+                        if (area == 2 && !tagData.contains("+")) {
+                            throw new FunctionalException("4007|read TID null");
+                        } else {
+                            ChannelMap.writeMessageToClient(remoteAddress, "UHFTagData:" + tagData);
+                            CommonClass.saveLog("UHFTagData:" + tagData, LogType.ServiceData);
+                        }
                     }
                 } catch (NumberFormatException e) {
                     throw new FunctionalException("4001|ZM_GetUHFTagData参数异常:" + e.getMessage());
@@ -736,19 +771,28 @@ public class FuncLabelCreator {
                 //socket.send('ZM_GetHFTagData|1|0|0|3|2000');//读取高频标签数据，目前只能读UID
                 //参数说明：参数1为10位打印机主板序号或者ip（只连接1台打印机可设置为1,如果是网络打印机可以ip）
                 //        参数2为需要操作的标签区域（0为UID，其他不支持）
-                //        参数3为模块读取功率(0:12db, 1:24db, 2:36db, 3:48db)
+                //        参数3为标签协议(1:15693, 2:14443A, 3:NFC / Ultralight)
                 //        参数4为读取操作完成后标签停止位置（0为回到原始位置，1为走纸到撕纸位置，2为走纸到打印位置，3为走纸到写入位置（需要写数据））
                 //        参数5为读取超时时间，单位毫秒（建议设置值为2000） 无效
                 try {
                     if (funcParams != null) {
                         Map<String, Integer> configuration = new HashMap<>();
-                        int power = Integer.parseInt(funcParams[3]);
+                        int protocol = Integer.parseInt(funcParams[3]);
                         int feed = Integer.parseInt(funcParams[4]);
-                        configuration.put("power", power);
+                        configuration.put("power", 0);
+                        configuration.put("protocol", protocol);
                         configuration.put("feed", feed);
                         Integer timeout = Integer.parseInt(funcParams[5]);
 
                         String tagData = readTagAndCatchStatusErr(funcParams[1], LabelType.HF, configuration, timeout);
+
+                        if (protocol == 1) {
+                            StringBuilder stringBuilder = new StringBuilder(tagData.length());
+                            for (int i = tagData.length(); i > 0; i -= 2) {
+                                stringBuilder.append(tagData, i - 2, i);
+                            }
+                            tagData = stringBuilder.toString();
+                        }
                         ChannelMap.writeMessageToClient(remoteAddress, "HFTagData:" + tagData);
                         CommonClass.saveLog("HFTagData:" + tagData, LogType.ServiceData);
                     }
@@ -800,7 +844,15 @@ public class FuncLabelCreator {
 
     public static boolean containsBasicChinese(String str) {
         if (str == null || str.isEmpty()) return false;
-        return BASIC_CHINESE_PATTERN.matcher(str).find();
+        for (int i = 0; i < str.length(); ) {
+            int cp = str.codePointAt(i);
+            if (Character.UnicodeScript.of(cp) == Character.UnicodeScript.HAN) {
+                return true;
+            }
+            i += Character.charCount(cp);
+        }
+        return false;
+//        return BASIC_CHINESE_PATTERN.matcher(str).find();
     }
 
     private static String getPrinterStatusAndCatchStatusErr(String addr) {
@@ -829,8 +881,6 @@ public class FuncLabelCreator {
             } else {
                 throw e;
             }
-        } catch (IllegalAccessException e) {
-            throw new FunctionalException("4002|函数式调用参数异常:" + e.getMessage());
         }
     }
 }

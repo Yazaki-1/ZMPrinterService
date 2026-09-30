@@ -107,6 +107,14 @@ public class DataJsonUtil {
                 CommonClass.usbTimeout = usbTimeout;
             else
                 CommonClass.usbTimeout = 5000;
+
+            Boolean takeEPC = object.getBoolean("takeEPC");
+            if (takeEPC != null) {
+                CommonClass.takeEPC = takeEPC;
+            }else {
+                CommonClass.takeEPC = false;
+            }
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
             CommonClass.saveLog("No data found: " + e.getMessage(), LogType.ErrorData);
@@ -122,6 +130,7 @@ public class DataJsonUtil {
             CommonClass.receiveServerIp = "127.0.0.1";
             CommonClass.receiveServerPort = 12301;
             CommonClass.usbTimeout = 5000;
+            CommonClass.takeEPC = false;
         }
     }
 

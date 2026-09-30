@@ -11,12 +11,10 @@ import function.FunctionalException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class DataUtils {
 
-    private static final Pattern pattern = Pattern.compile("^[0-9A-Fa-f]+$");
+//    private static final Pattern pattern = Pattern.compile("^[0-9A-Fa-f]+$");
 
     public static <T> List<T> castList(Object obj, Class<T> tClass) {
         List<T> result = new ArrayList<>();
@@ -57,6 +55,9 @@ public class DataUtils {
             });
 
             labelObjectList.forEach(item -> {
+                if (item.objectdata.equals("（")) {
+                    System.out.println(item.objectdata);
+                }
                 if (item.ObjectName.contains("text")) {
                     String data = item.objectdata;
                     if (FuncLabelCreator.containsBasicChinese(data)) {

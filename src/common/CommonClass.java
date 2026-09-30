@@ -2,14 +2,14 @@ package common;
 
 import layout.PrinterService;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CommonClass {
     public static String libPath = "";
@@ -17,7 +17,7 @@ public class CommonClass {
     public static PrinterService PARENT_LAYOUT = null;
 
     public static ResourceBundle i18nMessage = ResourceBundle.getBundle("i18n/messages");
-    public static final String SOFT_VERSION = "3.4.3.1 Last-Version";
+    public static final String SOFT_VERSION = "3.4.3.2 Last-Version";
     private static final String configDataDir =
             (System.getProperty("os.name").toLowerCase().contains("windows") ?
                     System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() :
@@ -40,16 +40,30 @@ public class CommonClass {
     public static String password = "";
     public static String receiveServerIp = "127.0.0.1";
     public static Integer receiveServerPort = null;
-    public static int usbTimeout = 5000;
+    public static int usbTimeout = 20000;
+    public static boolean takeEPC = false;
 
-    static {
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("windows")) {
-            libPath = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "r_lib" + FileSystems.getDefault().getSeparator() + "connector.dll";
-        }else {
-            System.out.println("linux does not support windows");
-        }
-    }
+//    public static Set<String> AVAILABLE_FONTS = new HashSet<>();
+
+//    static {
+////        String osName = System.getProperty("os.name").toLowerCase();
+////        if (osName.contains("windows")) {
+////            libPath = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "bin" + FileSystems.getDefault().getSeparator() + "r_lib" + FileSystems.getDefault().getSeparator() + "connector.dll";
+////        }else {
+////            System.out.println("linux does not support windows");
+////        }
+//        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        for (String fontName : ge.getAvailableFontFamilyNames()) {
+//            AVAILABLE_FONTS.add(fontName.toLowerCase());
+//        }
+//        for (String fontName : ge.getAvailableFontFamilyNames(Locale.ENGLISH)) {
+//            AVAILABLE_FONTS.add(fontName.toLowerCase());
+//        }
+//    }
+
+//    public static boolean fontExist(String fontName) {
+//        return AVAILABLE_FONTS.contains(fontName.toLowerCase());
+//    }
 
     //保存数据到log文件，被synchronized修饰的代码块及方法，在同一时间，只能被单个线程访问。
     public static synchronized void saveLog(String data, LogType logType) {

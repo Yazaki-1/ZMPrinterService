@@ -8,17 +8,25 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import common.CommonClass;
 import common.LogType;
+import function.FuncLabelCreator;
 import function.FunctionalException;
 import server.ChannelMap;
 import utils.DataUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
+
+import static data_processing.FontResolve.*;
+
+//import static common.CommonClass.AVAILABLE_FONTS;
+//import static common.CommonClass.fontExist;
 
 /**
  * @description: 数据处理中心
@@ -70,7 +78,7 @@ public class LabelBuilder {
                         JSONObject label = JSONObject.parseObject(labels.get(i));
                         try {
                             JSONArray array = label.getJSONArray("lsfFileVarList");
-                            setLsfFileVar(array, contents, jsonData.getOperator(), finalLsfPrinter, labelFormat, clientRemote);
+                            setContents(contents, array);
                         } catch (FunctionalException | ConnectException e) {
                             throw new FunctionalException(e.getMessage());
                         } catch (Exception e) {
@@ -80,21 +88,43 @@ public class LabelBuilder {
                 }
                 // 如果是用的LsfFileVarList单张数据
                 if (jsonData.getLsfFileVarList() != null) {
+                    if (jsonData.getOperator().contains("preview")) {
+                        preview_one = true;
+                    }
                     JSONArray array = JSONArray.parseArray(jsonData.getLsfFileVarList().toString());
-                    setLsfFileVar(array, contents, jsonData.getOperator(), finalLsfPrinter, labelFormat, clientRemote);
+                    setContents(contents, array);
+                }
+
+                matchObjectList(contents);
+                switch (jsonData.getOperator()) {
+//            case "print":
+//                printLabel(printer, label, contents, clientRemote);
+//                break;*/
+                    case "preview0":
+                        if (preview_one) {
+                            preview(finalLsfPrinter, labelFormat, contents, clientRemote, 0);
+                            preview_one = false;
+                        }
+                        break;
+                    case "preview":
+                        if (preview_one) {
+                            preview(finalLsfPrinter, labelFormat, contents, clientRemote, 1);
+                            preview_one = false;
+                        }
+                        break;
+                    case "setting":
+                        throw new FunctionalException("3008|调用LSF模板不能使用Setting");
+                    case "print":
+                    case "batch":
+                        addPrintQueue(finalLsfPrinter, labelFormat, contents, clientRemote);
+                        break;
+                    default:
+                        throw new FunctionalException("3001|未定义的调用方式");
                 }
             }
         } else {
-            //普通json
             List<ZMLabelobject> labelObjectList = jsonData.getLabelObjectList();
-            if (labelObjectList != null) {
-                labelObjectList.forEach(l -> {
-                    // 将所有text改为truetype
-                    if (l.ObjectName.contains("text")) {
-                        l.ObjectName = l.ObjectName.replace("text", "truetype");
-                    }
-                });
-            }
+            matchObjectList(labelObjectList);
 
             ZMPrinter printer = jsonData.getPrinter();
             ZMLabel labelFormat = jsonData.getLabelFormat();
@@ -114,9 +144,7 @@ public class LabelBuilder {
                     break;
                 case "print":
                 case "batch":
-                    if (labelObjectList != null) {
-                        DataUtils.checkHexData(labelObjectList);
-                    }
+                    DataUtils.checkHexData(labelObjectList);
                     addPrintQueue(printer, labelFormat, labelObjectList, clientRemote);
                     break;
                 default:
@@ -125,9 +153,9 @@ public class LabelBuilder {
         }
     }
 
-    private static void setLsfFileVar(ArrayList<Object> arrayList, List<ZMLabelobject> contents, String operator, ZMPrinter printer, ZMLabel label, String clientRemote) {
+    private static void setContents(List<ZMLabelobject> contents, JSONArray array) {
         Map<String, String> lsfMaps = new HashMap<>();
-        arrayList.forEach(a -> {
+        array.forEach(a -> {
             JSONObject lsfFileVar = JSONObject.parseObject(a.toString());
             if (lsfFileVar.containsKey("lsfFileVar")) {
                 String var = lsfFileVar.get("lsfFileVar").toString();
@@ -142,32 +170,131 @@ public class LabelBuilder {
             }
         });
         printUtility.setVarValue(contents, lsfMaps);
-        switch (operator) {
+    }
+
+    private static final String CHINESE_TEST_CHARS = "中文测试";
+
+    // 此方法仅用于普通对象传参
+    private static void matchObjectList(List<ZMLabelobject> labelObjectList) {
+        labelObjectList.forEach(l -> {
+            // 将所有text改为truetype
+            if (l.ObjectName.contains("text") || l.ObjectName.contains("truetype")) {
+                l.ObjectName = l.ObjectName.replace("text", "truetype");
+                String data = l.objectdata;
+                // data为空值可能是lsf模板绑定的子字符串共享名称，data会填充到Variables中
+                if (data.isEmpty()) {
+                    l.Variables.forEach(variable -> l.textfont = matchObjectList(variable.data, l.textfont));
+                } else {
+                    l.textfont = matchObjectList(data.trim(), l.textfont);
+                }
+            }
+        });
+    }
+
+    private static String matchObjectList(String data, String font) {
+        if (FuncLabelCreator.containsBasicChinese(data) && !canDisplayChinese(font)) {
+            String hei = HEI_FONT;
+            if (hei != null) {
+                font = hei;
+            }else {
+                String fallBack = FALLBACK_FONT;
+                if (fallBack != null) {
+                    font = fallBack;
+                }
+            }
+        }
+        return font;
+    }
+
+    private static boolean canDisplayChinese(String fontName) {
+        try {
+            return fontExist(fontName) && new Font(fontName, Font.PLAIN, 12).canDisplayUpTo(CHINESE_TEST_CHARS) == -1;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 查找系统中任何支持中文的字体
+     */
+//    private static String findAnyChineseFont() {
+//        try {
+//            System.out.println("开始查找系统中支持中文的字体...");
+//
+//            // 优先查找黑体系列
+//            List<String> heitiKeywords = Arrays.asList(
+//                    "Microsoft YaHei UI", "黑体", "Hei", "黑", "SimHei", "PingFang");
+//
+//            for (String font : AVAILABLE) {
+//                if (canDisplayChinese(font)) {
+//                    //System.out.println("找到支持中文的字体名称："+font);
+//                    // 优先选择名称中包含黑体关键词的字体
+//                    for (String keyword : heitiKeywords) {
+//                        if (font.toLowerCase().contains(keyword.toLowerCase())) {
+//                            System.out.println("找到支持中文的字体名称：" + font + "，匹配关键字：" + keyword + "成功。");
+//                            return font;
+//                        }
+//                        System.out.println("找到支持中文的字体名称：" + font + "，匹配关键字：" + keyword + "失败。");
+//                    }
+//                }
+//            }
+//
+//            // 返回第一个支持中文的字体
+//            for (String font : AVAILABLE) {
+//                if (canDisplayChinese(font)) {
+//                    System.out.println("没有匹配到指定的字体名称，返回第一个支持中文的字体名称：" + font);
+//                    return font;
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.err.println("查找中文字体时出错: " + e.getMessage());
+//        }
+//        return null;
+//    }
+
+//    private static void setLsfFileVar(ArrayList<Object> arrayList, List<ZMLabelobject> contents, String operator, ZMPrinter printer, ZMLabel label, String clientRemote) {
+//        Map<String, String> lsfMaps = new HashMap<>();
+//        arrayList.forEach(a -> {
+//            JSONObject lsfFileVar = JSONObject.parseObject(a.toString());
+//            if (lsfFileVar.containsKey("lsfFileVar")) {
+//                String var = lsfFileVar.get("lsfFileVar").toString();
+//                Map<String, Object> jsonMap = JSONObject.parseObject(var);
+//                String k = jsonMap.get("varname").toString();
+//                String v = jsonMap.get("varvalue").toString();
+//                lsfMaps.put(k, v);
+//            } else {
+//                String k = lsfFileVar.get("varname").toString();
+//                String v = lsfFileVar.get("varvalue").toString();
+//                lsfMaps.put(k, v);
+//            }
+//        });
+//        printUtility.setVarValue(contents, lsfMaps);
+//        switch (operator) {
 //            case "print":
 //                printLabel(printer, label, contents, clientRemote);
 //                break;*/
-            case "preview0":
-                if (preview_one) {
-                    preview(printer, label, contents, clientRemote, 0);
-                    preview_one = false;
-                }
-                break;
-            case "preview":
-                if (preview_one) {
-                    preview(printer, label, contents, clientRemote, 1);
-                    preview_one = false;
-                }
-                break;
-            case "setting":
-                throw new FunctionalException("3008|调用LSF模板不能使用Setting");
-            case "print":
-            case "batch":
-                addPrintQueue(printer, label, contents, clientRemote);
-                break;
-            default:
-                throw new FunctionalException("3001|未定义的调用方式");
-        }
-    }
+//            case "preview0":
+//                if (preview_one) {
+//                    preview(printer, label, contents, clientRemote, 0);
+//                    preview_one = false;
+//                }
+//                break;
+//            case "preview":
+//                if (preview_one) {
+//                    preview(printer, label, contents, clientRemote, 1);
+//                    preview_one = false;
+//                }
+//                break;
+//            case "setting":
+//                throw new FunctionalException("3008|调用LSF模板不能使用Setting");
+//            case "print":
+//            case "batch":
+//                addPrintQueue(printer, label, contents, clientRemote);
+//                break;
+//            default:
+//                throw new FunctionalException("3001|未定义的调用方式");
+//        }
+//    }
 
 //    @Deprecated
 //    public static void printLabel(ZMPrinter printer, ZMLabel label, List<ZMLabelobject> contents, String clientRemote) {
@@ -268,7 +395,12 @@ public class LabelBuilder {
                 CommonClass.saveAndShow(clientRemote + "    " + message, LogType.ErrorData);
                 ChannelMap.writeMessageToClient(clientRemote, message);
             } else {
-                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote, image, printer.printerinterface);
+                Map<String, Integer> readMap = hasRead(contents);
+                int labelType = readMap.get("readLabelType") == null ? 0 : readMap.get("readLabelType");
+                int readType = readMap.get("readType") == null ? 0 : readMap.get("readType");
+                boolean hasRead = readMap.get("hasRead") != null && readMap.get("hasRead") > 0;
+
+                LabelData labelData = new LabelData(printer, printWaiting, data, clientRemote, image, printer.printerinterface, hasRead, labelType, readType);
 
 //                if (printer.printerinterface == PrinterStyle.PDF) {
 //
@@ -295,6 +427,20 @@ public class LabelBuilder {
         } catch (IllegalArgumentException e) {
             throw new FunctionalException(e.getMessage());
         }
+    }
+
+    private static Map<String, Integer> hasRead(List<ZMLabelobject> contents) {
+        Map<String, Integer> map = new HashMap<>();
+        for (ZMLabelobject label : contents) {
+            if (label.ObjectName.contains("rfiduhf")) {
+                if (label.ReadIDOnly) {
+                    map.put("hasRead", 1);
+                    map.put("readLabelType", label.RFIDEncodertype);
+                    map.put("readType", label.ReadIDOnly_type);
+                }
+            }
+        }
+        return map;
     }
 
     public static void setting(ZMPrinter printer, String parameters, String clientRemote) {

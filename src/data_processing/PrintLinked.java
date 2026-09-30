@@ -1,15 +1,21 @@
 package data_processing;
 
+import com.ZMPrinter.LabelType;
 import com.ZMPrinter.PrinterOperator;
 import com.ZMPrinter.PrinterOperatorImpl;
+import com.ZMPrinter.PrinterStyle;
 import com.ZMPrinter.conn.*;
 import com.ZMPrinter.printer_connector.TcpConnect;
 import com.ZMPrinter.printer_connector.TcpConnectImpl;
 import com.ZMPrinter.printer_connector.UsbConnect;
 import common.CommonClass;
 import common.LogType;
+import function.ZMPrinterFunction;
+import function.ZMPrinterFunctionImpl;
 import server.ChannelMap;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintLinked {
@@ -17,14 +23,59 @@ public class PrintLinked {
     private final LinkedBlockingQueue<LabelData> blockingQueue = new LinkedBlockingQueue<>();
     private volatile boolean started = true;
     private final Thread printThread;
+    private final ZMPrinterFunction function = new ZMPrinterFunctionImpl();
 
     public PrintLinked() {
         printThread = new Thread(() -> {
             while (started && !Thread.currentThread().isInterrupted()) {
                 try {
                     LabelData labelData = blockingQueue.take();
-                    byte[] data = labelData.getData();
                     String clientRemote = labelData.getClientRemote();
+
+                    if (labelData.itHasRead()) {
+                        CommonClass.saveLog("------Reading Label------", LogType.ServiceData);
+
+                        String addr = (labelData.getPrinter().printerinterface == PrinterStyle.USB ||
+                                labelData.getPrinter().printerinterface == PrinterStyle.RFID_USB) ?
+                                labelData.getPrinter().printermbsn : labelData.getPrinter().printernetip;
+
+                        if (addr.isEmpty()) {
+                            addr = "1";
+                        }
+
+                        LabelType type = labelData.getLabelType() == 0 ? LabelType.UHF : LabelType.HF;
+                        //TID:E004010920E2036A
+                        Map<String, Integer> configuration = new HashMap<>();
+                        if (type == LabelType.UHF) {
+                            configuration.put("area", labelData.getReadArea());
+                        } else {
+                            configuration.put("power", 0);
+                        }
+                        configuration.put("feed", 2);
+
+                        try {
+                            String readData = function.readTagData(addr, type, configuration, CommonClass.usbTimeout, 512);
+
+                            if (configuration.get("protocol") != null && configuration.get("protocol") == 1) {
+                                StringBuilder stringBuilder = new StringBuilder(readData.length());
+                                for (int i = readData.length(); i > 0; i -= 2) {
+                                    stringBuilder.append(readData, i - 2, i);
+                                }
+                                readData = stringBuilder.toString();
+                            }
+
+                            String msg = "TID:" + readData;
+                            CommonClass.saveLog(msg, LogType.ServiceData);
+                            ChannelMap.writeMessageToClient(clientRemote, msg);
+                        } catch (Exception e) {
+                            String catcher = ErrorCatcher.CatchConnectError(e.getMessage());
+                            String msg = "Error: TID: X. " + catcher + ", The tag's data is not been read for 1 consecutive times.";
+                            CommonClass.saveLog(msg, LogType.ServiceData);
+                            ChannelMap.writeMessageToClient(clientRemote, msg);
+                        }
+                    }
+
+                    byte[] data = labelData.getData();
                     switch (labelData.getPrinter().printerinterface) {
                         case RFID_USB:
                         case GJB_USB:
@@ -157,7 +208,7 @@ public class PrintLinked {
 
     private void printLabel_NET_R(String ip, byte[] data) throws InterruptedException {
         String ps = TcpConnector.getPrinterStatus(ip);
-        System.out.println(ps);
+//        System.out.println(ps);
         if (ps.contains("|")) {
             if (!ps.startsWith("2004"))
                 throw new ConnectException(ErrorCatcher.CatchConnectError(ps));
@@ -172,7 +223,7 @@ public class PrintLinked {
             dataRead = dataRead.replace("\u0002", "").replace("\u0003", "").replace("\r", "").replace("\n", "");
 
             if (dataRead.equals("PN")) {
-                System.out.println("打印完成 -> PN");
+//                System.out.println("打印完成 -> PN");
                 ps = TcpConnector.getPrinterStatus(ip);
                 if (ps.contains("|")) {
                     throw new ConnectException(ErrorCatcher.CatchConnectError(ps));

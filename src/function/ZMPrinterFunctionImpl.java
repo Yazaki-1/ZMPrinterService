@@ -211,7 +211,7 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
     }
 
     @Override
-    public String readTagData(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout, int buffer_size) throws ConnectException, IllegalAccessException {
+    public String readTagData(String addr, LabelType labelType, Map<String, Integer> configuration, Integer timeout, int buffer_size) throws ConnectException {
         try {
             long serial = Long.parseLong(addr);
             String serialNumber = serial == 1 ? "" : addr;
@@ -243,7 +243,7 @@ public class ZMPrinterFunctionImpl implements ZMPrinterFunction {
                 Integer receivePort = CommonClass.receiveServerPort;
                 return tcpConnect.readTag(addr, receivePort, receiveIp, labelType, configuration);
             } else {
-                throw new IllegalAccessException("参数格式不正确");
+                throw new ConnectException("参数格式不正确");
             }
         }
     }

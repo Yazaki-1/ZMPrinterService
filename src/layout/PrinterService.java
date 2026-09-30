@@ -29,7 +29,7 @@ public class PrinterService extends JFrame {
         initComponents();//初始化Swing组件
         serverThread = new Thread(() -> {
             if (CommonClass.tcp_receive) {
-                System.out.println(CommonClass.i18nMessage.getString("tcp") + portBox.getText());
+//                System.out.println(CommonClass.i18nMessage.getString("tcp") + portBox.getText());
                 PrinterTcpSocketServer tcp_server = new PrinterTcpSocketServer(Integer.parseInt(portBox.getText()));
                 try {
                     tcp_server.start_server();

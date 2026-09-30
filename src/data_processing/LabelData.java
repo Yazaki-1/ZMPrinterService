@@ -21,8 +21,11 @@ public class LabelData implements Serializable {
     private float labelHeight;
     private final boolean deadFlag;
     private final PrinterStyle style;
+    private final boolean hasRead;
+    private final int labelType;
+    private final int readArea;
 
-    public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote, BufferedImage image, PrinterStyle style) {
+    public LabelData(ZMPrinter printer, long printWaiting, byte[] data, String clientRemote, BufferedImage image, PrinterStyle style, boolean hasRead, int labelType, int readArea) {
         this.image = image;
         this.style = style;
         this.serial = "";
@@ -32,6 +35,9 @@ public class LabelData implements Serializable {
         this.clientRemote = clientRemote;
         this.dataLen = data.length;
         this.deadFlag = false;
+        this.hasRead = hasRead;
+        this.labelType = labelType;
+        this.readArea = readArea;
     }
 
     public LabelData(PrinterStyle style) {
@@ -44,6 +50,9 @@ public class LabelData implements Serializable {
         this.clientRemote = "";
         this.dataLen = 0;
         this.deadFlag = true;
+        this.hasRead = false;
+        this.labelType = 0;
+        this.readArea = 0;
     }
 
     public ZMPrinter getPrinter() {
@@ -104,5 +113,17 @@ public class LabelData implements Serializable {
 
     public PrinterStyle getStyle() {
         return style;
+    }
+
+    public int getLabelType() {
+        return labelType;
+    }
+
+    public int getReadArea() {
+        return readArea;
+    }
+
+    public boolean itHasRead() {
+        return hasRead;
     }
 }
